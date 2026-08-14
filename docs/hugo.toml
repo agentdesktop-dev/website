@@ -1,0 +1,27 @@
+baseURL = "https://agentdesktop.dev/docs/"
+locale = "en-US"
+title = "agentdesktop documentation"
+enableRobotsTXT = true
+disableKinds = ["taxonomy", "term"]
+
+[params]
+description = "Set up agentdesktop to inventory AI agents, MCP servers, tools, and skills, then route their traffic through agentgateway policy."
+github = "https://github.com/agentdesktop-dev/agentdesktop"
+marketingURL = "/"
+
+[sitemap]
+changeFreq = "monthly"
+priority = 0.7
+filename = "sitemap.xml"
+
+[markup.goldmark.renderer]
+unsafe = true
+
+[markup.highlight]
+noClasses = false
+lineNos = false
+
+[markup.tableOfContents]
+startLevel = 2
+endLevel = 3
+ordered = false

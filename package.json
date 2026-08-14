@@ -4,11 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:docs": "hugo server --source docs --disableFastRender",
     "build": "next build",
+    "build:docs": "hugo --source docs --gc --minify --cleanDestinationDir",
+    "build:all": "npm run build && npm run build:docs",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "check": "npm run lint && npm run build:all"
   },
   "dependencies": {
+    "lucide-react": "^1.31.0",
     "next": "16.3.1",
     "react": "19.2.8",
     "react-dom": "19.2.8"
