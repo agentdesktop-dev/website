@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { siteConfig } from "./site-config";
 
 export const socialImageAlt =
-  "agentdesktop: manage AI agents on employee devices";
+  "agentdesktop: manage AI developer tools across your fleet";
 
 export const socialImageSize = {
   width: 1200,
@@ -84,7 +84,7 @@ export function createSocialImage() {
               lineHeight: 1.02,
             }}
           >
-            Manage AI agents on employee devices.
+            Manage AI developer tools across your fleet.
           </div>
           <div
             style={{
@@ -95,8 +95,8 @@ export function createSocialImage() {
               lineHeight: 1.35,
             }}
           >
-            Find agents, MCP servers, and skills. Attribute each action to its
-            agent and device.
+            Discover installed tools, reconcile configuration, and connect
+            devices to a shared inference gateway.
           </div>
         </div>
       </div>
@@ -114,9 +114,9 @@ export function createSocialImage() {
         }}
       >
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <Device label="Claude · agent-7A21" />
-          <Device label="Codex · agent-F114" />
-          <Device label="OpenClaw · agent-C390" />
+          <Device label="Claude Code · installed" />
+          <Device label="Codex · installed" />
+          <Device label="OpenCode · installed" />
         </div>
         <div
           style={{
@@ -140,7 +140,7 @@ export function createSocialImage() {
           }}
         >
           <div style={{ display: "flex", color: "#b997ff", fontSize: 18 }}>
-            IDENTITY + INVENTORY
+            DISCOVERY + CONFIG
           </div>
           <strong style={{ marginTop: 12, fontSize: 31 }}>agentdesktop</strong>
           <div
@@ -154,9 +154,9 @@ export function createSocialImage() {
               lineHeight: 1.5,
             }}
           >
-            <div style={{ display: "flex" }}>Agents</div>
-            <div style={{ display: "flex" }}>MCP servers</div>
-            <div style={{ display: "flex" }}>Skills</div>
+            <div style={{ display: "flex" }}>Tools + versions</div>
+            <div style={{ display: "flex" }}>MCP + skills</div>
+            <div style={{ display: "flex" }}>Managed settings</div>
           </div>
         </div>
       </div>

@@ -1,50 +1,48 @@
 ---
 title: Contributing
-description: Build agentdesktop, run the test suite, and find the code for each component.
+description: Build the Rust workspace and frontends, run CI checks, and find each component.
 weight: 2
 ---
 
-agentdesktop is primarily Rust. The optional enrollment service is written in Go. Run the local tests before setting up a VM or identity provider.
+agentdesktop is a Rust workspace with React and TypeScript frontends for the desktop app and controller. The controller handles enrollment directly; there is no separate enrollment service.
 
 ## Local setup and tests
 
-1. Read the [repository README](https://github.com/agentdesktop-dev/agentdesktop) and the architecture boundary in `AGENTS.md`.
-2. Install the Rust toolchain selected by `rust-toolchain.toml`.
-3. Run the complete local suite.
-4. Trace one native flow through the service and HBONE modules.
-5. Run the container smoke environment.
+Install the Rust toolchain selected by `rust-toolchain.toml`, the Node version in `frontend/.nvmrc`, pnpm, and the Tauri dependencies for your platform. On Linux, the CI workflow lists the required WebKitGTK, AppIndicator, SSL, Xdo, and SVG development packages.
 
-```bash
+```sh
 git clone https://github.com/agentdesktop-dev/agentdesktop.git
 cd agentdesktop
-cargo test --all-targets
-cargo run -- --help
+corepack enable
+make test
+make check
 ```
 
-## Run the container smoke test
+`make test` builds the frontends and runs `cargo test --workspace`. `make check` runs Rust formatting and Clippy with warnings denied, then checks all frontend packages.
 
-```bash
-./scripts/container-up.sh smoke
-./scripts/container-smoke.sh
-./scripts/container-down.sh
+When changing configuration types, regenerate and verify the checked-in schemas:
+
+```sh
+make generate-schema
+git diff --exit-code -- schema
 ```
-
-The fixtures use local test data and do not contact an AI provider.
 
 ## Code map
 
 | Area | Starting point |
 | --- | --- |
-| Runtime orchestration | `src/service.rs` |
-| HTTP/2 CONNECT pool | `src/service/hbone.rs` |
-| Opaque stream relay | `src/service/forwarder.rs` |
-| Claude adapter | `src/apps/claude.rs` |
-| Linux process scope | `src/launch.rs` |
-| Platform integrations | `src/platform/` |
-| Enrollment authority | `control-plane/` |
+| Device daemon, discovery, reconciliation, and OIDC | `crates/agent/` |
+| Desktop app and command-line entry point | `crates/agentdesktop/` |
+| Fleet controller, enrollment, storage, and admin API | `crates/controller/` |
+| Shared configuration and data models | `crates/core/` |
+| Fleet gRPC contract | `crates/proto/` |
+| Desktop and controller frontends | `frontend/` |
+| Local and Kubernetes scenarios | `examples/` |
+| Controller Helm chart | `deploy/helm/agentdesktop-controller/` |
+| Generated configuration reference | `schema/` |
 
 ## Before opening a PR
 
-Keep each change within one ownership area: identity, capture, telemetry, installation, or control plane. Read the nearest test before changing behavior, and add a regression test for an escaped defect.
+Keep changes within the owning crate or frontend package. Read the nearest test before changing behavior and add a regression test for an escaped defect.
 
-Keep policy in agentgateway. agentdesktop handles discovery, identity, and forwarding.
+Agentdesktop owns discovery, configuration reconciliation, enrollment, gateway credential delivery, and selected telemetry. Inference-gateway routing and provider policy remain in the configured gateway.

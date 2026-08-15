@@ -9,7 +9,7 @@
 
 ---
 
-**agentdesktop** finds AI agents, MCP servers, tools, and skills on employee devices, attaches user and device identity to their activity, and applies centrally managed policy. This repository contains the public website and documentation for the project.
+**agentdesktop** discovers AI developer tools, inventories MCP servers and skills, reconciles managed configuration, and connects employee devices to a shared inference gateway. This repository contains the public website and documentation for the project.
 
 The marketing site is a Next.js application under `src/app/`. The documentation is a Hugo site under `docs/` and is published at `/docs/` on the same domain.
 

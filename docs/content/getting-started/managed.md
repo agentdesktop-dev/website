@@ -1,96 +1,74 @@
 ---
-title: Organization-managed
-description: Enroll an organizational user and device, then route to a remote agentgateway with short-lived mTLS identity.
+title: Controller-managed
+description: Enroll a device, distribute configuration, and issue short-lived inference-gateway credentials.
 weight: 2
 ---
 
-In managed mode, the organization runs agentgateway remotely. OAuth authenticates enrollment and certificate recovery. Application traffic uses a short-lived mTLS certificate that identifies the organization, user, and device.
+In managed mode, the daemon enrolls with the agentdesktop controller and receives desired configuration from it. The controller provides a fleet management UI, stores inventory and selected telemetry, and can issue short-lived JWTs for an inference gateway such as Agentgateway.
 
-agentgateway does not yet consume published revocation state, so a revoked certificate remains valid until it expires. Signed distribution and cross-platform capture are also incomplete.
+The device certificate authenticates the daemon to the controller. Developer tools do not use that certificate for model traffic; they connect directly to the configured inference gateway and obtain a gateway credential through agentdesktop.
 
 ## Prerequisites
 
-A managed deployment requires:
+The repository includes a complete local scenario using Dex, the controller, Claude Code, and Agentgateway. It requires:
 
-- An HTTPS OAuth issuer supporting Authorization Code with PKCE `S256`.
-- A public OAuth client, expected audience, and user enrollment scope.
-- An HTTPS enrollment authority trusted by the laptop.
-- An HTTPS agentgateway CONNECT origin trusted by the laptop.
-- An administrator workflow for approving device enrollment.
+- Docker with Compose.
+- `agentdesktop` and `agentdesktop-controller` on `PATH`.
+- OpenSSL and an Anthropic API key.
+- Development TLS and JWT keys generated as described in the [local scenario](https://github.com/agentdesktop-dev/agentdesktop/tree/main/examples/claude).
 
-Configure the OAuth issuer, enrollment authority, and agentgateway origin as separate HTTPS endpoints. Validate the OAuth issuer and each service certificate independently, even when one organization operates all three.
+Build both binaries from source with `make install`, or download the device binary from [GitHub Releases](https://github.com/agentdesktop-dev/agentdesktop/releases).
 
-## Check credential storage
+## Start the local controller scenario
 
-Check local credential storage before opening a browser login:
+After generating the example key material, start Dex:
 
-```bash
-cargo run -- identity storage-check
+```sh
+docker compose -f examples/claude/compose.yaml up -d dex
 ```
 
-On Linux, `auto` uses Secret Service when its write/read/delete preflight succeeds and otherwise selects an owner-only protected file. Runtime does not silently switch stores after selection.
+Start the controller in another terminal:
 
-## Sign in
-
-```bash
-cargo run -- identity login \
-  --issuer https://identity.example/ \
-  --client-id agentdesktop \
-  --audience https://gateway.example \
-  --scope agentgateway.invoke \
-  --gateway-origin https://gateway.example
+```sh
+agentdesktop-controller --config examples/claude/controller.yaml
 ```
 
-agentdesktop opens the system browser, uses Authorization Code with PKCE, and validates the token issuer, audience, expiry, scope, signature, and subject.
+Start Agentgateway after supplying its upstream credential:
 
-## Enroll the device
-
-Create a protected P-256 device key and submit its certificate signing request:
-
-```bash
-cargo run -- identity enroll-request \
-  --issuer https://identity.example/ \
-  --enrollment-url https://enrollment.example/ \
-  --gateway-origin https://gateway.example
+```sh
+export ANTHROPIC_API_KEY=sk-ant-...
+docker compose -f examples/claude/compose.yaml up -d agentgateway
 ```
 
-After an administrator approves the pending request, retrieve the certificate:
+Start the device daemon:
 
-```bash
-cargo run -- identity enroll-status \
-  --issuer https://identity.example/ \
-  --enrollment-url https://enrollment.example/ \
-  --gateway-origin https://gateway.example
+```sh
+sudo "$(command -v agentdesktop)" daemon \
+  --config examples/claude/agentdesktop.yaml
 ```
 
-The private key never leaves agentdesktop storage. The authority constructs certificate identity from its own organization, user, and device records rather than trusting CSR identity fields.
+The browser opens for OIDC sign-in. For the checked-in Dex example, use `admin@example.com` and `password`.
 
-## Attribute agent activity
+## Enrollment and credentials
 
-The managed certificate identifies the organization, user, and device. agentdesktop combines that identity with the discovered agent instance and its process or adapter context. Audit records identify the agent and device behind each request to a model, MCP server, tool, or skill.
+During enrollment, the daemon generates its private key locally and sends a certificate signing request with the OIDC identity token. The controller returns a client certificate, which the daemon uses for mTLS on the fleet API. The private key stays on the device.
 
-agentdesktop ignores agent-supplied identity headers. It rejects a flow when it cannot identify the local source.
+When a configured tool requests an inference-gateway credential, the daemon asks the controller for a short-lived JWT. The controller restricts requests to configured client IDs and sets the configured issuer and audience. The Agentgateway example validates that JWT before forwarding a model request.
 
-## Start managed forwarding
+## Inspect the device and fleet
 
-```bash
-cargo run -- serve \
-  --mode managed \
-  --listen 127.0.0.1:8080 \
-  --status-listen 127.0.0.1:8081 \
-  --upstream https://gateway.example \
-  --native-target native.agentdesktop.internal:4000 \
-  --identity-issuer https://identity.example/ \
-  --enrollment-url https://enrollment.example/
+Open the controller UI at [http://127.0.0.1:8080](http://127.0.0.1:8080). Open the local desktop app with:
+
+```sh
+agentdesktop
 ```
 
-Startup requires protected storage, the matching OAuth session, and an approved device certificate. A failed managed route closes the agent flow rather than connecting directly to a provider.
+The command-line client can also query the daemon:
 
-## Validate status
-
-```bash
-curl --fail http://127.0.0.1:8081/_agentdesktop/healthz
-curl --fail http://127.0.0.1:8081/_agentdesktop/status
+```sh
+agentdesktop status
+agentdesktop config
+agentdesktop discover
 ```
 
-The status API does not expose Gateway addresses, identity claims, credentials, application traffic, or policy.
+For a cluster deployment, follow the [Kubernetes controller example](https://github.com/agentdesktop-dev/agentdesktop/tree/main/examples/kubernetes). It installs the controller Helm chart with development Dex and PostgreSQL dependencies and configures Agentgateway separately.

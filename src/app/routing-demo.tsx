@@ -5,58 +5,58 @@ export function RoutingDemo() {
   return (
     <figure className={styles.fleetDiagram} aria-labelledby="fleet-diagram-title">
       <div className={styles.fleetTopbar}>
-        <strong id="fleet-diagram-title">Agents on employee devices</strong>
+        <strong id="fleet-diagram-title">Developer tools across the fleet</strong>
       </div>
 
       <div className={styles.fleetMap}>
         <div className={styles.deviceStack} aria-label="Employee devices">
           <div className={styles.deviceNode}>
             <span><Laptop size={21} aria-hidden="true" /></span>
-            <div><strong>Device ENG-042</strong><p>Claude · agent-7A21</p></div>
+            <div><strong>Device ENG-042</strong><p>Claude Code · installed</p></div>
             <i className={styles.fleetPulse} aria-hidden="true" />
           </div>
           <div className={styles.deviceNode}>
             <span><Laptop size={21} aria-hidden="true" /></span>
-            <div><strong>Device FIN-018</strong><p>OpenClaw · agent-C390</p></div>
+            <div><strong>Device FIN-018</strong><p>OpenCode · installed</p></div>
             <i className={styles.fleetPulse} aria-hidden="true" />
           </div>
           <div className={styles.deviceNode}>
             <span><Laptop size={21} aria-hidden="true" /></span>
-            <div><strong>Device ENG-107</strong><p>Codex · agent-F114</p></div>
+            <div><strong>Device ENG-107</strong><p>Codex · installed</p></div>
             <i className={styles.fleetPulse} aria-hidden="true" />
           </div>
         </div>
 
         <div className={styles.desktopCore}>
           <span className={styles.coreIcon}><Route size={25} aria-hidden="true" /></span>
-          <p>Identity and inventory</p>
+          <p>Device daemon</p>
           <strong>agentdesktop</strong>
-          <small>Records agents and resources</small>
+          <small>Discovers and reconciles</small>
           <ul>
-            <li><Bot size={17} aria-hidden="true" /><span>Agents</span><strong>instance ID</strong></li>
-            <li><Network size={17} aria-hidden="true" /><span>MCP servers</span><strong>endpoint ID</strong></li>
-            <li><Code2 size={17} aria-hidden="true" /><span>Skills</span><strong>source + version</strong></li>
+            <li><Bot size={17} aria-hidden="true" /><span>Developer tools</span><strong>versions</strong></li>
+            <li><Network size={17} aria-hidden="true" /><span>MCP servers</span><strong>secret-free</strong></li>
+            <li><Code2 size={17} aria-hidden="true" /><span>Skills</span><strong>front matter</strong></li>
           </ul>
           <i className={styles.policyPulse} aria-hidden="true" />
         </div>
 
         <div className={styles.policyNode}>
           <span><ShieldCheck size={25} aria-hidden="true" /></span>
-          <p>Policy and routing</p>
-          <strong>agentgateway</strong>
-          <small>Allow · deny · route · audit</small>
+          <p>Fleet management</p>
+          <strong>controller</strong>
+          <small>Enroll · configure · observe</small>
           <div>
-            <span>Models</span>
-            <span>MCP</span>
-            <span>A2A</span>
+            <span>Devices</span>
+            <span>Config</span>
+            <span>Events</span>
           </div>
-          <code>agent-7A21 @ ENG-042 → github-mcp</code>
+          <code>config revision 12 → ENG-042</code>
         </div>
       </div>
 
       <figcaption>
-        agentdesktop records the agent, user, device, and destination for each
-        flow. It rejects flows that cannot be attributed.
+        Each daemon reconciles local tool configuration. Managed devices receive
+        desired configuration and short-lived gateway credentials from the controller.
       </figcaption>
     </figure>
   );

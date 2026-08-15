@@ -1,76 +1,80 @@
 ---
-title: Self-managed
-description: Run agentdesktop and agentgateway as separate processes on one Linux laptop.
+title: Standalone
+description: Run agentdesktop from local YAML without a fleet controller.
 weight: 1
 ---
 
-In self-managed mode, agentdesktop and agentgateway run as separate processes on one laptop. The user owns the policy, credentials, and log retention.
+In standalone mode, the agentdesktop daemon reads local YAML and reconciles developer-tool settings on one device. It does not enroll the device or connect to the fleet controller.
 
-The project does not yet publish a signed release. Review the current [phase status](https://github.com/agentdesktop-dev/agentdesktop/blob/main/docs/development/phase-status.md) before using agentdesktop with sensitive traffic.
+The repository's standalone example runs Dex and Agentgateway locally. Agentdesktop signs the user in through OIDC, configures Claude Code to use Agentgateway as its Anthropic base URL, and supplies the resulting access token through Claude's credential helper.
 
 ## Prerequisites
 
-- Linux with a current Rust toolchain for source builds.
-- Podman 5+ or Docker for the deterministic smoke environment.
-- Claude Code to test the current native application adapter.
-- agentgateway configuration that you own and can protect with user-only file permissions.
+- Docker with Compose.
+- Claude Code and `agentdesktop` on `PATH`.
+- An Anthropic API key for the example Agentgateway upstream.
+- Rust, pnpm, and the platform dependencies required by Tauri when building from source.
 
-This walkthrough uses Claude Code, the first persistent adapter. Codex, OpenClaw, other agents, MCP servers, tools, and skills require their corresponding adapters or capture profiles.
+Download the current binary from [GitHub Releases](https://github.com/agentdesktop-dev/agentdesktop/releases), or build and install the workspace:
 
-## Verify the source checkout
-
-The test suite uses local fixtures and does not contact an AI provider.
-
-```bash
+```sh
 git clone https://github.com/agentdesktop-dev/agentdesktop.git
 cd agentdesktop
-cargo test --all-targets
+make install
 ```
 
-Run the agentdesktop and agentgateway smoke environment:
+## Start the example services
 
-```bash
-./scripts/container-up.sh smoke
-./scripts/container-smoke.sh
-./scripts/container-down.sh
+From the repository root, start Dex and Agentgateway:
+
+```sh
+export ANTHROPIC_API_KEY=sk-ant-...
+docker compose -f examples/standalone/compose.yaml up -d
 ```
 
-## Local endpoints
+## Preview the configuration
 
-The standard local setup uses three loopback-only endpoints:
+Run a dry-run before changing Claude Code settings:
 
-| Endpoint | Default | Purpose |
-| --- | --- | --- |
-| Application path | `127.0.0.1:8080` | AI applications connect to agentdesktop |
-| Status path | `127.0.0.1:8081` | agentdesktop health and privacy-safe status |
-| agentgateway CONNECT path | `127.0.0.1:15008` | agentdesktop forwards to local agentgateway |
-
-agentgateway stores provider credentials, evaluates policy, parses requests, and owns any inspection CA. agentdesktop forwards opaque bytes.
-
-## Connect Claude Code
-
-Once agentdesktop and agentgateway are ready, configure the native adapter:
-
-```bash
-cargo run -- connect-agents
+```sh
+agentdesktop daemon \
+  --config examples/standalone/config.yaml \
+  --user \
+  --dry-run
 ```
 
-The command asks for separate consent before changing Claude Code settings. It preserves unrelated settings and refuses to replace a conflicting provider or gateway configuration.
+The report shows each proposed update and conflict without writing files. In `--user` mode, Claude Code values are merged into `~/.claude/settings.json` while unrelated settings are preserved.
 
-Launch `claude` normally after configuration. Configure a given application for either native routing or transparent capture.
+## Run the daemon
 
-## Check health
+Start the daemon without `--dry-run` and leave it running:
 
-```bash
-curl --fail http://127.0.0.1:8081/_agentdesktop/healthz
+```sh
+agentdesktop daemon \
+  --config examples/standalone/config.yaml \
+  --user
 ```
 
-This endpoint checks whether agentdesktop can reach the agentgateway TCP endpoint. It does not validate policy, provider credentials, or provider availability.
+In another terminal, verify the local daemon and discovery output:
 
-## Security checklist
+```sh
+agentdesktop status
+agentdesktop discover
+```
 
-- Keep all agentdesktop and agentgateway listeners on loopback.
-- Restrict agentgateway configuration and referenced secret files to the current user.
-- Supply provider credentials only through an agentgateway-supported secret source.
-- Confirm that stopping agentgateway makes selected requests fail without direct provider fallback.
-- Define retention for both service logs and agentgateway audit data.
+Launch `claude` normally. Claude Code connects directly to Agentgateway using the base URL written by agentdesktop. Its credential helper asks the daemon for the user's OIDC access token.
+
+Claude Desktop managed configuration requires system mode. Uncomment its configuration in the example YAML, then run:
+
+```sh
+sudo "$(command -v agentdesktop)" daemon \
+  --config examples/standalone/config.yaml
+```
+
+## Stop the example
+
+```sh
+docker compose -f examples/standalone/compose.yaml down
+```
+
+The checked-in configuration and identity provider are for local development. Use your own OIDC client, trusted HTTPS endpoints, gateway policy, and secret management for a real deployment.

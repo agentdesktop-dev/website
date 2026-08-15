@@ -32,14 +32,14 @@ const structuredData = {
       name: siteConfig.name,
       url: `${siteConfig.url}/`,
       description: siteConfig.description,
-      applicationCategory: "SecurityApplication",
-      applicationSubCategory: "AI agent governance",
+      applicationCategory: "DeveloperApplication",
+      applicationSubCategory: "AI developer tool management",
       isAccessibleForFree: true,
       featureList: [
-        "AI agent discovery",
-        "MCP server and skill inventory",
-        "Agent and device attribution",
-        "Policy routing and enforcement",
+        "AI developer tool discovery",
+        "Secret-minimized MCP server and skill inventory",
+        "Managed configuration reconciliation",
+        "Device enrollment and fleet telemetry",
       ],
       isPartOf: { "@id": `${siteConfig.url}/#website` },
     },
@@ -111,12 +111,12 @@ export default function Home() {
           <div className={styles.heroGrid}>
             <div className={styles.heroCopy}>
               <h1>agentdesktop</h1>
-              <p className={styles.heroKicker}>Manage AI agents on employee devices.</p>
+              <p className={styles.heroKicker}>Manage AI developer tools across your fleet.</p>
               <p className={styles.heroText}>
-                agentdesktop finds Claude Code, Codex, OpenClaw, and other
-                agents, along with their MCP servers, tools, and skills. It ties
-                each action to an agent instance and device, then routes the
-                traffic through centrally managed policy and inspection.
+                Discover Claude Code, Claude Desktop, Codex, OpenCode, and VS Code
+                across employee devices. Inventory versions, MCP servers, and
+                skills, reconcile managed settings, and connect each device to
+                your inference gateway.
               </p>
               <div className={styles.heroActions}>
                 <a className={styles.primaryCta} href="/docs/">
@@ -138,18 +138,18 @@ export default function Home() {
         <section className={styles.problem} id="why">
           <div className={styles.problemGrid}>
             <div>
-              <h2>AI agents are already running on employee devices.</h2>
+              <h2>MDM manages devices. AI tools need their own control plane.</h2>
               <p className={styles.problemIntro}>
-                They can reach models, MCP servers, skills, and sensitive local
-                files. Security teams need to know what is installed, who is
-                using it, and where its traffic goes.
+                Each developer tool has its own configuration, extensions, MCP
+                connections, and gateway settings. Platform teams need one view
+                of what is installed and one way to manage it.
               </p>
             </div>
             <ul className={styles.questions}>
-              <li><p>Attribute each call to an agent, user, and device.</p></li>
-              <li><p>Inventory the MCP servers, tools, and skills available to each agent.</p></li>
-              <li><p>Apply policy using verified user and device identity.</p></li>
-              <li><p>Block traffic when identity or the policy route is unavailable.</p></li>
+              <li><p>See installed tools and versions on each device.</p></li>
+              <li><p>Inventory MCP servers and skill metadata without collecting their secrets or bodies.</p></li>
+              <li><p>Distribute managed settings and a shared inference gateway.</p></li>
+              <li><p>Associate devices with users and collect only the events you select.</p></li>
             </ul>
           </div>
         </section>
@@ -158,9 +158,9 @@ export default function Home() {
           <div className={styles.sectionHeadingRow}>
             <h2>How agentdesktop works</h2>
             <p>
-              agentdesktop inventories agents and resources on each device,
-              attaches source identity to each flow, and sends the flow to
-              your policy service for evaluation and inspection.
+              The device daemon discovers installed tools and reconciles their
+              configuration. In managed deployments, the controller distributes
+              desired state, enrolls devices, and records opt-in telemetry.
             </p>
           </div>
           <div className={styles.processFlow} aria-label="agentdesktop processing flow">
@@ -168,15 +168,15 @@ export default function Home() {
             <div className={styles.processStages}>
               <article>
                 <h3>Discover</h3>
-                <p>Find installed agents, MCP server connections, tools, and skills on each supported device.</p>
+                <p>Find supported developer tools, versions, MCP servers, and skills on Linux, macOS, and Windows.</p>
               </article>
               <article>
-                <h3>Identify</h3>
-                <p>Bind each agent instance to its verified user, device, process scope, and discovered resource IDs.</p>
+                <h3>Configure</h3>
+                <p>Preview changes, then reconcile each supported tool&apos;s managed settings and inference gateway URL.</p>
               </article>
               <article>
-                <h3>Apply policy</h3>
-                <p>Send source and destination context to the policy service. Reject flows whose source cannot be identified.</p>
+                <h3>Connect</h3>
+                <p>Use direct OIDC or controller-issued JWTs for gateway access, and report selected events when enabled.</p>
               </article>
             </div>
           </div>
@@ -184,31 +184,31 @@ export default function Home() {
 
         <section className={styles.deployments} id="deployments">
           <div className={styles.deploymentIntro}>
-            <h2>Run policy locally or centrally</h2>
-            <p>Individuals can keep policy on their laptop. Organizations can manage policy for employee devices from a central service.</p>
+            <h2>Use a local file or manage a fleet</h2>
+            <p>Run from YAML on one device, or enroll devices with a controller that distributes configuration and records fleet state.</p>
           </div>
           <div className={styles.deploymentGrid}>
             <article>
               <div className={styles.deploymentTopline}><HardDrive size={24} aria-hidden="true" /></div>
-              <h3>Self-managed</h3>
-              <p>agentdesktop runs with a local policy service on one laptop. Policy and credentials stay local.</p>
+              <h3>Standalone</h3>
+              <p>Run the daemon from local YAML without a controller or device identity. OIDC can authenticate directly to your gateway.</p>
               <ul>
-                <li><Check size={16} aria-hidden="true" /> User-owned policy</li>
-                <li><Check size={16} aria-hidden="true" /> Local-only endpoints</li>
-                <li><Check size={16} aria-hidden="true" /> Agents, MCP + skills</li>
+                <li><Check size={16} aria-hidden="true" /> Local YAML configuration</li>
+                <li><Check size={16} aria-hidden="true" /> Direct OIDC gateway auth</li>
+                <li><Check size={16} aria-hidden="true" /> Dry-run before writing</li>
               </ul>
-              <a href="/docs/getting-started/standalone/">Set up local mode <ArrowRight size={16} aria-hidden="true" /></a>
+              <a href="/docs/getting-started/standalone/">Set up standalone mode <ArrowRight size={16} aria-hidden="true" /></a>
             </article>
             <article>
               <div className={styles.deploymentTopline}><Server size={24} aria-hidden="true" /></div>
-              <h3>Organization-managed</h3>
-              <p>Enroll each user and device, then route agent, model, MCP, and tool traffic to a central policy service.</p>
+              <h3>Controller-managed</h3>
+              <p>Enroll devices, distribute desired configuration, issue short-lived gateway JWTs, and inspect fleet state in the management UI.</p>
               <ul>
-                <li><Check size={16} aria-hidden="true" /> Browser-based enrollment</li>
-                <li><Check size={16} aria-hidden="true" /> User + device identity</li>
-                <li><Check size={16} aria-hidden="true" /> Fleet-wide policy context</li>
+                <li><Check size={16} aria-hidden="true" /> User + device enrollment</li>
+                <li><Check size={16} aria-hidden="true" /> Versioned configuration</li>
+                <li><Check size={16} aria-hidden="true" /> Opt-in session + tool events</li>
               </ul>
-              <a href="/docs/getting-started/managed/">Explore managed mode <ArrowRight size={16} aria-hidden="true" /></a>
+              <a href="/docs/getting-started/managed/">Set up managed mode <ArrowRight size={16} aria-hidden="true" /></a>
             </article>
           </div>
         </section>
@@ -232,11 +232,11 @@ export default function Home() {
       <footer className={styles.footer}>
         <div>
           <Brand />
-          <p>Manage AI agents and their traffic across employee devices.</p>
+          <p>Manage AI developer tools and their configuration across employee devices.</p>
           <p className={styles.createdBy}>Created by <a href="https://solo.io/" target="_blank" rel="noopener noreferrer">Solo.io</a></p>
         </div>
         <nav aria-label="Footer navigation">
-          <a href="/docs/">Documentation</a><a href={githubUrl}>GitHub</a><a href={`${githubUrl}/issues`}>Issues</a><a href={`${githubUrl}/blob/main/CONTRIBUTING.md`}>Contribute</a>
+          <a href="/docs/">Documentation</a><a href={githubUrl}>GitHub</a><a href={`${githubUrl}/issues`}>Issues</a><a href="/docs/contributing/">Contribute</a>
         </nav>
       </footer>
     </div>

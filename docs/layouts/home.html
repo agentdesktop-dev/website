@@ -2,8 +2,8 @@
   <div class="docs-home">
     <section class="docs-hero">
       <p class="hero-kicker">agentdesktop documentation</p>
-      <h1>Manage AI agents on employee devices.</h1>
-      <p class="hero-summary">Inventory Claude Code, Codex, OpenClaw, MCP servers, tools, and skills. Route their traffic through agentgateway with agent and device identity attached.</p>
+      <h1>Manage AI developer tools across your fleet.</h1>
+      <p class="hero-summary">Discover installed tools, inventory MCP servers and skills, reconcile managed configuration, and connect devices to an inference gateway.</p>
       <div class="hero-actions">
         <a class="button-primary" href="{{ "getting-started/standalone/" | relURL }}">Run locally <span aria-hidden="true">→</span></a>
         <a class="button-secondary" href="{{ "getting-started/managed/" | relURL }}">Set up managed mode</a>
@@ -17,14 +17,14 @@
     <section class="quick-paths" aria-labelledby="quick-path-heading">
       <div class="overview-heading">
         <h2 id="quick-path-heading">Quickstart</h2>
-        <p>Choose where agentgateway runs.</p>
+        <p>Choose where agentdesktop gets its configuration.</p>
       </div>
       <div class="quick-grid">
         <a href="{{ "getting-started/standalone/" | relURL }}">
-          <span class="path-label">Self-managed</span><h3>Run agentgateway on the laptop</h3><p>agentdesktop and agentgateway run as separate local processes. Policy and credentials stay on the device.</p><i aria-hidden="true">→</i>
+          <span class="path-label">Standalone</span><h3>Read configuration from local YAML</h3><p>Run without a controller or device identity and authenticate directly to your inference gateway with OIDC.</p><i aria-hidden="true">→</i>
         </a>
         <a href="{{ "getting-started/managed/" | relURL }}">
-          <span class="path-label">Organization-managed</span><h3>Connect devices to a remote agentgateway</h3><p>Enroll users and devices, then attach their identity to agent traffic.</p><i aria-hidden="true">→</i>
+          <span class="path-label">Controller-managed</span><h3>Distribute configuration across a fleet</h3><p>Enroll devices, issue short-lived gateway credentials, and inspect inventory and selected events.</p><i aria-hidden="true">→</i>
         </a>
       </div>
     </section>
@@ -35,7 +35,7 @@
         <p>Build and test agentdesktop.</p>
       </div>
       <a class="contribute-link" href="{{ "contributing/" | relURL }}">
-        <div><strong>Contributor guide</strong><p>Run the test suite and find the code that owns forwarding, identity, capture, and enrollment.</p></div>
+        <div><strong>Contributor guide</strong><p>Run the Rust and frontend checks and find the crates that own discovery, reconciliation, enrollment, and fleet management.</p></div>
         <span aria-hidden="true">→</span>
       </a>
     </section>

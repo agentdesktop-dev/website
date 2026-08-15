@@ -1,27 +1,46 @@
 ---
 title: agentdesktop documentation
-description: Learn what agentdesktop runs on the device and choose a deployment mode.
+description: Learn how agentdesktop discovers and configures AI developer tools across employee devices.
 ---
 
 ## Project overview
 
-agentdesktop runs on employee devices. It discovers Claude Code, Codex, OpenClaw, and other agents, along with their MCP servers, tools, skills, and configuration. It ties agent activity to a user and device, then forwards the traffic to agentgateway.
+agentdesktop is an open-source control plane for AI developer tools. A daemon on each device discovers installed tools and reconciles their configuration. It can read desired configuration from a local YAML file or receive it from the agentdesktop controller.
 
-It discovers and inventories:
+agentdesktop can:
 
-- Coding agents, desktop agents, local runtimes, and selected processes.
-- MCP servers, exposed tools, and agent connections to them.
-- Skill sources and agent configuration.
+- Report installed developer tools and versions.
+- Inventory configured MCP servers and agent skills.
+- Reconcile managed settings and a shared inference gateway.
+- Enroll a device and associate it with the signed-in user.
+- Supply short-lived gateway credentials to configured tools.
+- Report selected session and tool-use events when telemetry is enabled.
 
-Each agent and resource receives a stable identity tied to its device and configuration. Policy and audit records identify the agent, device, model, MCP server, tool, or skill involved in an action. agentdesktop rejects a flow when it cannot identify the source.
+## Supported tools
+
+| Tool | Discovery | Managed configuration | MCP and skills |
+| --- | --- | --- | --- |
+| Claude Code | Yes | Yes | MCP and skills |
+| Claude Desktop | Yes | Yes | MCP |
+| Codex | Yes | Yes | MCP and skills |
+| OpenCode | Yes | Yes | MCP |
+| VS Code | Yes | Not yet | Not yet |
+
+The project targets Linux, macOS, and Windows. Some managed settings require system-level access; Claude Desktop configuration, for example, cannot be applied in `--user` mode.
+
+## Data boundaries
+
+Discovery is designed to avoid collecting secrets. MCP command arguments, environment variables, and HTTP headers are omitted. Skill bodies are omitted; agentdesktop records their path and YAML front matter.
+
+Telemetry is off until event names are configured. Current hooks can report new Claude sessions and tool use. Tool input is collected only when `tool.use.input` is selected, and hook failures do not block the developer tool.
 
 ## Components
 
-agentdesktop handles discovery, device identity, process attribution, and forwarding. agentgateway evaluates policy, inspects traffic, stores provider credentials, and records request-level audit data.
-
 | Component | Owns |
 | --- | --- |
-| agentdesktop | Loopback listeners, application adapters, process scopes, OS capture, enrollment, device identity, tunnel lifecycle, and fail-closed behavior |
-| agentgateway | AI policy, HTTP parsing, TLS inspection, provider credentials, upstream routing, and request-level audit data |
-| Identity and enrollment services | Organizational login, device approval, certificate issuance, renewal, and revocation records |
-| Deployment systems | Installation and bootstrap configuration in managed deployments |
+| Device daemon | Discovery, local API, configuration reconciliation, enrollment, gateway credential helpers, and telemetry collection |
+| Desktop app | Local daemon status, configuration state, and enrollment status |
+| Controller | OIDC enrollment, device certificates, configuration distribution, inventory, telemetry, gateway JWTs, and the fleet management UI |
+| Inference gateway | External model endpoint configured in developer tools; Agentgateway is used by the repository examples |
+
+Developer tools connect directly to the configured inference gateway. The daemon writes the gateway URL into supported tool configuration and supplies credentials through each tool's helper mechanism; it does not proxy model traffic.
