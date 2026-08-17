@@ -34,7 +34,7 @@
   display: inline-flex;
   align-items: center;
   gap: 11px;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 750;
   line-height: 1;
 }
@@ -63,7 +63,7 @@
   display: flex;
   align-items: center;
   gap: 30px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 650;
 }
 
@@ -86,7 +86,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
 }
 
@@ -146,7 +146,7 @@
   grid-row: 1 / 4;
   max-width: 720px;
   font-family: var(--font-body), sans-serif;
-  font-size: clamp(52px, 5.5vw, 80px);
+  font-size: clamp(56px, 5.5vw, 86px);
   font-weight: 600;
   line-height: 0.88;
   letter-spacing: 0;
@@ -156,7 +156,7 @@
   grid-column: 2;
   max-width: 660px;
   margin-top: 5px;
-  font-size: clamp(24px, 2.25vw, 38px);
+  font-size: clamp(26px, 2.25vw, 40px);
   font-weight: 650;
   line-height: 1.15;
 }
@@ -166,7 +166,7 @@
   max-width: 670px;
   margin-top: 22px;
   color: var(--ink-soft);
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.75;
 }
 
@@ -189,7 +189,7 @@
   background: var(--orange-dark);
   border: 0;
   border-radius: 3px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 750;
   transition: color 180ms ease, background 180ms ease, transform 180ms ease;
 }
@@ -201,7 +201,7 @@
   min-height: 44px;
   align-items: center;
   gap: 9px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 750;
 }
 
@@ -211,17 +211,17 @@
 
 .problem h2, .deploymentIntro h2, .sectionHeadingRow h2 {
   font-family: var(--font-body), sans-serif;
-  font-size: clamp(42px, 4.7vw, 68px);
+  font-size: clamp(46px, 4.7vw, 72px);
   font-weight: 600;
   line-height: 1.02;
   letter-spacing: 0;
 }
 
-.problemIntro { max-width: 610px; margin-top: 32px; color: var(--ink-soft); font-size: 17px; line-height: 1.75; }
+.problemIntro { max-width: 610px; margin-top: 32px; color: var(--ink-soft); font-size: 19px; line-height: 1.7; }
 .questions { display: grid; gap: 14px; list-style: none; }
 .questions li { display: flex; align-items: flex-start; min-height: 0; padding: 8px 0; }
 .questions li::before { width: 9px; height: 9px; flex: 0 0 auto; margin: 8px 14px 0 0; content: ""; background: var(--orange); }
-.questions p { font-size: 17px; font-weight: 620; line-height: 1.45; }
+.questions p { font-size: 19px; font-weight: 620; line-height: 1.45; }
 
 .routingSection {
   padding: clamp(80px, 9vw, 125px) max(32px, calc((100vw - 1376px) / 2));
@@ -231,7 +231,7 @@
 
 .sectionHeadingRow { display: grid; grid-template-columns: minmax(0, 1fr) minmax(330px, 0.5fr); gap: 60px; align-items: end; }
 .sectionHeadingRow h2 { max-width: 800px; }
-.sectionHeadingRow > p { color: #aeb0a7; font-size: 15px; line-height: 1.75; }
+.sectionHeadingRow > p { color: #aeb0a7; font-size: 17px; line-height: 1.7; }
 
 .processFlow {
   position: relative;
@@ -279,13 +279,13 @@
 .processStages article:nth-child(3) { animation-name: processStageThree; }
 
 .processStages h3 {
-  font-size: 22px;
+  font-size: 24px;
 }
 
 .processStages p {
   margin-top: 14px;
   color: #b9bfd3;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.65;
 }
 
@@ -326,7 +326,7 @@
   align-items: center;
   padding: 0 20px;
   background: #151927;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .fleetMap {
@@ -378,14 +378,14 @@
 .deviceNode strong,
 .policyNode strong {
   display: block;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .deviceNode p {
   margin-top: 4px;
   overflow: hidden;
   color: #aab0c5;
-  font-size: 12px;
+  font-size: 14px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -437,25 +437,25 @@
 
 .desktopCore > p {
   color: #ece5ff;
-  font-size: 12px;
+  font-size: 14px;
 }
 
-.policyNode > p { color: #aab0c5; font-size: 12px; }
+.policyNode > p { color: #aab0c5; font-size: 14px; }
 
 .desktopCore > strong {
   display: block;
   margin-top: 6px;
-  font-size: 22px;
+  font-size: 24px;
 }
 
 .desktopCore > small {
   display: block;
   margin-top: 7px;
   color: #ece5ff;
-  font-size: 12px;
+  font-size: 14px;
 }
 
-.policyNode > small { display: block; margin-top: 7px; color: #b9bfd3; font-size: 12px; }
+.policyNode > small { display: block; margin-top: 7px; color: #b9bfd3; font-size: 14px; }
 
 .desktopCore ul {
   display: grid;
@@ -473,7 +473,7 @@
   color: #e2e4f1;
   background: rgba(11, 14, 24, 0.26);
   border-radius: 3px;
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .desktopCore li svg { color: white; }
@@ -483,7 +483,7 @@
 .desktopCore li > strong {
   color: #f0eaff;
   font-family: var(--font-body), sans-serif;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
 }
 
@@ -507,7 +507,7 @@
 }
 
 .policyNode > span { margin-bottom: 27px; color: #d8c8fa; }
-.policyNode > strong { margin-top: 6px; font-size: 19px; }
+.policyNode > strong { margin-top: 6px; font-size: 21px; }
 
 .policyNode > div {
   display: flex;
@@ -521,7 +521,7 @@
   color: #c8cce0;
   background: #24293b;
   border-radius: 2px;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .policyNode > code {
@@ -533,7 +533,7 @@
   background: #0b0e18;
   border-radius: 3px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.45;
   text-overflow: ellipsis;
 }
@@ -542,7 +542,7 @@
   padding: 20px;
   color: #c2c6d8;
   background: #151927;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.65;
 }
 
@@ -560,19 +560,19 @@
 
 .deploymentIntro { display: grid; min-width: 0; grid-template-columns: minmax(0, 1fr) minmax(330px, 0.5fr); gap: 60px; align-items: end; }
 .deploymentIntro > * { min-width: 0; }
-.deploymentIntro p { color: var(--ink-soft); font-size: 16px; line-height: 1.7; }
+.deploymentIntro p { color: var(--ink-soft); font-size: 18px; line-height: 1.7; }
 
 .deployments { width: 100%; padding: clamp(80px, 9vw, 130px) max(32px, calc((100vw - 1376px) / 2)); background: var(--paper-bright); }
 .deploymentGrid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(50px, 8vw, 110px); margin-top: clamp(45px, 6vw, 80px); }
 .deploymentGrid article { min-height: 410px; padding: 20px 0 10px; }
 .deploymentGrid article + article { padding-right: 0; padding-left: 0; }
 .deploymentTopline { display: flex; align-items: center; color: var(--orange-dark); }
-.deploymentGrid h3 { margin-top: 36px; font-family: var(--font-body), sans-serif; font-size: clamp(36px, 3.4vw, 50px); font-weight: 600; line-height: 1; }
-.deploymentGrid article > p { max-width: 520px; margin-top: 23px; color: var(--ink-soft); font-size: 15px; line-height: 1.7; }
+.deploymentGrid h3 { margin-top: 36px; font-family: var(--font-body), sans-serif; font-size: clamp(40px, 3.4vw, 54px); font-weight: 600; line-height: 1; }
+.deploymentGrid article > p { max-width: 520px; margin-top: 23px; color: var(--ink-soft); font-size: 17px; line-height: 1.7; }
 .deploymentGrid ul { display: flex; flex-wrap: wrap; gap: 10px 20px; margin-top: 30px; list-style: none; }
-.deploymentGrid li { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 650; }
+.deploymentGrid li { display: flex; align-items: center; gap: 7px; font-size: 15px; font-weight: 650; }
 .deploymentGrid li svg { color: var(--green); }
-.deploymentGrid article > a { display: inline-flex; align-items: center; gap: 9px; margin-top: 46px; font-size: 13px; font-weight: 750; }
+.deploymentGrid article > a { display: inline-flex; align-items: center; gap: 9px; margin-top: 46px; font-size: 15px; font-weight: 750; }
 
 .githubCta {
   display: grid;
@@ -604,13 +604,13 @@
 .githubCtaCopy p {
   color: #d8c8fa;
   font-family: var(--font-body), sans-serif;
-  font-size: 12px;
+  font-size: 14px;
   text-transform: uppercase;
 }
 
 .githubCta h2 {
   margin-top: 8px;
-  font-size: clamp(28px, 3vw, 42px);
+  font-size: clamp(30px, 3vw, 44px);
   line-height: 1.08;
 }
 
@@ -618,7 +618,7 @@
   display: block;
   margin-top: 10px;
   color: #ece5ff;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.5;
 }
 
@@ -633,7 +633,7 @@
   background: #f6f7fb;
   border: 0;
   border-radius: 3px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
   transition: color 180ms ease, background 180ms ease;
 }
@@ -646,10 +646,10 @@
 .footer { display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: end; padding: 70px max(32px, calc((100vw - 1376px) / 2)); color: #edeef7; background: #0b0e18; }
 .footer .brandMark span { background: #e1e0d7; }
 .footer .brandMark span:first-child { background: var(--orange); }
-.footer > div > p { max-width: 340px; margin-top: 16px; color: #aeb3c7; font-size: 13px; }
+.footer > div > p { max-width: 380px; margin-top: 16px; color: #aeb3c7; font-size: 15px; line-height: 1.55; }
 .footer > div > p.createdBy { margin-top: 9px; }
 .createdBy a { color: #edeef7; font-weight: 650; }
-.footer nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 26px; font-size: 13px; font-weight: 650; }
+.footer nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 26px; font-size: 15px; font-weight: 650; }
 
 @media (max-width: 1180px) {
   .header { grid-template-columns: 1fr auto; }
@@ -669,7 +669,7 @@
   .menuClose, .mobileNav[open] .menuOpen { display: none; }
   .mobileNav[open] .menuClose { display: block; }
   .mobileNav nav { position: absolute; top: 49px; right: 0; display: flex; width: min(310px, calc(100vw - 40px)); flex-direction: column; gap: 2px; padding: 12px; color: #ecebe3; background: #1b1d19; border-radius: 4px; }
-  .mobileNav nav a { padding: 12px 10px; font-size: 13px; }
+  .mobileNav nav a { padding: 12px 10px; font-size: 15px; }
   .hero { min-height: auto; padding-top: 130px; padding-bottom: 100px; }
   .heroGrid { grid-template-columns: 1fr; gap: 70px; }
   .heroCopy { display: block; }
@@ -692,17 +692,17 @@
   .header { height: 70px; }
   .hero { padding: 96px 20px 60px; }
   .heroGrid { gap: 44px; }
-  .hero h1 { font-size: clamp(40px, 13.5vw, 62px); }
-  .heroKicker { margin-top: 25px; font-size: 25px; }
-  .heroText { font-size: 14px; }
+  .hero h1 { font-size: clamp(42px, 13.5vw, 64px); }
+  .heroKicker { margin-top: 25px; font-size: 27px; }
+  .heroText { font-size: 16px; }
   .heroActions { align-items: flex-start; flex-direction: column; gap: 12px; }
   .problem, .routingSection { padding: 64px 20px; }
   .deployments { padding: 64px 20px; }
-  .problem h2, .deploymentIntro h2, .sectionHeadingRow h2 { font-size: clamp(36px, 11vw, 48px); overflow-wrap: anywhere; }
-  .problemIntro, .deploymentIntro p { font-size: 14px; }
+  .problem h2, .deploymentIntro h2, .sectionHeadingRow h2 { font-size: clamp(38px, 11vw, 50px); overflow-wrap: anywhere; }
+  .problemIntro, .deploymentIntro p { font-size: 16px; }
   .problemGrid { gap: 40px; }
   .questions li { min-height: 0; padding: 5px 0; }
-  .questions p { font-size: 14px; }
+  .questions p { font-size: 16px; }
   .processFlow { padding-top: 0; padding-left: 32px; }
   .processTrack { top: 6px; bottom: 6px; left: 5px; width: 4px; height: auto; }
   .processTrack i { top: 0; left: -6px; animation-name: processTravelVertical; }
@@ -720,7 +720,7 @@
   .policyNode > span { margin-bottom: 18px; }
   .policyNode > div { margin-top: 16px; }
   .policyNode > code { margin-top: 14px; }
-  .fleetDiagram figcaption { padding: 14px; font-size: 13px; }
+  .fleetDiagram figcaption { padding: 14px; font-size: 15px; }
   .deploymentGrid { grid-template-columns: 1fr; }
   .deploymentGrid { gap: 24px; margin-top: 36px; }
   .deploymentGrid article, .deploymentGrid article + article { min-height: auto; padding: 20px 0 24px; }
