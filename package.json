@@ -8,6 +8,9 @@
     "build": "next build",
     "build:docs": "hugo --source docs --gc --minify --cleanDestinationDir",
     "build:all": "npm run build && npm run build:docs",
+    "build:cloudflare": "CF_PAGES=1 next build && hugo --source docs --destination ../out/docs --gc --minify --cleanDestinationDir",
+    "preview:cloudflare": "npm run build:cloudflare && wrangler pages dev",
+    "deploy:cloudflare": "npm run build:cloudflare && wrangler pages deploy",
     "start": "next start",
     "lint": "eslint",
     "check": "npm run lint && npm run build:all"
@@ -24,6 +27,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.124.0"
   }
 }
