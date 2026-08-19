@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { siteConfig } from "./site-config";
 
 export const socialImageAlt =
-  "agentdesktop: manage AI developer tools across your fleet";
+  "agentdesktop: open-source control plane for AI developer tools";
 
 export const socialImageSize = {
   width: 1200,
@@ -84,7 +84,7 @@ export function createSocialImage() {
               lineHeight: 1.02,
             }}
           >
-            Manage AI developer tools across your fleet.
+            Open-source control plane for AI developer tools.
           </div>
           <div
             style={{
@@ -95,8 +95,8 @@ export function createSocialImage() {
               lineHeight: 1.35,
             }}
           >
-            Discover installed tools, reconcile configuration, and connect
-            devices to a shared inference gateway.
+            See installed tools and apply managed configuration across your
+            fleet. Connect each device to your inference gateway.
           </div>
         </div>
       </div>

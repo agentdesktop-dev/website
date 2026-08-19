@@ -111,12 +111,12 @@ export default function Home() {
           <div className={styles.heroGrid}>
             <div className={styles.heroCopy}>
               <h1>agentdesktop</h1>
-              <p className={styles.heroKicker}>Manage AI developer tools across your fleet.</p>
+              <p className={styles.heroKicker}>The open-source control plane for AI developer tools.</p>
               <p className={styles.heroText}>
-                Discover Claude Code, Claude Desktop, Codex, OpenCode, and VS Code
-                across employee devices. Inventory versions, MCP servers, and
-                skills, reconcile managed settings, and connect each device to
-                your inference gateway.
+                See what is installed across your fleet, apply managed
+                configuration, and connect each device to your
+                inference gateway. Inventory MCP servers and skills without
+                collecting their secrets or bodies.
               </p>
               <div className={styles.heroActions}>
                 <a className={styles.primaryCta} href="/docs/">
@@ -138,18 +138,18 @@ export default function Home() {
         <section className={styles.problem} id="why">
           <div className={styles.problemGrid}>
             <div>
-              <h2>MDM manages devices. AI tools need their own control plane.</h2>
+              <h2>Developers choose AI tools one device at a time. Platform teams manage them as a fleet.</h2>
               <p className={styles.problemIntro}>
-                Each developer tool has its own configuration, extensions, MCP
-                connections, and gateway settings. Platform teams need one view
-                of what is installed and one way to manage it.
+                MDM manages the device, but each AI tool has its own settings,
+                MCP connections, skills, and gateway configuration. Platform
+                teams otherwise have to inspect and configure every tool separately.
               </p>
             </div>
             <ul className={styles.questions}>
-              <li><p>See installed tools and versions on each device.</p></li>
-              <li><p>Inventory MCP servers and skill metadata without collecting their secrets or bodies.</p></li>
-              <li><p>Distribute managed settings and a shared inference gateway.</p></li>
-              <li><p>Associate devices with users and collect only the events you select.</p></li>
+              <li><p>Track supported tools and versions by device.</p></li>
+              <li><p>Omit MCP command arguments, environment variables, HTTP headers, and skill bodies from inventory.</p></li>
+              <li><p>Preview changes before applying managed configuration.</p></li>
+              <li><p>Associate devices with users and report only the events you choose.</p></li>
             </ul>
           </div>
         </section>
@@ -158,9 +158,9 @@ export default function Home() {
           <div className={styles.sectionHeadingRow}>
             <h2>How agentdesktop works</h2>
             <p>
-              The device daemon discovers installed tools and reconciles their
-              configuration. In managed deployments, the controller distributes
-              desired state, enrolls devices, and records opt-in telemetry.
+              The device daemon discovers installed tools and applies their
+              managed configuration after a preview. The controller distributes
+              the same configuration to enrolled devices.
             </p>
           </div>
           <div className={styles.processFlow} aria-label="agentdesktop processing flow">
@@ -168,15 +168,15 @@ export default function Home() {
             <div className={styles.processStages}>
               <article>
                 <h3>Discover</h3>
-                <p>Find supported developer tools, versions, MCP servers, and skills on Linux, macOS, and Windows.</p>
+                <p>Find supported developer tools and versions, plus configured MCP servers and skills, on Linux, macOS, and Windows.</p>
               </article>
               <article>
                 <h3>Configure</h3>
-                <p>Preview changes, then reconcile each supported tool&apos;s managed settings and inference gateway URL.</p>
+                <p>Preview changes, then write managed settings and the inference gateway URL for each supported tool.</p>
               </article>
               <article>
                 <h3>Connect</h3>
-                <p>Use direct OIDC or controller-issued JWTs for gateway access, and report selected events when enabled.</p>
+                <p>Authenticate gateway requests with direct OIDC or controller-issued JWTs. Telemetry stays off until you select events.</p>
               </article>
             </div>
           </div>
@@ -184,14 +184,14 @@ export default function Home() {
 
         <section className={styles.deployments} id="deployments">
           <div className={styles.deploymentIntro}>
-            <h2>Use a local file or manage a fleet</h2>
-            <p>Run from YAML on one device, or enroll devices with a controller that distributes configuration and records fleet state.</p>
+            <h2>Start with one device. Add a controller when you need a fleet.</h2>
+            <p>The same daemon runs from local YAML or enrolls with a controller that distributes configuration and records fleet state.</p>
           </div>
           <div className={styles.deploymentGrid}>
             <article>
               <div className={styles.deploymentTopline}><HardDrive size={24} aria-hidden="true" /></div>
               <h3>Standalone</h3>
-              <p>Run the daemon from local YAML without a controller or device identity. OIDC can authenticate directly to your gateway.</p>
+              <p>Keep configuration local. Preview and apply changes from YAML without a controller or device identity, and authenticate directly to your gateway.</p>
               <ul>
                 <li><Check size={16} aria-hidden="true" /> Local YAML configuration</li>
                 <li><Check size={16} aria-hidden="true" /> Direct OIDC gateway auth</li>
@@ -202,7 +202,7 @@ export default function Home() {
             <article>
               <div className={styles.deploymentTopline}><Server size={24} aria-hidden="true" /></div>
               <h3>Controller-managed</h3>
-              <p>Enroll devices, distribute desired configuration, issue short-lived gateway JWTs, and inspect fleet state in the management UI.</p>
+              <p>Enroll devices and let the controller distribute versioned configuration. It also issues short-lived gateway JWTs and records fleet state for the management UI.</p>
               <ul>
                 <li><Check size={16} aria-hidden="true" /> User + device enrollment</li>
                 <li><Check size={16} aria-hidden="true" /> Versioned configuration</li>
@@ -217,8 +217,8 @@ export default function Home() {
           <div className={styles.githubCtaCopy}>
             <span><Code2 size={24} aria-hidden="true" /></span>
             <div>
-              <p>Source code and roadmap</p>
-              <h2 id="github-cta-heading">agentdesktop is developed on GitHub.</h2>
+              <p>Open source</p>
+              <h2 id="github-cta-heading">Inspect the code and shape the roadmap.</h2>
               <small>Browse the source, open an issue, or contribute.</small>
             </div>
           </div>
@@ -232,7 +232,7 @@ export default function Home() {
       <footer className={styles.footer}>
         <div>
           <Brand />
-          <p>Manage AI developer tools and their configuration across employee devices.</p>
+          <p>The open-source control plane for AI developer tools across employee devices.</p>
           <p className={styles.createdBy}>Created by <a href="https://solo.io/" target="_blank" rel="noopener noreferrer">Solo.io</a></p>
         </div>
         <nav aria-label="Footer navigation">

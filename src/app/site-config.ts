@@ -1,8 +1,8 @@
 export const siteConfig = {
   name: "agentdesktop",
-  title: "agentdesktop | Manage AI developer tools across your fleet",
+  title: "agentdesktop | Open-source control plane for AI developer tools",
   description:
-    "agentdesktop discovers AI developer tools, inventories MCP servers and skills, reconciles managed configuration, and connects devices to a shared inference gateway.",
+    "agentdesktop is an open-source control plane for discovering and configuring AI developer tools across employee devices and connecting them to a shared inference gateway.",
   url: "https://agentdesktop.dev",
   docsUrl: "https://agentdesktop.dev/docs/",
   githubUrl: "https://github.com/agentdesktop-dev/agentdesktop",
