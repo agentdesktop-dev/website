@@ -1,62 +1,72 @@
-import { Bot, Code2, Laptop, Network, Route, ShieldCheck } from "lucide-react";
+import { Bot, Check, Laptop, Network, ShieldCheck } from "lucide-react";
 import styles from "./marketing.module.css";
+
+const devices = [
+  { name: "ENG-042", tool: "Claude Code" },
+  { name: "FIN-018", tool: "OpenCode" },
+  { name: "ENG-107", tool: "Codex" },
+];
 
 export function RoutingDemo() {
   return (
     <figure className={styles.fleetDiagram} aria-labelledby="fleet-diagram-title">
       <div className={styles.fleetTopbar}>
-        <strong id="fleet-diagram-title">Developer tools across the fleet</strong>
+        <div>
+          <span aria-hidden="true" />
+          <strong id="fleet-diagram-title">Fleet state</strong>
+        </div>
+        <small>3 enrolled devices</small>
       </div>
 
-      <div className={styles.fleetMap}>
-        <div className={styles.deviceStack} aria-label="Employee devices">
-          <div className={styles.deviceNode}>
-            <span><Laptop size={21} aria-hidden="true" /></span>
-            <div><strong>Device ENG-042</strong><p>Claude Code · installed</p></div>
-            <i className={styles.fleetPulse} aria-hidden="true" />
-          </div>
-          <div className={styles.deviceNode}>
-            <span><Laptop size={21} aria-hidden="true" /></span>
-            <div><strong>Device FIN-018</strong><p>OpenCode · installed</p></div>
-            <i className={styles.fleetPulse} aria-hidden="true" />
-          </div>
-          <div className={styles.deviceNode}>
-            <span><Laptop size={21} aria-hidden="true" /></span>
-            <div><strong>Device ENG-107</strong><p>Codex · installed</p></div>
-            <i className={styles.fleetPulse} aria-hidden="true" />
-          </div>
-        </div>
+      <div className={styles.fleetConsole}>
+        <table className={styles.fleetTable}>
+          <thead>
+            <tr>
+              <th>Device</th>
+              <th>Detected tool</th>
+              <th>Configuration</th>
+              <th>Gateway</th>
+            </tr>
+          </thead>
+          <tbody>
+            {devices.map((device) => (
+              <tr key={device.name}>
+                <td data-label="Device">
+                  <span className={styles.deviceIdentity}>
+                    <i><Laptop size={18} aria-hidden="true" /></i>
+                    <span><strong>{device.name}</strong><small>agentdesktop active</small></span>
+                  </span>
+                </td>
+                <td data-label="Detected tool">
+                  <span className={styles.toolIdentity}><Bot size={17} aria-hidden="true" />{device.tool}</span>
+                </td>
+                <td data-label="Configuration">
+                  <span className={styles.syncedState}><Check size={15} aria-hidden="true" />Revision 12</span>
+                </td>
+                <td data-label="Gateway">
+                  <span className={styles.gatewayState}><i aria-hidden="true" />Connected</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-        <div className={styles.desktopCore}>
-          <span className={styles.coreIcon}><Route size={25} aria-hidden="true" /></span>
-          <p>Device daemon</p>
-          <strong>agentdesktop</strong>
-          <small>Discovers and reconciles</small>
-          <ul>
-            <li><Bot size={17} aria-hidden="true" /><span>Developer tools</span><strong>versions</strong></li>
-            <li><Network size={17} aria-hidden="true" /><span>MCP servers</span><strong>secret-free</strong></li>
-            <li><Code2 size={17} aria-hidden="true" /><span>Skills</span><strong>front matter</strong></li>
-          </ul>
-          <i className={styles.policyPulse} aria-hidden="true" />
-        </div>
-
-        <div className={styles.policyNode}>
-          <span><ShieldCheck size={25} aria-hidden="true" /></span>
-          <p>Fleet management</p>
-          <strong>controller</strong>
-          <small>Enroll · configure · observe</small>
-          <div>
-            <span>Devices</span>
-            <span>Config</span>
-            <span>Events</span>
+        <div className={styles.fleetControl}>
+          <div className={styles.controlIdentity}>
+            <span><ShieldCheck size={22} aria-hidden="true" /></span>
+            <div><small>Fleet controller</small><strong>Desired configuration: revision 12</strong></div>
           </div>
-          <code>config revision 12 → ENG-042</code>
+          <div className={styles.controlFacts}>
+            <span><Check size={15} aria-hidden="true" />3 devices synced</span>
+            <span><Network size={15} aria-hidden="true" />Gateway configured</span>
+            <span><Bot size={15} aria-hidden="true" />Selected events only</span>
+          </div>
         </div>
       </div>
 
       <figcaption>
-        Each daemon reconciles local tool configuration. Managed devices receive
-        desired configuration and short-lived gateway credentials from the controller.
+        <ShieldCheck size={18} aria-hidden="true" />
+        <span>Inventory omits MCP command arguments, environment variables, HTTP headers, and skill bodies.</span>
       </figcaption>
     </figure>
   );

@@ -4,8 +4,12 @@ import {
   Check,
   Code2,
   HardDrive,
+  Laptop,
   Menu,
+  Network,
   Server,
+  Settings2,
+  ShieldCheck,
   X,
 } from "lucide-react";
 import { RoutingDemo } from "./routing-demo";
@@ -13,6 +17,11 @@ import styles from "./marketing.module.css";
 import { siteConfig } from "./site-config";
 
 const githubUrl = siteConfig.githubUrl;
+const exampleDevices = [
+  { name: "ENG-042", tool: "Claude Code" },
+  { name: "FIN-018", tool: "OpenCode" },
+  { name: "ENG-107", tool: "Codex" },
+];
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -110,13 +119,16 @@ export default function Home() {
         <section className={styles.hero} id="top">
           <div className={styles.heroGrid}>
             <div className={styles.heroCopy}>
-              <h1>agentdesktop</h1>
-              <p className={styles.heroKicker}>The open-source control plane for AI developer tools.</p>
+              <p className={styles.heroEyebrow}>
+                <span aria-hidden="true" />
+                Open source
+                <i aria-hidden="true">/</i>
+                Linux, macOS, and Windows
+              </p>
+              <h1>The open-source control plane for AI developer tools.</h1>
               <p className={styles.heroText}>
                 See what is installed across your fleet, apply managed
-                configuration, and connect each device to your
-                inference gateway. Inventory MCP servers and skills without
-                collecting their secrets or bodies.
+                configuration, and connect each device to your inference gateway.
               </p>
               <div className={styles.heroActions}>
                 <a className={styles.primaryCta} href="/docs/">
@@ -145,12 +157,33 @@ export default function Home() {
                 teams otherwise have to inspect and configure every tool separately.
               </p>
             </div>
-            <ul className={styles.questions}>
-              <li><p>Track supported tools and versions by device.</p></li>
-              <li><p>Omit MCP command arguments, environment variables, HTTP headers, and skill bodies from inventory.</p></li>
-              <li><p>Preview changes before applying managed configuration.</p></li>
-              <li><p>Associate devices with users and report only the events you choose.</p></li>
-            </ul>
+            <div className={styles.driftComparison} aria-label="From separate tool settings to fleet configuration">
+              <div className={styles.driftHeader}>
+                <div><span>Device by device</span><strong>Each tool keeps its own configuration</strong></div>
+                <Settings2 size={23} aria-hidden="true" />
+              </div>
+              <div className={styles.driftRows}>
+                {exampleDevices.map((device) => (
+                  <div className={styles.driftRow} key={device.name}>
+                    <span><Laptop size={18} aria-hidden="true" /></span>
+                    <div><strong>{device.name}</strong><small>{device.tool}</small></div>
+                    <p><Settings2 size={15} aria-hidden="true" />Configured separately</p>
+                  </div>
+                ))}
+              </div>
+              <div className={styles.fleetResolution}>
+                <div className={styles.resolutionHeading}>
+                  <span><ShieldCheck size={22} aria-hidden="true" /></span>
+                  <div><small>Managed as a fleet</small><strong>One configuration, distributed by the controller</strong></div>
+                </div>
+                <ul>
+                  <li><Check size={15} aria-hidden="true" />Tool inventory</li>
+                  <li><Check size={15} aria-hidden="true" />Managed settings</li>
+                  <li><Network size={15} aria-hidden="true" />Gateway URL</li>
+                  <li><Check size={15} aria-hidden="true" />Selected events</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -169,14 +202,29 @@ export default function Home() {
               <article>
                 <h3>Discover</h3>
                 <p>Find supported developer tools and versions, plus configured MCP servers and skills, on Linux, macOS, and Windows.</p>
+                <dl className={styles.stageEvidence}>
+                  <div><dt>Tools</dt><dd>Versions</dd></div>
+                  <div><dt>MCP servers</dt><dd>Metadata</dd></div>
+                  <div><dt>Skills</dt><dd>Front matter</dd></div>
+                </dl>
               </article>
               <article>
                 <h3>Configure</h3>
                 <p>Preview changes, then write managed settings and the inference gateway URL for each supported tool.</p>
+                <dl className={styles.stageEvidence}>
+                  <div><dt>Managed settings</dt><dd>Preview</dd></div>
+                  <div><dt>Gateway URL</dt><dd>Preview</dd></div>
+                  <div><dt>Write</dt><dd>After review</dd></div>
+                </dl>
               </article>
               <article>
                 <h3>Connect</h3>
                 <p>Authenticate gateway requests with direct OIDC or controller-issued JWTs. Telemetry stays off until you select events.</p>
+                <dl className={styles.stageEvidence}>
+                  <div><dt>Standalone</dt><dd>Direct OIDC</dd></div>
+                  <div><dt>Managed</dt><dd>Short-lived JWT</dd></div>
+                  <div><dt>Telemetry</dt><dd>Opt-in</dd></div>
+                </dl>
               </article>
             </div>
           </div>
@@ -189,7 +237,7 @@ export default function Home() {
           </div>
           <div className={styles.deploymentGrid}>
             <article>
-              <div className={styles.deploymentTopline}><HardDrive size={24} aria-hidden="true" /></div>
+              <div className={styles.deploymentTopline}><HardDrive size={24} aria-hidden="true" /><span>01 / local</span></div>
               <h3>Standalone</h3>
               <p>Keep configuration local. Preview and apply changes from YAML without a controller or device identity, and authenticate directly to your gateway.</p>
               <ul>
@@ -199,8 +247,12 @@ export default function Home() {
               </ul>
               <a href="/docs/getting-started/standalone/">Set up standalone mode <ArrowRight size={16} aria-hidden="true" /></a>
             </article>
+            <div className={styles.deploymentBridge} aria-hidden="true">
+              <span>Same daemon</span>
+              <i><ArrowRight size={20} /></i>
+            </div>
             <article>
-              <div className={styles.deploymentTopline}><Server size={24} aria-hidden="true" /></div>
+              <div className={styles.deploymentTopline}><Server size={24} aria-hidden="true" /><span>02 / fleet</span></div>
               <h3>Controller-managed</h3>
               <p>Enroll devices and let the controller distribute versioned configuration. It also issues short-lived gateway JWTs and records fleet state for the management UI.</p>
               <ul>
