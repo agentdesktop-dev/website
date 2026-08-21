@@ -1,0 +1,15 @@
+{{- if .Values.storage.createStorageClass }}
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .Values.storage.storageClassName }}
+  labels:
+    {{- include "agentdesktop-postgresql.labels" . | nindent 4 }}
+provisioner: pd.csi.storage.gke.io
+parameters:
+  type: {{ .Values.storage.volumeType | quote }}
+  replication-type: {{ .Values.storage.replicationType | quote }}
+reclaimPolicy: Retain
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
+{{- end }}

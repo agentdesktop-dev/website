@@ -1,10 +1,10 @@
 # agentdesktop website
 
 <!-- markdownlint-disable-next-line MD033 -->
-<a href="https://agentdesktop.dev"><img src="./src/app/icon.svg" alt="agentdesktop" width="48"></a>
+<a href="https://agentdesktop.io"><img src="./src/app/icon.svg" alt="agentdesktop" width="48"></a>
 
-[Website](https://agentdesktop.dev) ·
-[Documentation](https://agentdesktop.dev/docs/) ·
+[Website](https://agentdesktop.io) ·
+[Documentation](https://agentdesktop.io/docs/) ·
 [Project source](https://github.com/agentdesktop-dev/agentdesktop)
 
 ---
@@ -40,6 +40,14 @@ npm run check
 
 This runs ESLint, builds the Next.js site, and builds the Hugo documentation. Product code and product-level issues belong in the [agentdesktop project repository](https://github.com/agentdesktop-dev/agentdesktop).
 
+## Production deployment
+
+Read the [production deployment guide](docs/content/operations/production.md)
+for architecture, identity, PKI, controller, MDM, pilot, and operating
+requirements. The complete GCP Terraform, Helm, image-build, PKI, Intune
+bootstrap, backup, teardown, and local smoke-test assets are indexed under
+[deploy/](deploy/README.md).
+
 ## Cloudflare Pages
 
 Build one static artifact containing the Next.js marketing site at `/` and the Hugo documentation at `/docs/`:
@@ -71,4 +79,4 @@ npx wrangler pages project create agentdesktop-website --production-branch main
 npm run deploy:cloudflare
 ```
 
-After the first deployment, add `agentdesktop.dev` under the Pages project's **Custom domains** settings. The apex domain must be a zone in the same Cloudflare account.
+After the first deployment, add `agentdesktop.io` under the Pages project's **Custom domains** settings. The apex domain must be a zone in the same Cloudflare account.

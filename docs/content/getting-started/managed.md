@@ -6,7 +6,7 @@ weight: 3
 
 In managed mode, the daemon enrolls with the agentdesktop controller and receives desired configuration from it. The controller provides a fleet management UI, stores inventory and selected telemetry, and can issue short-lived JWTs for an inference gateway such as agentgateway.
 
-This local quickstart runs all components on one machine. In production, the controller and inference gateway normally run remotely.
+This local quickstart runs all components on one machine. In production, the controller and inference gateway normally run remotely. Follow [Production deployment](../../operations/production/) for certificates, Kubernetes, MDM, endpoint enrollment, and operations.
 
 ## What you will run
 

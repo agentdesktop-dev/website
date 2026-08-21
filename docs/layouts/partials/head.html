@@ -4,14 +4,15 @@
   <meta name="theme-color" content="#f6f7fb">
   {{ $description := .Description | default site.Params.description }}
   {{ $title := cond .IsHome site.Title (printf "%s | agentdesktop docs" .Title) }}
-  {{ $image := "https://agentdesktop.dev/opengraph-image" }}
+  {{ $image := "https://agentdesktop.io/opengraph-image" }}
   <meta name="description" content="{{ $description }}">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <meta name="author" content="agentdesktop-dev">
   <title>{{ $title }}</title>
   <link rel="canonical" href="{{ .Permalink }}">
-  <link rel="icon" href="{{ "favicon.svg" | relURL }}" type="image/svg+xml">
+  {{ $favicon := resources.Get "imgs/mark-color.svg" | fingerprint }}
+  <link rel="icon" href="{{ $favicon.RelPermalink }}" type="image/svg+xml">
   <link rel="manifest" href="/manifest.webmanifest">
   {{ with .OutputFormats.Get "RSS" }}<link rel="alternate" type="application/rss+xml" title="{{ $.Title }}" href="{{ .Permalink }}">{{ end }}
 
@@ -44,8 +45,8 @@
     "description" $description
     "inLanguage" site.Language.Locale
     "image" $image
-    "isPartOf" (dict "@id" "https://agentdesktop.dev/#website")
-    "about" (dict "@id" "https://agentdesktop.dev/#software")
+    "isPartOf" (dict "@id" "https://agentdesktop.io/#website")
+    "about" (dict "@id" "https://agentdesktop.io/#software")
   }}
   {{ if .IsPage }}
     {{ $pageSchema = merge $pageSchema (dict

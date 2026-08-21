@@ -1,0 +1,128 @@
+{{- if .Values.backup.enabled }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.backup.serviceAccount.name }}
+  labels:
+    {{- include "agentdesktop-postgresql.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database-backup
+  {{- with .Values.backup.serviceAccount.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "agentdesktop-postgresql.fullname" . }}-backup
+  labels:
+    {{- include "agentdesktop-postgresql.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database-backup
+spec:
+  schedule: {{ .Values.backup.schedule | quote }}
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 3600
+  successfulJobsHistoryLimit: {{ .Values.backup.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.backup.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 86400
+      template:
+        metadata:
+          labels:
+            {{- include "agentdesktop-postgresql.labels" . | nindent 12 }}
+            app.kubernetes.io/component: database-backup
+        spec:
+          serviceAccountName: {{ .Values.backup.serviceAccount.name }}
+          restartPolicy: Never
+          securityContext:
+            fsGroup: 999
+            runAsUser: 999
+            runAsGroup: 999
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          initContainers:
+            - name: pg-dump
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              command: ["/bin/sh", "-ec"]
+              args:
+                - |
+                  pg_dump \
+                    --host="$PGHOST" \
+                    --username="$PGUSER" \
+                    --dbname="$PGDATABASE" \
+                    --format=custom \
+                    --compress=9 \
+                    --file=/backup/agentdesktop.dump
+              env:
+                - name: PGHOST
+                  value: {{ include "agentdesktop-postgresql.serviceHost" . | quote }}
+                - name: PGUSER
+                  value: {{ .Values.database.user | quote }}
+                - name: PGDATABASE
+                  value: {{ .Values.database.name | quote }}
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.database.existingSecret }}
+                      key: {{ .Values.database.passwordKey }}
+                - name: PGSSLMODE
+                  value: verify-full
+                - name: PGSSLROOTCERT
+                  value: /etc/postgresql/ca/{{ .Values.tls.caKey }}
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+                readOnlyRootFilesystem: true
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+                - name: postgres-ca
+                  mountPath: /etc/postgresql/ca
+                  readOnly: true
+          containers:
+            - name: upload
+              image: "{{ .Values.backup.uploaderImage.repository }}:{{ .Values.backup.uploaderImage.tag }}"
+              imagePullPolicy: {{ .Values.backup.uploaderImage.pullPolicy }}
+              command: ["/bin/sh", "-ec"]
+              args:
+                - |
+                  timestamp="$(date -u +%Y-%m-%dT%H-%M-%SZ)"
+                  destination="gs://${BACKUP_BUCKET}/daily/${timestamp}.dump"
+                  gcloud storage cp --quiet /backup/agentdesktop.dump "$destination"
+                  sha256sum /backup/agentdesktop.dump > /backup/agentdesktop.dump.sha256
+                  gcloud storage cp --quiet /backup/agentdesktop.dump.sha256 "${destination}.sha256"
+                  printf 'Uploaded %s\n' "$destination"
+              env:
+                - name: BACKUP_BUCKET
+                  value: {{ required "backup.bucket is required when backups are enabled" .Values.backup.bucket | quote }}
+                - name: HOME
+                  value: /tmp
+                - name: CLOUDSDK_CONFIG
+                  value: /tmp/gcloud
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+                readOnlyRootFilesystem: true
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+                - name: tmp
+                  mountPath: /tmp
+          volumes:
+            - name: backup
+              emptyDir: {}
+            - name: tmp
+              emptyDir: {}
+            - name: postgres-ca
+              secret:
+                secretName: {{ .Values.tls.existingSecret }}
+                items:
+                  - key: {{ .Values.tls.caKey }}
+                    path: {{ .Values.tls.caKey }}
+{{- end }}

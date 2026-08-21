@@ -1,0 +1,20 @@
+project_id = "my-production-project"
+region     = "us-central1"
+name       = "agentdesktop"
+
+# Keep DNS at your existing provider. After apply, create the A and optional
+# CNAME records printed by the dns_records output.
+controller_hostname  = "agentdesktop.example.com"
+controller_dns_aliases = []
+
+admin_cidr_blocks = [
+  {
+    cidr_block   = "203.0.113.10/32"
+    display_name = "platform-team"
+  }
+]
+
+# node_machine_type    = "e2-standard-4"
+# node_total_min_count = 3
+# node_total_max_count = 6
+# deletion_protection  = true

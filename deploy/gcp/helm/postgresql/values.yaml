@@ -1,0 +1,54 @@
+image:
+  repository: docker.io/pgvector/pgvector
+  tag: pg18-trixie
+  pullPolicy: IfNotPresent
+
+database:
+  name: agentdesktop
+  user: agentdesktop
+  existingSecret: agentdesktop-postgres
+  passwordKey: POSTGRES_PASSWORD
+
+tls:
+  existingSecret: agentdesktop-postgres-tls
+  certificateKey: tls.crt
+  privateKeyKey: tls.key
+  caKey: ca.crt
+
+storage:
+  size: 100Gi
+  storageClassName: agentdesktop-postgres-regional
+  createStorageClass: true
+  volumeType: pd-ssd
+  replicationType: regional-pd
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: "2"
+    memory: 4Gi
+
+backup:
+  enabled: true
+  schedule: "17 3 * * *"
+  bucket: ""
+  serviceAccount:
+    name: postgres-backup
+    annotations: {}
+  uploaderImage:
+    repository: gcr.io/google.com/cloudsdktool/google-cloud-cli
+    tag: stable
+    pullPolicy: IfNotPresent
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+
+networkPolicy:
+  enabled: true
+  controllerPodSelector:
+    app.kubernetes.io/instance: agentdesktop
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

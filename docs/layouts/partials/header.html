@@ -1,7 +1,7 @@
+{{ $logo := resources.Get "imgs/logo-color.svg" | fingerprint }}
 <header class="docs-header">
   <a class="docs-brand" href="{{ site.Home.RelPermalink }}" aria-label="agentdesktop documentation home">
-    <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
-    <strong>agentdesktop</strong>
+    <img src="{{ $logo.RelPermalink }}" width="152" height="40" alt="">
     <span>docs</span>
   </a>
   <div class="header-search">

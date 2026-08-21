@@ -55,16 +55,13 @@ const structuredData = {
   ],
 };
 
-function Brand() {
+function Brand({ inverted = false }: { inverted?: boolean }) {
   return (
-    <span className={styles.brand}>
-      <span className={styles.brandMark} aria-hidden="true">
-        <span />
-        <span />
-        <span />
-      </span>
-      <span>agentdesktop</span>
-    </span>
+    <span
+      className={`${styles.brandLogo} ${inverted ? styles.brandLogoInverted : ""}`}
+      role="img"
+      aria-label="agentdesktop"
+    />
   );
 }
 
@@ -119,12 +116,6 @@ export default function Home() {
         <section className={styles.hero} id="top">
           <div className={styles.heroGrid}>
             <div className={styles.heroCopy}>
-              <p className={styles.heroEyebrow}>
-                <span aria-hidden="true" />
-                Open source
-                <i aria-hidden="true">/</i>
-                Linux, macOS, and Windows
-              </p>
               <h1>The open-source control plane for AI developer tools.</h1>
               <p className={styles.heroText}>
                 See what is installed across your fleet, apply managed
@@ -159,7 +150,7 @@ export default function Home() {
             </div>
             <div className={styles.driftComparison} aria-label="From separate tool settings to fleet configuration">
               <div className={styles.driftHeader}>
-                <div><span>Device by device</span><strong>Each tool keeps its own configuration</strong></div>
+                <strong>Each tool keeps its own configuration</strong>
                 <Settings2 size={23} aria-hidden="true" />
               </div>
               <div className={styles.driftRows}>
@@ -174,7 +165,7 @@ export default function Home() {
               <div className={styles.fleetResolution}>
                 <div className={styles.resolutionHeading}>
                   <span><ShieldCheck size={22} aria-hidden="true" /></span>
-                  <div><small>Managed as a fleet</small><strong>One configuration, distributed by the controller</strong></div>
+                  <strong>One configuration, distributed by the controller</strong>
                 </div>
                 <ul>
                   <li><Check size={15} aria-hidden="true" />Tool inventory</li>
@@ -237,7 +228,7 @@ export default function Home() {
           </div>
           <div className={styles.deploymentGrid}>
             <article>
-              <div className={styles.deploymentTopline}><HardDrive size={24} aria-hidden="true" /><span>01 / local</span></div>
+              <div className={styles.deploymentTopline}><HardDrive size={24} aria-hidden="true" /></div>
               <h3>Standalone</h3>
               <p>Keep configuration local. Preview and apply changes from YAML without a controller or device identity, and authenticate directly to your gateway.</p>
               <ul>
@@ -252,7 +243,7 @@ export default function Home() {
               <i><ArrowRight size={20} /></i>
             </div>
             <article>
-              <div className={styles.deploymentTopline}><Server size={24} aria-hidden="true" /><span>02 / fleet</span></div>
+              <div className={styles.deploymentTopline}><Server size={24} aria-hidden="true" /></div>
               <h3>Controller-managed</h3>
               <p>Enroll devices and let the controller distribute versioned configuration. It also issues short-lived gateway JWTs and records fleet state for the management UI.</p>
               <ul>
@@ -269,7 +260,6 @@ export default function Home() {
           <div className={styles.githubCtaCopy}>
             <span><Code2 size={24} aria-hidden="true" /></span>
             <div>
-              <p>Open source</p>
               <h2 id="github-cta-heading">Inspect the code and shape the roadmap.</h2>
               <small>Browse the source, open an issue, or contribute.</small>
             </div>
@@ -283,7 +273,7 @@ export default function Home() {
 
       <footer className={styles.footer}>
         <div>
-          <Brand />
+          <Brand inverted />
           <p>The open-source control plane for AI developer tools across employee devices.</p>
           <p className={styles.createdBy}>Created by <a href="https://solo.io/" target="_blank" rel="noopener noreferrer">Solo.io</a></p>
         </div>

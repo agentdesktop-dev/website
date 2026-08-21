@@ -1,4 +1,4 @@
-baseURL = "https://agentdesktop.dev/docs/"
+baseURL = "https://agentdesktop.io/docs/"
 locale = "en-US"
 title = "agentdesktop documentation"
 enableRobotsTXT = true

@@ -38,6 +38,14 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+/deploy/gcp/agentdesktop-pki/
+/deploy/gcp/generated/
+
 # vercel
 .vercel
 

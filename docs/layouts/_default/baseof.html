@@ -17,12 +17,18 @@
         </aside>
       {{ end }}
     </div>
+    {{ $logo := resources.Get "imgs/logo-light.svg" | fingerprint }}
     <footer class="docs-footer">
-      <p>Created by <a href="https://solo.io/" target="_blank" rel="noopener noreferrer">Solo.io</a></p>
+      <div class="docs-footer-owner">
+        <a class="docs-footer-logo" href="{{ site.Params.marketingURL }}" aria-label="agentdesktop website">
+          <img src="{{ $logo.RelPermalink }}" width="152" height="40" alt="agentdesktop">
+        </a>
+        <p>Created by <a href="https://solo.io/" target="_blank" rel="noopener noreferrer">Solo.io</a></p>
+      </div>
       <div>
         <a href="{{ site.Params.github }}">GitHub</a>
         <a href="{{ site.Params.github }}/issues">Issues</a>
-        <a href="{{ site.Params.marketingURL }}">agentdesktop.dev</a>
+        <a href="{{ site.Params.marketingURL }}">agentdesktop.io</a>
       </div>
     </footer>
     {{ $script := resources.Get "js/docs.js" | minify | fingerprint }}

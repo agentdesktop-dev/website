@@ -1,5 +1,14 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { siteConfig } from "./site-config";
+
+const [brandMark, brandLogo] = await Promise.all([
+  readFile(join(process.cwd(), "docs/assets/imgs/mark-color.svg")),
+  readFile(join(process.cwd(), "docs/assets/imgs/logo-light.svg")),
+]);
+const brandMarkDataUrl = `data:image/svg+xml;base64,${brandMark.toString("base64")}`;
+const brandLogoDataUrl = `data:image/svg+xml;base64,${brandLogo.toString("base64")}`;
 
 export const socialImageAlt =
   "agentdesktop: open-source control plane for AI developer tools";
@@ -62,14 +71,15 @@ export function createSocialImage() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", fontSize: 28 }}>
-          <div
+          {/* ImageResponse renders embedded SVG data URLs through native images. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={brandMarkDataUrl}
+            width={62}
+            height={62}
+            alt=""
             style={{
-              display: "flex",
-              width: 42,
-              height: 42,
               marginRight: 16,
-              background: "#8a3ffc",
-              boxShadow: "18px 0 0 #151927, 18px 18px 0 #151927",
             }}
           />
           <strong>{siteConfig.name}</strong>
@@ -142,7 +152,14 @@ export function createSocialImage() {
           <div style={{ display: "flex", color: "#b997ff", fontSize: 18 }}>
             DISCOVERY + CONFIG
           </div>
-          <strong style={{ marginTop: 12, fontSize: 31 }}>agentdesktop</strong>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={brandLogoDataUrl}
+            width={157}
+            height={41}
+            alt="agentdesktop"
+            style={{ marginTop: 12 }}
+          />
           <div
             style={{
               display: "flex",
