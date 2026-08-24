@@ -3,13 +3,12 @@ import {
   BookOpen,
   Check,
   Code2,
+  Eye,
   HardDrive,
-  Laptop,
+  KeyRound,
   Menu,
-  Network,
   Server,
-  Settings2,
-  ShieldCheck,
+  SlidersHorizontal,
   X,
 } from "lucide-react";
 import { RoutingDemo } from "./routing-demo";
@@ -17,10 +16,61 @@ import styles from "./marketing.module.css";
 import { siteConfig } from "./site-config";
 
 const githubUrl = siteConfig.githubUrl;
-const exampleDevices = [
-  { name: "ENG-042", tool: "Claude Code" },
-  { name: "FIN-018", tool: "OpenCode" },
-  { name: "ENG-107", tool: "Codex" },
+
+const pillars = [
+  {
+    category: "Visibility",
+    question: "Do you know what’s running?",
+    body: "Every laptop is quietly accumulating agent harnesses, MCP servers, and skills that no inventory captures. The first step analysts recommend for agent governance: build the inventory.",
+    statValue: "52% vs 90%",
+    statDetail:
+      "of employees use unapproved AI tools, while 90% of executives believe they have full visibility.",
+    statSource: "Okta · AI Agents at Work 2026",
+    icon: Eye,
+  },
+  {
+    category: "Security",
+    question: "What can it reach?",
+    body: "Agents authenticate with long-lived API keys sitting in plaintext config files — the exact credentials harvested at scale when supply-chain attacks weaponized AI tools on developer laptops.",
+    statValue: "24,000+",
+    statDetail:
+      "secrets found in MCP configuration files on public GitHub alone. Thousands were still valid.",
+    statSource: "GitGuardian · State of Secrets Sprawl 2026",
+    icon: KeyRound,
+  },
+  {
+    category: "Control",
+    question: "Who decides how it behaves?",
+    body: "Every harness has its own settings format, its own admin console, its own drift. Policy you set once should hold everywhere — on every device, in every tool, continuously reconciled.",
+    statValue: "5 / 5 / 0",
+    statDetail:
+      "five tools, five configuration formats, zero shared policy. Per-vendor consoles can’t see each other.",
+    statSource: "Claude · Codex · Copilot · Cursor · OpenCode",
+    icon: SlidersHorizontal,
+  },
+];
+
+const gaps = [
+  {
+    who: "MDM",
+    does: "Manages the device: apps, disk encryption, OS policy.",
+    miss: "Sees the app, not the agent. Can’t parse tool configs, inventory MCP servers, or reconcile drift.",
+  },
+  {
+    who: "Vendor consoles",
+    does: "Managed settings for one harness at a time.",
+    miss: "One tool, one format, one silo. No cross-tool inventory, no device identity.",
+  },
+  {
+    who: "AI gateways",
+    does: "Govern model traffic: routing, quotas, logging.",
+    miss: "Never touch the device. Developers still hand-edit configs and hold static keys.",
+  },
+  {
+    who: "AI security tools",
+    does: "Watch usage, block data egress, alert on risk.",
+    miss: "Surveillance after the fact — they observe the fleet, they don’t manage it.",
+  },
 ];
 
 const structuredData = {
@@ -42,12 +92,13 @@ const structuredData = {
       url: `${siteConfig.url}/`,
       description: siteConfig.description,
       applicationCategory: "DeveloperApplication",
-      applicationSubCategory: "AI developer tool management",
+      applicationSubCategory: "AI agent governance",
       isAccessibleForFree: true,
       featureList: [
-        "AI developer tool discovery",
+        "AI agent and developer tool discovery",
         "Secret-minimized MCP server and skill inventory",
         "Managed configuration reconciliation",
+        "Short-lived gateway identity for devices",
         "Device enrollment and fleet telemetry",
       ],
       isPartOf: { "@id": `${siteConfig.url}/#website` },
@@ -78,6 +129,7 @@ export default function Home() {
         </a>
         <nav className={styles.desktopNav} aria-label="Main navigation">
           <a href="#why">Why</a>
+          <a href="#gaps">Why now</a>
           <a href="#routing">How it works</a>
           <a href="#deployments">Deployments</a>
         </nav>
@@ -104,6 +156,7 @@ export default function Home() {
           </summary>
           <nav aria-label="Mobile navigation">
             <a href="#why">Why agentdesktop</a>
+            <a href="#gaps">Why now</a>
             <a href="#routing">How it works</a>
             <a href="#deployments">Deployments</a>
             <a href="/docs/">Documentation</a>
@@ -116,10 +169,14 @@ export default function Home() {
         <section className={styles.hero} id="top">
           <div className={styles.heroGrid}>
             <div className={styles.heroCopy}>
-              <h1>The open-source control plane for AI developer tools.</h1>
+              <h1>
+                Your largest agent runtime has the <em className={styles.heroEm}>least amount of governance.</em>
+              </h1>
               <p className={styles.heroText}>
-                See what is installed across your fleet, apply managed
-                configuration, and connect each device to your inference gateway.
+                AI agents run in agent harnesses on every developer and employee desktop in your organization. 
+                These agents integrate models with production data, APIs, and endpoints while running outside of 
+                existing governance controls. Agentdesktop brings visibility, security, and control to agents 
+                where they actually run - on the desktop.
               </p>
               <div className={styles.heroActions}>
                 <a className={styles.primaryCta} href="/docs/">
@@ -139,42 +196,66 @@ export default function Home() {
         </section>
 
         <section className={styles.problem} id="why">
-          <div className={styles.problemGrid}>
-            <div>
-              <h2>Developers choose AI tools one device at a time. Platform teams manage them as a fleet.</h2>
-              <p className={styles.problemIntro}>
-                MDM manages the device, but each AI tool has its own settings,
-                MCP connections, skills, and gateway configuration. Platform
-                teams otherwise have to inspect and configure every tool separately.
-              </p>
-            </div>
-            <div className={styles.driftComparison} aria-label="From separate tool settings to fleet configuration">
-              <div className={styles.driftHeader}>
-                <strong>Each tool keeps its own configuration</strong>
-                <Settings2 size={23} aria-hidden="true" />
-              </div>
-              <div className={styles.driftRows}>
-                {exampleDevices.map((device) => (
-                  <div className={styles.driftRow} key={device.name}>
-                    <span><Laptop size={18} aria-hidden="true" /></span>
-                    <div><strong>{device.name}</strong><small>{device.tool}</small></div>
-                    <p><Settings2 size={15} aria-hidden="true" />Configured separately</p>
-                  </div>
-                ))}
-              </div>
-              <div className={styles.fleetResolution}>
-                <div className={styles.resolutionHeading}>
-                  <span><ShieldCheck size={22} aria-hidden="true" /></span>
-                  <strong>One configuration, distributed by the controller</strong>
+          <div className={styles.problemHeading}>
+            <h2>
+              Your platform no longer ends at the cluster. It extends to every
+              desktop.
+            </h2>
+            <p className={styles.problemIntro}>
+              Agent harnesses connect reasoning models to live production data
+              through tools, MCP servers, and skills &mdash; from machines that
+              sit outside every governance boundary you&rsquo;ve built. Three
+              questions your current stack can&rsquo;t answer:
+            </p>
+          </div>
+          <div className={styles.pillarGrid}>
+            {pillars.map((pillar) => (
+              <article className={styles.pillar} key={pillar.category}>
+                <span className={styles.pillarCategory}>
+                  <pillar.icon size={16} aria-hidden="true" />
+                  {pillar.category}
+                </span>
+                <h3>{pillar.question}</h3>
+                <p>{pillar.body}</p>
+                <div className={styles.pillarStat}>
+                  <strong>{pillar.statValue}</strong>
+                  <p>{pillar.statDetail}</p>
+                  <small>{pillar.statSource}</small>
                 </div>
-                <ul>
-                  <li><Check size={15} aria-hidden="true" />Tool inventory</li>
-                  <li><Check size={15} aria-hidden="true" />Managed settings</li>
-                  <li><Network size={15} aria-hidden="true" />Gateway URL</li>
-                  <li><Check size={15} aria-hidden="true" />Selected events</li>
-                </ul>
-              </div>
-            </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.gapsSection} id="gaps">
+          <div className={styles.gapsHeading}>
+            <h2>
+              Everything you run today covers a piece. Nothing governs the
+              runtime itself.
+            </h2>
+          </div>
+          <div className={styles.gapGrid}>
+            {gaps.map((gap) => (
+              <article className={styles.gapCard} key={gap.who}>
+                <h3>{gap.who}</h3>
+                <p>{gap.does}</p>
+                <p className={styles.gapMiss}>
+                  <X size={14} aria-hidden="true" />
+                  {gap.miss}
+                </p>
+              </article>
+            ))}
+          </div>
+          <div className={styles.gapVerdict}>
+            <p>
+              agentdesktop is the layer that governs the agent runtime &mdash;
+              working with your MDM, your gateway, and your security stack,
+              doing what none of them can.
+            </p>
+            <small>
+              Aligned with CSA agent-governance guidance, the OWASP Agentic and
+              MCP Top 10, and NIST AI agent standards work.
+            </small>
           </div>
         </section>
 
@@ -261,7 +342,7 @@ export default function Home() {
             <span><Code2 size={24} aria-hidden="true" /></span>
             <div>
               <h2 id="github-cta-heading">Inspect the code and shape the roadmap.</h2>
-              <small>Browse the source, open an issue, or contribute.</small>
+              <small>100% open source, end to end. Browse the source, open an issue, or contribute.</small>
             </div>
           </div>
           <a href={githubUrl} target="_blank" rel="noopener noreferrer">
@@ -274,8 +355,8 @@ export default function Home() {
       <footer className={styles.footer}>
         <div>
           <Brand inverted />
-          <p>The open-source control plane for AI developer tools across employee devices.</p>
-          <p className={styles.createdBy}>Created by <a href="https://solo.io/" target="_blank" rel="noopener noreferrer">Solo.io</a></p>
+          <p>The open-source governance layer for AI agents on desktops.</p>
+          <p className={styles.createdBy}>Created by <a href="https://solo.io/" target="_blank" rel="noopener noreferrer">Solo.io</a>, alongside <a href="https://agentgateway.dev/" target="_blank" rel="noopener noreferrer">agentgateway</a>.</p>
         </div>
         <nav aria-label="Footer navigation">
           <a href="/docs/">Documentation</a><a href={githubUrl}>GitHub</a><a href={`${githubUrl}/issues`}>Issues</a><a href="/docs/contributing/">Contribute</a>
