@@ -1,4 +1,5 @@
 import {
+  Activity,
   ArrowRight,
   BookOpen,
   Check,
@@ -7,6 +8,7 @@ import {
   HardDrive,
   KeyRound,
   Menu,
+  ScanSearch,
   Server,
   SlidersHorizontal,
   X,
@@ -22,54 +24,63 @@ const pillars = [
     category: "Visibility",
     question: "Do you know what’s running?",
     body: "Every laptop is quietly accumulating agent harnesses, MCP servers, and skills that no inventory captures. The first step analysts recommend for agent governance: build the inventory.",
-    statValue: "52% vs 90%",
-    statDetail:
-      "of employees use unapproved AI tools, while 90% of executives believe they have full visibility.",
-    statSource: "Okta · AI Agents at Work 2026",
+    statValue: "52%",
+    statLine: "of employees run unapproved AI tools at work.",
+    sourceHref:
+      "https://www.okta.com/newsroom/articles/ai-agents-at-work-2026-agentic-enterprise-security/",
+    sourceLabel: "Okta, AI Agents at Work 2026",
+    sourceNum: 1,
     icon: Eye,
   },
   {
     category: "Security",
     question: "What can it reach?",
     body: "Agents authenticate with long-lived API keys sitting in plaintext config files — the exact credentials harvested at scale when supply-chain attacks weaponized AI tools on developer laptops.",
-    statValue: "24,000+",
-    statDetail:
-      "secrets found in MCP configuration files on public GitHub alone. Thousands were still valid.",
-    statSource: "GitGuardian · State of Secrets Sprawl 2026",
+    statValue: "28M+",
+    statLine: "hardcoded secrets leaked on GitHub in 2026.",
+    sourceHref: "https://blog.gitguardian.com/the-state-of-secrets-sprawl-2026/",
+    sourceLabel: "GitGuardian, State of Secrets Sprawl 2026",
+    sourceNum: 2,
     icon: KeyRound,
   },
   {
     category: "Control",
     question: "Who decides how it behaves?",
     body: "Every harness has its own settings format, its own admin console, its own drift. Policy you set once should hold everywhere — on every device, in every tool, continuously reconciled.",
-    statValue: "5 / 5 / 0",
-    statDetail:
-      "five tools, five configuration formats, zero shared policy. Per-vendor consoles can’t see each other.",
-    statSource: "Claude · Codex · Copilot · Cursor · OpenCode",
+    statValue: "86%",
+    statLine: "of enterprises don’t enforce AI identity policies.",
+    sourceHref:
+      "https://labs.cloudsecurityalliance.org/research/csa-research-note-ai-agent-governance-framework-gap-20260403/",
+    sourceLabel: "Cloud Security Alliance, 2026",
+    sourceNum: 3,
     icon: SlidersHorizontal,
   },
 ];
 
-const gaps = [
+const capabilities = [
   {
-    who: "MDM",
-    does: "Manages the device: apps, disk encryption, OS policy.",
-    miss: "Sees the app, not the agent. Can’t parse tool configs, inventory MCP servers, or reconcile drift.",
+    category: "Discovery",
+    title: "Know what’s running.",
+    body: "Build the agent inventory security frameworks now call for: every harness, version, MCP server, and skill across the fleet, attributed to a device and its signed-in user. Surface shadow AI without reading secrets — no command arguments, environment variables, headers, or skill bodies.",
+    icon: ScanSearch,
   },
   {
-    who: "Vendor consoles",
-    does: "Managed settings for one harness at a time.",
-    miss: "One tool, one format, one silo. No cross-tool inventory, no device identity.",
+    category: "Policy",
+    title: "Decide how it behaves.",
+    body: "Set policy once and enforce it everywhere. Managed settings are written into each tool’s native configuration format, previewed before anything is written, and continuously reconciled back to the desired state when devices drift.",
+    icon: SlidersHorizontal,
   },
   {
-    who: "AI gateways",
-    does: "Govern model traffic: routing, quotas, logging.",
-    miss: "Never touch the device. Developers still hand-edit configs and hold static keys.",
+    category: "Identity",
+    title: "Control what it reaches.",
+    body: "Treat agents as non-human identities with least-privilege access. Devices enroll through OIDC, bind to the signed-in user, and receive short-lived, just-in-time credentials for your inference gateway — no standing API keys on disk.",
+    icon: KeyRound,
   },
   {
-    who: "AI security tools",
-    does: "Watch usage, block data egress, alert on risk.",
-    miss: "Surveillance after the fact — they observe the fleet, they don’t manage it.",
+    category: "Observability",
+    title: "See what it did.",
+    body: "End-to-end session inspection across every harness. Opt-in session and tool-use events stream to the controller, attributed to user and device — the audit trail agent governance requires, collected only for the events you select.",
+    icon: Activity,
   },
 ];
 
@@ -129,7 +140,7 @@ export default function Home() {
         </a>
         <nav className={styles.desktopNav} aria-label="Main navigation">
           <a href="#why">Why</a>
-          <a href="#gaps">Why now</a>
+          <a href="#what">What it does</a>
           <a href="#routing">How it works</a>
           <a href="#deployments">Deployments</a>
         </nav>
@@ -156,7 +167,7 @@ export default function Home() {
           </summary>
           <nav aria-label="Mobile navigation">
             <a href="#why">Why agentdesktop</a>
-            <a href="#gaps">Why now</a>
+            <a href="#what">What it does</a>
             <a href="#routing">How it works</a>
             <a href="#deployments">Deployments</a>
             <a href="/docs/">Documentation</a>
@@ -197,16 +208,7 @@ export default function Home() {
 
         <section className={styles.problem} id="why">
           <div className={styles.problemHeading}>
-            <h2>
-              Your platform no longer ends at the cluster. It extends to every
-              desktop.
-            </h2>
-            <p className={styles.problemIntro}>
-              Agent harnesses connect reasoning models to live production data
-              through tools, MCP servers, and skills &mdash; from machines that
-              sit outside every governance boundary you&rsquo;ve built. Three
-              questions your current stack can&rsquo;t answer:
-            </p>
+            <h2>Three questions your current stack can&rsquo;t answer.</h2>
           </div>
           <div className={styles.pillarGrid}>
             {pillars.map((pillar) => (
@@ -216,46 +218,57 @@ export default function Home() {
                   {pillar.category}
                 </span>
                 <h3>{pillar.question}</h3>
-                <p>{pillar.body}</p>
                 <div className={styles.pillarStat}>
                   <strong>{pillar.statValue}</strong>
-                  <p>{pillar.statDetail}</p>
-                  <small>{pillar.statSource}</small>
+                  <p>
+                    {pillar.statLine}{" "}
+                    <a
+                      className={styles.pillarRef}
+                      href={pillar.sourceHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={pillar.sourceLabel}
+                      aria-label={`Source: ${pillar.sourceLabel}`}
+                    >
+                      [{pillar.sourceNum}]
+                    </a>
+                  </p>
                 </div>
+                <p className={styles.pillarBody}>{pillar.body}</p>
               </article>
             ))}
           </div>
         </section>
 
-        <section className={styles.gapsSection} id="gaps">
-          <div className={styles.gapsHeading}>
-            <h2>
-              Everything you run today covers a piece. Nothing governs the
-              runtime itself.
-            </h2>
-          </div>
-          <div className={styles.gapGrid}>
-            {gaps.map((gap) => (
-              <article className={styles.gapCard} key={gap.who}>
-                <h3>{gap.who}</h3>
-                <p>{gap.does}</p>
-                <p className={styles.gapMiss}>
-                  <X size={14} aria-hidden="true" />
-                  {gap.miss}
-                </p>
-              </article>
-            ))}
-          </div>
-          <div className={styles.gapVerdict}>
+        <section className={styles.whatSection} id="what">
+          <div className={styles.whatHeading}>
+            <h2>Answers with agentdesktop</h2>
             <p>
-              agentdesktop is the layer that governs the agent runtime &mdash;
-              working with your MDM, your gateway, and your security stack,
-              doing what none of them can.
+              An agent inventory, managed policy, non-human identity, and
+              end-to-end observability &mdash; delivered by one daemon on the
+              device and one controller for the fleet.
             </p>
-            <small>
-              Aligned with CSA agent-governance guidance, the OWASP Agentic and
-              MCP Top 10, and NIST AI agent standards work.
-            </small>
+          </div>
+          <div className={styles.whatGrid}>
+            <div className={styles.capStack}>
+              {capabilities.map((cap) => (
+                <article className={styles.capCard} key={cap.category}>
+                  <span className={styles.capCategory}>
+                    <cap.icon size={16} aria-hidden="true" />
+                    {cap.category}
+                  </span>
+                  <h3>{cap.title}</h3>
+                  <p>{cap.body}</p>
+                </article>
+              ))}
+            </div>
+            <div className={styles.whatVisual}>
+              <img
+                src="/images/device-details.png"
+                alt="agentdesktop device details view showing discovered developer tools, MCP servers and skills, configuration state, recent agent activity, and enrollment identity"
+                loading="lazy"
+              />
+            </div>
           </div>
         </section>
 
@@ -263,49 +276,81 @@ export default function Home() {
           <div className={styles.sectionHeadingRow}>
             <h2>How agentdesktop works</h2>
             <p>
-              The device daemon discovers installed tools and applies their
-              managed configuration after a preview. The controller distributes
-              the same configuration to enrolled devices.
+              A daemon on each device, a controller for the fleet, and a trust
+              chain to your inference gateway.
             </p>
           </div>
           <div className={styles.processFlow} aria-label="agentdesktop processing flow">
             <div className={styles.processTrack} aria-hidden="true"><i /></div>
             <div className={styles.processStages}>
               <article>
-                <h3>Discover</h3>
-                <p>Find supported developer tools and versions, plus configured MCP servers and skills, on Linux, macOS, and Windows.</p>
+                <h3>Reconcile on the device</h3>
+                <p>The daemon discovers installed tools, MCP servers, and skills, then writes managed settings into each harness&rsquo;s native format &mdash; previewed with a dry run, and pulled back to the desired state when configs drift.</p>
                 <dl className={styles.stageEvidence}>
-                  <div><dt>Tools</dt><dd>Versions</dd></div>
-                  <div><dt>MCP servers</dt><dd>Metadata</dd></div>
-                  <div><dt>Skills</dt><dd>Front matter</dd></div>
+                  <div><dt>Discovery</dt><dd>Tools · MCP · Skills</dd></div>
+                  <div><dt>Preview</dt><dd>Dry-run</dd></div>
+                  <div><dt>Drift</dt><dd>Reconciled</dd></div>
                 </dl>
               </article>
               <article>
-                <h3>Configure</h3>
-                <p>Preview changes, then write managed settings and the inference gateway URL for each supported tool.</p>
+                <h3>Distribute from the controller</h3>
+                <p>Devices enroll through OIDC with a device-bound key. The controller distributes versioned configuration, records fleet state for the management UI, and collects only the telemetry events you select.</p>
                 <dl className={styles.stageEvidence}>
-                  <div><dt>Managed settings</dt><dd>Preview</dd></div>
-                  <div><dt>Gateway URL</dt><dd>Preview</dd></div>
-                  <div><dt>Write</dt><dd>After review</dd></div>
-                </dl>
-              </article>
-              <article>
-                <h3>Connect</h3>
-                <p>Authenticate gateway requests with direct OIDC or controller-issued JWTs. Telemetry stays off until you select events.</p>
-                <dl className={styles.stageEvidence}>
-                  <div><dt>Standalone</dt><dd>Direct OIDC</dd></div>
-                  <div><dt>Managed</dt><dd>Short-lived JWT</dd></div>
+                  <div><dt>Enrollment</dt><dd>OIDC + device key</dd></div>
+                  <div><dt>Configuration</dt><dd>Versioned</dd></div>
                   <div><dt>Telemetry</dt><dd>Opt-in</dd></div>
                 </dl>
               </article>
+              <article>
+                <h3>Broker identity to the gateway</h3>
+                <p>Agents request short-lived JWTs through the daemon; the gateway verifies them against the controller and attributes every request to a user and device. The API key never reaches the laptop.</p>
+                <dl className={styles.stageEvidence}>
+                  <div><dt>Credentials</dt><dd>Short-lived JWT</dd></div>
+                  <div><dt>Verification</dt><dd>Controller JWKS</dd></div>
+                  <div><dt>API keys</dt><dd>Never on device</dd></div>
+                </dl>
+              </article>
             </div>
+          </div>
+          <div className={styles.configPanel}>
+            <div className={styles.configCopy}>
+              <h3>One configuration, every tool.</h3>
+              <p>
+                A single declarative config manages the gateway connection,
+                telemetry, and per-tool policy &mdash; reconciled into Claude
+                Code, Claude Desktop, Codex, and OpenCode in their own formats.
+              </p>
+              <p className={styles.configNote}>
+                Pairs with{" "}
+                <a href="https://agentgateway.dev/" target="_blank" rel="noopener noreferrer">
+                  agentgateway
+                </a>{" "}
+                &mdash; or any inference gateway that verifies JWTs.
+              </p>
+            </div>
+            <pre className={styles.configCode}>
+              <code>{`inferenceGateway:
+  url: https://gateway.example.com
+  authentication:
+    type: controllerJwt
+    audience: agentgateway
+
+telemetry:
+  events: [session.new, tool.use]
+
+programs:
+  claudeCode:
+    permissions:
+      defaultMode: plan
+  claudeDesktop: {}
+  codex: {}`}</code>
+            </pre>
           </div>
         </section>
 
         <section className={styles.deployments} id="deployments">
           <div className={styles.deploymentIntro}>
-            <h2>Start with one device. Add a controller when you need a fleet.</h2>
-            <p>The same daemon runs from local YAML or enrolls with a controller that distributes configuration and records fleet state.</p>
+            <h2>Start with one device, extend to your entire fleet.</h2>
           </div>
           <div className={styles.deploymentGrid}>
             <article>
@@ -320,7 +365,6 @@ export default function Home() {
               <a href="/docs/getting-started/standalone/">Set up standalone mode <ArrowRight size={16} aria-hidden="true" /></a>
             </article>
             <div className={styles.deploymentBridge} aria-hidden="true">
-              <span>Same daemon</span>
               <i><ArrowRight size={20} /></i>
             </div>
             <article>

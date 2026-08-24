@@ -190,7 +190,7 @@
 
 .problem { width: min(100%, 1440px); padding: clamp(80px, 9vw, 130px) 32px; margin: 0 auto; }
 
-.problemHeading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(330px, 0.55fr); gap: 60px; align-items: end; }
+.problemHeading { max-width: 900px; }
 
 .problem h2, .deploymentIntro h2, .sectionHeadingRow h2 {
   font-family: var(--font-body), sans-serif;
@@ -199,8 +199,6 @@
   line-height: 1.02;
   letter-spacing: 0;
 }
-
-.problemIntro { max-width: 610px; color: var(--ink-soft); font-size: 19px; line-height: 1.7; }
 
 .pillarGrid {
   display: grid;
@@ -230,52 +228,134 @@
 }
 
 .pillar h3 {
-  font-size: 23px;
+  font-size: 21px;
   font-weight: 600;
   line-height: 1.2;
 }
 
-.pillar > p {
+.pillarBody {
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
   color: var(--ink-soft);
   font-size: 15px;
   line-height: 1.65;
 }
 
 .pillarStat {
-  margin-top: auto;
-  padding-top: 20px;
-  border-top: 1px solid var(--line);
+  margin-top: 6px;
 }
 
 .pillarStat strong {
   display: block;
-  font-size: 27px;
+  font-size: clamp(68px, 5.7vw, 92px);
   font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.015em;
   font-variant-numeric: tabular-nums;
 }
 
 .pillarStat p {
-  margin-top: 7px;
+  margin-top: 12px;
   color: var(--ink-soft);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.55;
 }
 
-.pillarStat small {
-  display: block;
-  margin-top: 10px;
-  color: var(--ink-soft);
+.pillarRef {
+  color: var(--orange-dark);
   font-size: 11px;
-  font-weight: 650;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  vertical-align: super;
+}
+
+.pillarRef:hover {
+  text-decoration: underline;
+}
+
+.whatSection {
+  width: 100%;
+  padding: clamp(80px, 9vw, 125px) max(32px, calc((100vw - 1376px) / 2));
+  background: var(--paper-bright);
+}
+
+.whatHeading { max-width: 860px; }
+
+.whatHeading h2 {
+  font-family: var(--font-body), sans-serif;
+  font-size: clamp(42px, 4.2vw, 64px);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: 0;
+}
+
+.whatHeading > p { max-width: 680px; margin-top: 22px; color: var(--ink-soft); font-size: 17px; line-height: 1.7; }
+
+.whatGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: clamp(36px, 5vw, 72px);
+  align-items: start;
+  margin-top: clamp(45px, 6vw, 76px);
+}
+
+.capStack {
+  display: grid;
+  gap: 16px;
+}
+
+.whatVisual {
+  position: sticky;
+  top: 96px;
+}
+
+.whatVisual img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-shadow: 0 24px 60px -34px rgba(21, 25, 39, 0.4);
+}
+
+.capCard {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 30px 28px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.capCategory {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--orange-dark);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  opacity: 0.75;
+}
+
+.capCard h3 {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.capCard > p {
+  max-width: 560px;
+  color: var(--ink-soft);
+  font-size: 15px;
+  line-height: 1.65;
 }
 
 .gapsSection {
   width: 100%;
   padding: clamp(80px, 9vw, 125px) max(32px, calc((100vw - 1376px) / 2));
-  background: var(--paper-bright);
+  background: var(--paper);
 }
 
 .gapsHeading h2 {
@@ -298,7 +378,7 @@
   display: flex;
   flex-direction: column;
   padding: 24px 22px;
-  background: var(--paper);
+  background: var(--paper-bright);
   border: 1px solid var(--line);
   border-radius: 6px;
 }
@@ -429,6 +509,62 @@
   35%, 45% { left: calc(50% - 8px); }
   68%, 99.9% { left: calc(100% - 16px); }
   100% { left: 0; }
+}
+
+.configPanel {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(32px, 5vw, 64px);
+  align-items: center;
+  margin-top: clamp(56px, 7vw, 88px);
+  padding: clamp(28px, 3vw, 40px);
+  background: #0b0e18;
+  border-radius: 6px;
+}
+
+.configCopy h3 {
+  font-size: clamp(24px, 2.2vw, 32px);
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.configCopy > p {
+  margin-top: 14px;
+  color: #b9bfd3;
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.configCopy .configNote {
+  margin-top: 20px;
+  color: #8f95aa;
+  font-size: 13.5px;
+}
+
+.configNote a {
+  color: #d8c8fa;
+  font-weight: 650;
+}
+
+.configNote a:hover {
+  text-decoration: underline;
+}
+
+.configCode {
+  overflow-x: auto;
+  padding: 22px 24px;
+  background: #151927;
+  border: 1px solid #292f43;
+  border-radius: 4px;
+}
+
+.configCode code {
+  display: block;
+  color: #d8dbea;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre;
 }
 
 .fleetDiagram {
@@ -690,8 +826,9 @@
   .hero { min-height: auto; }
   .heroGrid { grid-template-columns: 1fr; width: min(100%, 900px); }
   .heroCopy { max-width: 760px; }
-  .problemHeading { grid-template-columns: 1fr; align-items: start; }
   .gapGrid { grid-template-columns: repeat(2, 1fr); }
+  .whatGrid { grid-template-columns: 1fr; }
+  .whatVisual { position: static; max-width: 760px; }
   .deploymentGrid { grid-template-columns: 1fr 92px 1fr; gap: 24px; }
 }
 
@@ -707,9 +844,9 @@
   .mobileNav nav a { padding: 12px 10px; font-size: 15px; }
   .hero { padding-top: 120px; padding-bottom: 72px; }
   .heroGrid { gap: 50px; }
-  .problemHeading, .sectionHeadingRow, .deploymentIntro { grid-template-columns: 1fr; }
-  .problemHeading { gap: 28px; }
+  .sectionHeadingRow, .deploymentIntro { grid-template-columns: 1fr; }
   .pillarGrid { grid-template-columns: 1fr; }
+  .configPanel { grid-template-columns: 1fr; }
   .sectionHeadingRow, .deploymentIntro { gap: 28px; }
   .footer { grid-template-columns: 1fr 1fr; }
   .footer nav { justify-content: flex-end; }
@@ -724,10 +861,12 @@
   .heroText { font-size: 16px; }
   .heroActions { gap: 12px; }
   .problem, .routingSection { padding: 64px 20px; }
-  .gapsSection { padding: 64px 20px; }
+  .whatSection, .gapsSection { padding: 64px 20px; }
   .deployments { padding: 64px 20px; }
-  .problem h2, .deploymentIntro h2, .sectionHeadingRow h2, .gapsHeading h2 { font-size: clamp(32px, 9.5vw, 42px); overflow-wrap: anywhere; }
-  .problemIntro, .deploymentIntro p { font-size: 16px; }
+  .problem h2, .deploymentIntro h2, .sectionHeadingRow h2, .gapsHeading h2, .whatHeading h2 { font-size: clamp(32px, 9.5vw, 42px); overflow-wrap: anywhere; }
+  .capCard { padding: 24px 20px; }
+  .configPanel { padding: 20px; }
+  .deploymentIntro p { font-size: 16px; }
   .pillar { padding: 24px 20px; }
   .gapGrid { grid-template-columns: 1fr; }
   .gapVerdict { padding: 20px; }
