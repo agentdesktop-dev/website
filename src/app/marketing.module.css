@@ -115,13 +115,35 @@
 
 .heroGrid .fleetDiagram { width: 100%; margin-top: 0; }
 
+.heroKicker {
+  margin-bottom: 18px;
+  color: var(--orange-dark);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
 .hero h1 {
   max-width: 660px;
   font-family: var(--font-body), sans-serif;
-  font-size: clamp(50px, 4.2vw, 66px);
+  font-size: clamp(42px, 3.6vw, 58px);
   font-weight: 600;
-  line-height: 0.98;
+  line-height: 1.02;
   letter-spacing: 0;
+}
+
+.heroEm {
+  color: var(--orange-dark);
+  font-style: normal;
+}
+
+.heroFine {
+  max-width: 560px;
+  margin-top: 26px;
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 .heroText {
@@ -168,7 +190,7 @@
 
 .problem { width: min(100%, 1440px); padding: clamp(80px, 9vw, 130px) 32px; margin: 0 auto; }
 
-.problemGrid { display: grid; grid-template-columns: minmax(0, 0.82fr) minmax(520px, 0.88fr); gap: clamp(50px, 7vw, 100px); align-items: center; }
+.problemHeading { max-width: 900px; }
 
 .problem h2, .deploymentIntro h2, .sectionHeadingRow h2 {
   font-family: var(--font-body), sans-serif;
@@ -178,71 +200,245 @@
   letter-spacing: 0;
 }
 
-.problemIntro { max-width: 610px; margin-top: 32px; color: var(--ink-soft); font-size: 19px; line-height: 1.7; }
+.pillarGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  margin-top: clamp(45px, 6vw, 76px);
+}
 
-.driftComparison {
-  overflow: hidden;
+.pillar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 30px 28px;
   background: var(--paper-bright);
   border-radius: 6px;
 }
 
-.driftHeader {
+.pillarCategory {
   display: flex;
-  min-height: 76px;
   align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 16px 18px;
-  color: #e9e9e2;
-  background: var(--ink);
-}
-
-.driftHeader strong { display: block; }
-.driftHeader strong { font-size: 16px; }
-.driftHeader svg { flex: 0 0 auto; color: #a887ee; }
-.driftRows { display: grid; gap: 5px; padding: 8px; }
-
-.driftRow {
-  display: grid;
-  grid-template-columns: 36px minmax(120px, 1fr) auto;
-  gap: 11px;
-  align-items: center;
-  min-height: 62px;
-  padding: 10px 12px;
-  background: #f0f1f6;
-}
-
-.driftRow > span {
-  display: grid;
-  width: 36px;
-  height: 36px;
-  place-items: center;
+  gap: 8px;
   color: var(--orange-dark);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pillar h3 {
+  font-size: 21px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.pillarBody {
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.pillarStat {
+  margin-top: 6px;
+}
+
+.pillarStat strong {
+  display: block;
+  font-size: clamp(68px, 5.7vw, 92px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.015em;
+  font-variant-numeric: tabular-nums;
+}
+
+.pillarStat p {
+  margin-top: 12px;
+  color: var(--ink-soft);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.pillarRef {
+  color: var(--orange-dark);
+  font-size: 11px;
+  font-weight: 700;
+  vertical-align: super;
+}
+
+.pillarRef:hover {
+  text-decoration: underline;
+}
+
+.whatSection {
+  width: 100%;
+  padding: clamp(80px, 9vw, 125px) max(32px, calc((100vw - 1376px) / 2));
   background: var(--paper-bright);
-  border-radius: 3px;
 }
 
-.driftRow strong,
-.driftRow small { display: block; }
-.driftRow strong { font-size: 14px; }
-.driftRow small { margin-top: 3px; color: var(--ink-soft); font-size: 12px; }
-.driftRow p { display: flex; align-items: center; gap: 7px; color: var(--ink-soft); font-size: 12px; white-space: nowrap; }
+.whatHeading { max-width: 860px; }
 
-.fleetResolution {
-  padding: 18px;
+.whatHeading h2 {
+  font-family: var(--font-body), sans-serif;
+  font-size: clamp(42px, 4.2vw, 64px);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: 0;
+}
+
+.whatHeading > p { max-width: 680px; margin-top: 22px; color: var(--ink-soft); font-size: 17px; line-height: 1.7; }
+
+.whatGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: clamp(36px, 5vw, 72px);
+  align-items: start;
+  margin-top: clamp(45px, 6vw, 76px);
+}
+
+.capStack {
+  display: grid;
+  gap: 16px;
+}
+
+.whatVisual {
+  position: sticky;
+  top: 96px;
+}
+
+.whatVisual img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-shadow: 0 24px 60px -34px rgba(21, 25, 39, 0.4);
+}
+
+.capCard {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 30px 28px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.capCategory {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--orange-dark);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.capCard h3 {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.capCard > p {
+  max-width: 560px;
+  color: var(--ink-soft);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.gapsSection {
+  width: 100%;
+  padding: clamp(80px, 9vw, 125px) max(32px, calc((100vw - 1376px) / 2));
+  background: var(--paper);
+}
+
+.gapsHeading h2 {
+  max-width: 900px;
+  font-family: var(--font-body), sans-serif;
+  font-size: clamp(38px, 3.8vw, 56px);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: 0;
+}
+
+.gapGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-top: clamp(40px, 5vw, 64px);
+}
+
+.gapCard {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 22px;
+  background: var(--paper-bright);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.gapCard h3 {
+  font-size: 18px;
+  font-weight: 650;
+}
+
+.gapCard > p {
+  margin-top: 10px;
+  color: var(--ink-soft);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.gapCard .gapMiss {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+.gapCard .gapMiss svg {
+  flex: 0 0 auto;
+  margin-top: 3px;
+  color: var(--orange-dark);
+}
+
+.gapVerdict {
+  display: grid;
+  gap: 12px;
+  margin-top: clamp(34px, 4vw, 48px);
+  padding: 26px 28px;
   color: #f6f7fb;
-  background: var(--orange-dark);
+  background: var(--ink);
+  border-left: 4px solid var(--orange);
+  border-radius: 6px;
 }
 
-.resolutionHeading,
-.fleetResolution ul,
-.fleetResolution li { display: flex; align-items: center; }
-.resolutionHeading { gap: 12px; }
-.resolutionHeading > span { display: grid; width: 38px; height: 38px; flex: 0 0 auto; place-items: center; color: var(--orange-dark); background: #f6f7fb; border-radius: 3px; }
-.resolutionHeading strong { display: block; }
-.resolutionHeading strong { font-size: 15px; line-height: 1.35; }
-.fleetResolution ul { flex-wrap: wrap; gap: 8px 16px; margin-top: 16px; list-style: none; }
-.fleetResolution li { gap: 6px; color: #eee8fb; font-size: 12px; }
+.gapVerdict p {
+  max-width: 900px;
+  font-size: clamp(18px, 1.8vw, 22px);
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.gapVerdict small {
+  color: #aeb3c7;
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
 
 .routingSection {
   padding: clamp(80px, 9vw, 125px) max(32px, calc((100vw - 1376px) / 2));
@@ -313,6 +509,62 @@
   35%, 45% { left: calc(50% - 8px); }
   68%, 99.9% { left: calc(100% - 16px); }
   100% { left: 0; }
+}
+
+.configPanel {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(32px, 5vw, 64px);
+  align-items: center;
+  margin-top: clamp(56px, 7vw, 88px);
+  padding: clamp(28px, 3vw, 40px);
+  background: #0b0e18;
+  border-radius: 6px;
+}
+
+.configCopy h3 {
+  font-size: clamp(24px, 2.2vw, 32px);
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.configCopy > p {
+  margin-top: 14px;
+  color: #b9bfd3;
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.configCopy .configNote {
+  margin-top: 20px;
+  color: #8f95aa;
+  font-size: 13.5px;
+}
+
+.configNote a {
+  color: #d8c8fa;
+  font-weight: 650;
+}
+
+.configNote a:hover {
+  text-decoration: underline;
+}
+
+.configCode {
+  overflow-x: auto;
+  padding: 22px 24px;
+  background: #151927;
+  border: 1px solid #292f43;
+  border-radius: 4px;
+}
+
+.configCode code {
+  display: block;
+  color: #d8dbea;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre;
 }
 
 .fleetDiagram {
@@ -559,8 +811,9 @@
   .hero { min-height: auto; }
   .heroGrid { grid-template-columns: 1fr; width: min(100%, 900px); }
   .heroCopy { max-width: 760px; }
-  .problemGrid { grid-template-columns: 1fr; }
-  .driftComparison { max-width: 760px; }
+  .gapGrid { grid-template-columns: repeat(2, 1fr); }
+  .whatGrid { grid-template-columns: 1fr; }
+  .whatVisual { position: static; max-width: 760px; }
   .deploymentGrid { grid-template-columns: 1fr 92px 1fr; gap: 24px; }
 }
 
@@ -576,8 +829,9 @@
   .mobileNav nav a { padding: 12px 10px; font-size: 15px; }
   .hero { padding-top: 120px; padding-bottom: 72px; }
   .heroGrid { gap: 50px; }
-  .problemGrid, .sectionHeadingRow, .deploymentIntro { grid-template-columns: 1fr; }
-  .problemGrid { gap: 60px; }
+  .sectionHeadingRow, .deploymentIntro { grid-template-columns: 1fr; }
+  .pillarGrid { grid-template-columns: 1fr; }
+  .configPanel { grid-template-columns: 1fr; }
   .sectionHeadingRow, .deploymentIntro { gap: 28px; }
   .footer { grid-template-columns: 1fr 1fr; }
   .footer nav { justify-content: flex-end; }
@@ -588,19 +842,19 @@
   .header { height: 70px; }
   .hero { padding: 96px 20px 60px; }
   .heroGrid { gap: 38px; }
-  .hero h1 { font-size: clamp(40px, 12vw, 50px); }
+  .hero h1 { font-size: clamp(34px, 10vw, 44px); }
   .heroText { font-size: 16px; }
   .heroActions { gap: 12px; }
   .problem, .routingSection { padding: 64px 20px; }
+  .whatSection, .gapsSection { padding: 64px 20px; }
   .deployments { padding: 64px 20px; }
-  .problem h2, .deploymentIntro h2, .sectionHeadingRow h2 { font-size: clamp(32px, 9.5vw, 42px); overflow-wrap: anywhere; }
-  .problemIntro, .deploymentIntro p { font-size: 16px; }
-  .problemGrid { gap: 40px; }
-  .driftHeader { min-height: 70px; }
-  .driftRow { grid-template-columns: 34px minmax(0, 1fr); }
-  .driftRow > span { width: 34px; height: 34px; }
-  .driftRow p { grid-column: 2; }
-  .fleetResolution { padding: 16px; }
+  .problem h2, .deploymentIntro h2, .sectionHeadingRow h2, .gapsHeading h2, .whatHeading h2 { font-size: clamp(32px, 9.5vw, 42px); overflow-wrap: anywhere; }
+  .capCard { padding: 24px 20px; }
+  .configPanel { padding: 20px; }
+  .deploymentIntro p { font-size: 16px; }
+  .pillar { padding: 24px 20px; }
+  .gapGrid { grid-template-columns: 1fr; }
+  .gapVerdict { padding: 20px; }
   .processFlow { padding-top: 0; padding-left: 32px; }
   .processTrack { top: 6px; bottom: 6px; left: 5px; width: 4px; height: auto; }
   .processTrack i { top: 0; left: -6px; animation-name: processTravelVertical; }
