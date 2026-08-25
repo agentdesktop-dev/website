@@ -5,6 +5,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const filters = Array.from(document.querySelectorAll("[data-nav-filter]"));
   const navLinks = Array.from(document.querySelectorAll(".docs-sidebar nav a"));
   const groups = Array.from(document.querySelectorAll("[data-nav-group]"));
+  const pageItems = Array.from(document.querySelectorAll("[data-nav-page]"));
+
+  const setPageSections = (toggle, expanded) => {
+    const sections = document.getElementById(toggle.getAttribute("aria-controls"));
+    toggle.setAttribute("aria-expanded", String(expanded));
+    if (sections) sections.hidden = !expanded;
+  };
+
+  document.querySelectorAll("[data-nav-page-toggle]").forEach((toggle) => {
+    toggle.addEventListener("click", () => {
+      setPageSections(toggle, toggle.getAttribute("aria-expanded") !== "true");
+    });
+  });
 
   const setNavigation = (open) => {
     body.classList.toggle("nav-open", open);
@@ -26,6 +39,26 @@ document.addEventListener("DOMContentLoaded", () => {
       const item = link.closest("li");
       if (item) item.hidden = !match;
       if (link.classList.contains("overview-link")) link.hidden = !match;
+    });
+
+    pageItems.forEach((item) => {
+      const pageLink = item.querySelector(":scope > .nav-page-row > a");
+      const toggle = item.querySelector(":scope > .nav-page-row > [data-nav-page-toggle]");
+      const sectionItems = Array.from(item.querySelectorAll(".nav-page-sections li"));
+      const pageMatch = !query || pageLink?.textContent.toLowerCase().includes(query);
+      const visibleSections = sectionItems.some((section) => !section.hidden);
+      item.hidden = Boolean(query) && !pageMatch && !visibleSections;
+
+      if (!toggle) return;
+      if (query) {
+        if (!toggle.dataset.beforeFilterExpanded) {
+          toggle.dataset.beforeFilterExpanded = toggle.getAttribute("aria-expanded");
+        }
+        setPageSections(toggle, visibleSections);
+      } else if (toggle.dataset.beforeFilterExpanded) {
+        setPageSections(toggle, toggle.dataset.beforeFilterExpanded === "true");
+        delete toggle.dataset.beforeFilterExpanded;
+      }
     });
 
     groups.forEach((group) => {

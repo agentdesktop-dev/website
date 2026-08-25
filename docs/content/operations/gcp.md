@@ -376,6 +376,33 @@ The generated script writes `/etc/agentdesktop/config.yaml`, installs the public
 controller CA, restarts an existing daemon only when content changes, and adds
 the current console user to the local `agentdesktop` group.
 
+### Prepare a Windows bootstrap
+
+The command above generates only the macOS bootstrap script. For a Windows
+Intune package, derive `config.yaml` from the same deployment state:
+
+```sh
+source deploy/gcp/.env.production
+
+WINDOWS_INTUNE_DIR=deploy/gcp/generated/windows-intune
+mkdir -p "${WINDOWS_INTUNE_DIR}"
+
+cat >"${WINDOWS_INTUNE_DIR}/config.yaml" <<EOF
+controller:
+  address: https://${CONTROLLER_HOSTNAME}
+  caCertificatePath: C:/ProgramData/AgentDesktop/controller-ca.pem
+  heartbeatInterval: 30s
+EOF
+
+cp deploy/gcp/agentdesktop-pki/controller-ca.pem \
+  "${WINDOWS_INTUNE_DIR}/controller-ca.pem"
+```
+
+Copy those two generated files to the Windows packaging host. The CA certificate
+is public trust material; never copy `controller-ca-key.pem` or another private
+key. Continue with [Deploy Windows](../intune/#deploy-windows) to add the signed
+MSI and `install.ps1`, create the `.intunewin` package, and configure detection.
+
 ## 8. Assign the pilot in Intune
 
 Complete [Prepare the Intune tenant](../intune/#prepare-the-intune-tenant) and

@@ -31,5 +31,9 @@ source = "assets"
 target = "assets"
 
 [[module.mounts]]
+source = "static"
+target = "static"
+
+[[module.mounts]]
 source = "../public/downloads"
 target = "static/downloads"

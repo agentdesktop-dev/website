@@ -12,7 +12,23 @@
         {{ with .Pages }}
           <ul>
             {{ range .ByWeight }}
-              <li><a class="{{ if eq $current .RelPermalink }}active{{ end }}" href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+              {{ $isCurrent := eq $current .RelPermalink }}
+              {{ if .Params.sidebar_toc }}
+                {{ $sectionID := printf "nav-%s-sections" (.Title | anchorize) }}
+                {{ $tocID := printf "%s-toc" $sectionID }}
+                {{ $sectionLinks := .Fragments.ToHTML 2 2 false }}
+                {{ $sectionLinks = replace $sectionLinks "id=\"TableOfContents\"" (printf "id=\"%s\" aria-label=\"%s sections\"" $tocID .Title) }}
+                {{ $sectionLinks = replace $sectionLinks "href=\"#" (printf "href=\"%s#" .RelPermalink) }}
+                <li class="nav-page-item" data-nav-page>
+                  <div class="nav-page-row">
+                    <a class="{{ if $isCurrent }}active{{ end }}" href="{{ .RelPermalink }}">{{ .Title }}</a>
+                    <button class="nav-page-toggle" type="button" aria-label="Toggle {{ .Title }} sections" title="Toggle sections" aria-controls="{{ $sectionID }}" aria-expanded="{{ $isCurrent }}" data-nav-page-toggle><span aria-hidden="true"></span></button>
+                  </div>
+                  <div class="nav-page-sections" id="{{ $sectionID }}" data-nav-page-sections {{ if not $isCurrent }}hidden{{ end }}>{{ $sectionLinks | safeHTML }}</div>
+                </li>
+              {{ else }}
+                <li><a class="{{ if $isCurrent }}active{{ end }}" href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+              {{ end }}
             {{ end }}
           </ul>
         {{ end }}

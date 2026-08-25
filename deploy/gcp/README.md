@@ -407,6 +407,33 @@ installs the public controller CA, restarts an existing LaunchDaemon only when
 content changes, and adds the current console user to the local `agentdesktop`
 group. It is safe to assign before or after the PKG.
 
+The renderer above is macOS-only. To prepare the equivalent Windows bootstrap,
+generate `config.yaml` and copy the public controller CA:
+
+```sh
+source deploy/gcp/.env.production
+
+WINDOWS_INTUNE_DIR=deploy/gcp/generated/windows-intune
+mkdir -p "${WINDOWS_INTUNE_DIR}"
+
+cat >"${WINDOWS_INTUNE_DIR}/config.yaml" <<EOF
+controller:
+   address: https://${CONTROLLER_HOSTNAME}
+   caCertificatePath: C:/ProgramData/AgentDesktop/controller-ca.pem
+   heartbeatInterval: 30s
+EOF
+
+cp deploy/gcp/agentdesktop-pki/controller-ca.pem \
+   "${WINDOWS_INTUNE_DIR}/controller-ca.pem"
+```
+
+The generated directory is ignored by Git. Copy only `config.yaml` and
+`controller-ca.pem` to the Windows packaging host; do not copy private keys.
+Follow the [Microsoft Intune Windows
+runbook](../../docs/content/operations/intune.md#deploy-windows) to add the
+signed MSI and `install.ps1`, convert the source folder to `.intunewin`, upload
+`detect.ps1`, and assign the pilot group.
+
 ### Build, sign, and notarize the PKG
 
 The checks below verify a release package; they do not sign an unsigned local
@@ -479,7 +506,7 @@ In Intune:
 
 The full enrollment, Automated Device Enrollment, monitoring, and offboarding
 instructions are in the
-[production deployment guide](../../docs/content/operations/production.md#deploy-through-microsoft-intune).
+[Microsoft Intune runbook](../../docs/content/operations/intune.md).
 
 ## Backups
 

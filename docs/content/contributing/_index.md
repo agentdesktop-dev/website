@@ -1,7 +1,7 @@
 ---
 title: Contributing
 description: Build and test the agentdesktop Rust workspace and frontends, and find the components that own discovery, enrollment, and fleet management.
-weight: 2
+weight: 40
 ---
 
 agentdesktop is a Rust workspace with React and TypeScript frontends for the desktop app and controller. The controller handles enrollment directly; there is no separate enrollment service.

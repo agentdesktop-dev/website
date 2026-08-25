@@ -2,6 +2,7 @@
 title: Production deployment
 description: Deploy an agentdesktop controller with Kubernetes, PostgreSQL, OIDC, production certificates, MDM bootstrap, pilot validation, and recovery procedures.
 weight: 1
+sidebar_toc: true
 ---
 
 In a production deployment, the controller runs in Kubernetes, PostgreSQL stores fleet state, your identity provider authorizes enrollment, and an MDM installs and configures the daemon on each endpoint.

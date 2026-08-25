@@ -372,6 +372,32 @@ logic as one [Windows app
 Do not mix a line-of-business MSI assignment with Win32 packages during Windows
 Autopilot enrollment.
 
+The GCP `render-intune-bootstrap.sh` helper generates a macOS shell script; it
+does not generate the Windows `config.yaml`. From the extracted deployment kit
+root, create the equivalent Windows bootstrap from `.env.production`:
+
+```sh
+source deploy/gcp/.env.production
+
+WINDOWS_INTUNE_DIR=deploy/gcp/generated/windows-intune
+mkdir -p "${WINDOWS_INTUNE_DIR}"
+
+cat >"${WINDOWS_INTUNE_DIR}/config.yaml" <<EOF
+controller:
+  address: https://${CONTROLLER_HOSTNAME}
+  caCertificatePath: C:/ProgramData/AgentDesktop/controller-ca.pem
+  heartbeatInterval: 30s
+EOF
+
+cp deploy/gcp/agentdesktop-pki/controller-ca.pem \
+  "${WINDOWS_INTUNE_DIR}/controller-ca.pem"
+```
+
+The generated directory is ignored by Git. Copy only `config.yaml` and the
+public `controller-ca.pem` to the Windows packaging host. Do not copy any
+`*-key.pem` file. When the controller uses a publicly trusted certificate,
+remove `caCertificatePath` from `config.yaml` and omit `controller-ca.pem`.
+
 On a Windows packaging host, create this directory:
 
 ```text
@@ -456,17 +482,29 @@ signature, installs as `SYSTEM`, writes the bootstrap files, restricts their
 ACL, restarts the service, verifies the local API, and records file hashes for
 detection.
 
-Download the latest [Microsoft Win32 Content Prep
-Tool](https://github.com/microsoft/Microsoft-Win32-Content-Prep-Tool) outside the
-source directory, then package all four files:
+### Convert the folder to `.intunewin`
+
+Download `IntuneWinAppUtil.exe` from Microsoft's [Win32 Content Prep Tool
+repository](https://github.com/microsoft/Microsoft-Win32-Content-Prep-Tool) and
+place it outside `C:\Intune\AgentDesktop`. Keep the output directory outside the
+source directory too, or a later conversion can package its previous output.
+
+After signing `agentdesktop.msi` and adding all four source files, run:
 
 ```powershell
-IntuneWinAppUtil.exe `
-  -c C:\Intune\AgentDesktop `
-  -s install.ps1 `
-  -o C:\Intune\Output `
+New-Item -ItemType Directory -Force C:\Intune\Output | Out-Null
+
+& "C:\Tools\IntuneWinAppUtil.exe" `
+  -c "C:\Intune\AgentDesktop" `
+  -s "install.ps1" `
+  -o "C:\Intune\Output" `
   -q
 ```
+
+The command creates `C:\Intune\Output\install.intunewin`. Upload that file as
+the **Windows app (Win32)** package. `detect.ps1` is not part of the source
+folder; create it separately and upload it under the app's custom detection
+rules.
 
 Create `detect.ps1` separately and save it as UTF-8 with a BOM:
 
@@ -508,17 +546,30 @@ version is created.
 Add the package to Intune:
 
 1. Go to **Apps > All Apps > Create > Windows app (Win32)** and upload
-   `install.intunewin`.
-2. Set the install command to `%SystemRoot%\Sysnative\WindowsPowerShell\v1.0\powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\install.ps1`.
-3. Set the uninstall command to `msiexec.exe /x ".\agentdesktop.msi" /qn /norestart`.
-4. Set **Install behavior** to **System** and **Device restart behavior** to **No
-   specific action**.
-5. Select the package's matching x64 or ARM64 architecture and supported minimum
-   Windows version.
-6. Choose a custom detection script, upload `detect.ps1`, set **Run script as
-   32-bit process on 64-bit clients** to **No**, and configure signature
-   enforcement according to your PowerShell policy.
-7. Assign the app as **Required** to `AgentDesktop-Pilot-Windows`.
+  `install.intunewin`.
+2. On **Program**, enter these exact values:
+
+  | Field | Value |
+  | --- | --- |
+  | Install command | `%SystemRoot%\Sysnative\WindowsPowerShell\v1.0\powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\install.ps1` |
+  | Uninstall command | `msiexec.exe /x ".\agentdesktop.msi" /qn /norestart` |
+  | Install behavior | **System** |
+  | Device restart behavior | **No specific action** |
+
+  Use `install.ps1` rather than `msiexec.exe /i` as the install command. The
+  wrapper also writes `config.yaml` and the optional CA, restricts their ACLs,
+  restarts the service, and verifies the local daemon API.
+3. Keep return code `0` mapped to **Success** and map `3010` to **Soft reboot**.
+  `install.ps1` treats both values as a successful MSI installation and exits
+  successfully after configuration and health checks complete.
+4. On **Requirements**, select the package's matching x64 or ARM64 architecture
+  and supported minimum Windows version.
+5. On **Detection rules**, choose **Use a custom detection script**, upload
+  `detect.ps1`, set **Run script as 32-bit process on 64-bit clients** to
+  **No**, and configure signature enforcement according to your PowerShell
+  policy.
+6. On **Assignments**, assign the app as **Required** to
+  `AgentDesktop-Pilot-Windows`.
 
 Build separate Win32 apps for x64 and ARM64. For an upgrade, create a new
 versioned app and supersede the old one with **Uninstall previous version** set
@@ -560,4 +611,4 @@ private device key and OAuth tokens use the operating-system credential store
 on macOS and Windows. On Linux they are owner-only files under the state
 directory.
 
-Continue with [Validate a pilot endpoint](../production/#validate-a-pilot-endpoint).
+Continue with [Validate a pilot endpoint](../production/#8-validate-a-pilot-endpoint).

@@ -74,6 +74,14 @@ button { color: inherit; }
 .nav-group li a { display: flex; min-height: 40px; align-items: center; padding: 0 10px; color: #565d76; border-radius: 4px; font-size: 15px; line-height: 1.4; }
 .nav-group li a:hover { color: var(--ink); }
 .nav-group li a.active { color: var(--ink); background: #e9ddff; font-weight: 700; }
+.nav-page-row { display: grid; grid-template-columns: minmax(0, 1fr) 32px; gap: 2px; align-items: center; }
+.nav-page-toggle { display: grid; width: 32px; height: 32px; place-items: center; background: transparent; border: 0; border-radius: 4px; cursor: pointer; }
+.nav-page-toggle:hover { color: var(--orange-dark); background: #e9ebf4; }
+.nav-page-toggle > span { width: 7px; height: 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); transition: transform 150ms ease; }
+.nav-page-toggle[aria-expanded="true"] > span { transform: rotate(45deg); }
+.nav-page-sections { margin: 3px 0 8px 23px; border-left: 1px solid var(--line); }
+.nav-page-sections nav > ul { margin: 0; }
+.nav-page-sections li a { min-height: 32px; padding: 5px 9px 5px 12px; font-size: 13px; line-height: 1.35; }
 .docs-main { min-width: 0; background: var(--paper-bright); }
 .doc-article { width: min(100%, 860px); padding: 58px 70px 110px; margin: 0 auto; }
 .breadcrumbs { display: flex; gap: 9px; align-items: center; margin-bottom: 54px; color: #666c84; font-size: 14px; }
