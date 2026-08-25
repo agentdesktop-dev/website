@@ -1,10 +1,11 @@
 ---
 title: Production deployment
-description: Deploy the controller with production certificates, distribute enrollment configuration through MDM, and verify managed clients.
+description: Deploy an agentdesktop controller with Kubernetes, PostgreSQL, OIDC, production certificates, MDM bootstrap, pilot validation, and recovery procedures.
 weight: 1
+sidebar_toc: true
 ---
 
-This guide describes a production controller-managed deployment. The controller runs in Kubernetes, PostgreSQL stores fleet state, your identity provider authorizes enrollment, and an MDM installs and configures the daemon on each endpoint.
+In a production deployment, the controller runs in Kubernetes, PostgreSQL stores fleet state, your identity provider authorizes enrollment, and an MDM installs and configures the daemon on each endpoint.
 
 The examples use these placeholders:
 
@@ -100,7 +101,7 @@ The controller loads the identity provider's JWKS when it starts. Restart the co
 For a single-tenant Microsoft Entra deployment:
 
 1. Open the [Microsoft Entra admin center](https://entra.microsoft.com), then go to **Entra ID > App registrations > New registration**.
-2. Name the app `Agentdesktop enrollment`, choose **Accounts in this organizational directory only**, leave the redirect URI empty, and select **Register**.
+2. Name the app `agentdesktop enrollment`, choose **Accounts in this organizational directory only**, leave the redirect URI empty, and select **Register**.
 3. Record the **Application (client) ID** and **Directory (tenant) ID**. Do not create a client secret.
 4. Open **Manifest** and update the existing Microsoft Graph fields:
 
@@ -113,9 +114,9 @@ For a single-tenant Microsoft Entra deployment:
 }
 ```
 
-Do not add the legacy Azure AD Graph fields `allowPublicClient` or `replyUrlsWithType`; the current manifest editor rejects them. Leave `web.implicitGrantSettings` disabled because Agentdesktop uses authorization code flow with PKCE, not implicit flow.
+Do not add the legacy Azure AD Graph fields `allowPublicClient` or `replyUrlsWithType`; the current manifest editor rejects them. Leave `web.implicitGrantSettings` disabled because agentdesktop uses authorization code flow with PKCE, not implicit flow.
 
-Limit who may enroll under **Enterprise applications > Agentdesktop enrollment > Properties** by enabling **Assignment required**. Assigning individual pilot users is valid. Group-based enterprise-application assignment can depend on tenant licensing, but this identity assignment is separate from Intune software targeting.
+Limit who may enroll under **Enterprise applications > agentdesktop enrollment > Properties** by enabling **Assignment required**. Assigning individual pilot users is valid. Group-based enterprise-application assignment can depend on tenant licensing, but this identity assignment is separate from Intune software targeting.
 
 Use the exact canonical issuer returned by discovery. Entra may accept the tenant domain in the request but return the tenant GUID in `issuer`:
 
@@ -127,9 +128,34 @@ curl --fail --silent --show-error \
 
 Set `OIDC_ISSUER` to that output without changing it and set `OIDC_CLIENT_ID` to the Application (client) ID.
 
+To create or converge the app registration with GA Azure CLI commands instead of editing the portal manifest, sign in to the target tenant and run the committed helper:
+
+```sh
+az login --tenant TENANT_ID
+./deploy/gcp/scripts/create-entra-app.sh
+```
+
+The helper:
+
+- creates or updates the app registration and its Enterprise Application;
+- declares only the `openid`, `profile`, `email`, and `offline_access` delegated scopes;
+- configures the public loopback callback and enables **Assignment required**;
+- creates no client secret; and
+- prints the exact `OIDC_ISSUER` and `OIDC_CLIENT_ID` exports.
+
+Use `--dry-run` to inspect its commands without changing Entra.
+
+Because Assignment required is enabled, a Global Administrator must grant tenant-wide consent for those four scopes before anyone can enroll:
+
+```sh
+az ad app permission admin-consent --id OIDC_CLIENT_ID
+```
+
+The same action is available under **App registrations > agentdesktop enrollment > API permissions > Grant admin consent**. Without it, Entra reports that agentdesktop needs permission that only an administrator can grant. Assign pilot users or groups to the Enterprise Application separately; the helper does not decide who is authorized to enroll. An unassigned user receives `AADSTS50105`.
+
 ## 2. Prepare certificates and signing keys
 
-Agentdesktop uses three independent key purposes. Do not reuse keys between them.
+agentdesktop uses three independent key purposes. Do not reuse keys between them.
 
 ### Fleet API server certificate
 
@@ -196,7 +222,12 @@ The controller opens a pool of up to 10 connections per process. Include that in
 
 Keep the complete database URL in the controller configuration Secret. Do not pass credentials in Helm values or place the URL in the chart-generated ConfigMap.
 
-For GCP, use the [production deployment templates](https://github.com/agentdesktop-dev/website/tree/main/deploy/gcp). Their PostgreSQL chart follows kagent's direct `Deployment`, PVC, `PGDATA`, probe, security-context, and `pgvector/pgvector:pg18-trixie` pattern. It adds generated credentials, verified TLS, a retained regional persistent disk, NetworkPolicy, and daily `pg_dump` backups to a protected GCS bucket.
+For GCP, follow the [Deploy on Google Cloud walkthrough](../gcp/). It uses the
+[downloadable production deployment kit](../../downloads/agentdesktop-gcp-deployment-kit.zip),
+whose PostgreSQL chart follows kagent's direct `Deployment`, PVC, `PGDATA`,
+probe, security-context, and `pgvector/pgvector:pg18-trixie` pattern. It adds
+generated credentials, verified TLS, a retained regional persistent disk,
+NetworkPolicy, and daily `pg_dump` backups to a protected GCS bucket.
 
 This remains a single database process with `Recreate` upgrades. Expect an outage while Kubernetes restarts the Pod or reattaches its disk. Use managed or operator-managed PostgreSQL instead when the required recovery-time objective needs automatic database failover.
 
@@ -305,13 +336,19 @@ System-mode defaults include:
 | OpenCode settings | `/etc/opencode/opencode.jsonc` |
 | OpenCode credential plugin | `/etc/opencode/plugins/agentdesktop.js` |
 
-Agentdesktop marks files it owns and refuses to replace a conflicting file it did not create. Inventory existing management profiles and files before the pilot.
+agentdesktop marks files it owns and refuses to replace a conflicting file it did not create. Inventory existing management profiles and files before the pilot.
 
 The current Windows service also receives the Unix-style `/etc` defaults for Claude Desktop, Codex, and OpenCode, and the MSI does not override them. Treat Windows managed paths as a production integration point. If the installed client expects another organization-managed location, customize the service arguments with `--claude-desktop-managed-settings`, `--claude-desktop-credential-helper`, `--codex-managed-config`, `--open-code-managed-config`, and `--open-code-plugin`, then test the resulting installer.
 
 ## 5. Install the controller
 
-On GCP, first run the [local Kind smoke test](https://github.com/agentdesktop-dev/website/tree/main/deploy/kind), then follow the [infrastructure, image-build, and installation workflow](https://github.com/agentdesktop-dev/website/tree/main/deploy/gcp). It asks for the controller hostname before provisioning, prints the A and optional CNAME records for your existing DNS provider, waits for GKE, builds and pushes an AMD64/ARM64 controller image to a private Artifact Registry, validates OIDC discovery and certificates, installs PostgreSQL, and applies the controller chart overlay described below. It does not require a Cloud DNS zone. Cloudflare records must use **DNS only** because its normal proxy terminates the end-to-end TLS and client-certificate path.
+On GCP, download the [deployment kit](../../downloads/agentdesktop-gcp-deployment-kit.zip),
+run its local Kind smoke test, then follow the [Deploy on Google Cloud
+walkthrough](../gcp/). It covers the complete infrastructure, image-build,
+Entra, certificate, installation, Intune, and pilot-enrollment sequence. It
+does not require a Cloud DNS zone. Cloudflare records must use **DNS only**
+because its normal proxy terminates the end-to-end TLS and client-certificate
+path.
 
 ### Account for the chart's policy-file mount
 
@@ -394,16 +431,16 @@ curl --fail --silent \
 The management UI has no separate application authentication layer and remains loopback-only. Restrict Kubernetes port-forward access with RBAC:
 
 ```sh
-kubectl -n agentdesktop port-forward deployment/agentdesktop 8080:8080
+./deploy/gcp/scripts/port-forward-admin.sh
 ```
 
-Then open [http://127.0.0.1:8080](http://127.0.0.1:8080).
+Then open [http://127.0.0.1:18080](http://127.0.0.1:18080). The helper binds only to IPv4 loopback, re-resolves the Ready controller Pod after a rollout, and reconnects when GKE closes a long-lived streaming session. Press `Ctrl-C` to stop it.
 
-If local port 8080 is occupied, forward a different local port, for example
-`kubectl -n agentdesktop port-forward deployment/agentdesktop 18080:8080`, and
-open [http://127.0.0.1:18080](http://127.0.0.1:18080). The public controller
-hostname serves the fleet API on HTTPS 443, not this management UI; `/` may
-correctly return `404`, and HTTP port 80 is not required.
+Pass another local port when needed, for example
+`./deploy/gcp/scripts/port-forward-admin.sh 28080`, and open
+`http://127.0.0.1:28080`. The public controller hostname serves the fleet API
+on HTTPS 443, not this management UI; `/` may correctly return `404`, and HTTP
+port 80 is not required.
 
 ## 6. Configure the inference gateway
 
@@ -420,375 +457,23 @@ Configure the gateway to:
 
 The JWT contains the OIDC subject in `sub`, the device ID in `act.sub`, the requesting tool in `client_id`, and selected verified IdP claims. Test expiry, clock skew, JWKS refresh, and key rotation before rollout.
 
-## 7. Deploy through Microsoft Intune
-
-Use **Microsoft Intune** as the MDM for this walkthrough. It manages both macOS and Windows, installs signed application packages, runs macOS scripts as root, delivers multi-file Windows packages in `.intunewin` format, and provides staged assignments and installation reporting.
-
-Microsoft Entra ID and Intune have separate responsibilities:
-
-- Entra authenticates users who enroll Agentdesktop.
-- Intune enrolls and manages the Mac, installs the PKG, and runs the bootstrap script.
-- Administrators use the browser-based [Microsoft Intune admin center](https://intune.microsoft.com); there is no Intune administrator application to download.
-- A manually enrolled Mac uses the Microsoft Company Portal application.
-
-Download the macOS PKG and Windows MSI for the same reviewed release as the controller. Verify their published checksums and platform signatures before uploading them to the MDM. Building or signing endpoint installers is not part of this deployment workflow.
-
-Agentdesktop does not require Intune. See [MDM integrations](../mdm-integrations/) for Jamf Pro, Kandji, and Fleet deployment mappings.
-
-Intune does not expose one cross-platform arbitrary-file payload. Use the platform-native delivery path instead:
-
-| Platform | Application | Bootstrap files |
-| --- | --- | --- |
-| macOS | Required unmanaged macOS PKG app | Idempotent Intune root shell script |
-| Windows | Required Windows app (Win32) | Files bundled with the MSI inside one `.intunewin` package |
-
-The bootstrap and controller CA certificate are not secrets. Never put the device CA key, controller TLS key, gateway signing key, database URL, provider credentials, or any other secret in Intune scripts or app content.
-
-### Prepare the Intune tenant
-
-Confirm that the tenant has an Intune subscription, the pilot user has an Intune license, and the operator has the **Intune Administrator** role. Configure the Apple MDM push certificate under **Devices > Enrollment > Apple** before enrolling a Mac. Renew that certificate with the same Apple ID before it expires.
-
-Prepare these Microsoft Entra device groups before uploading anything:
-
-- `AgentDesktop-Pilot-macOS`
-- `AgentDesktop-Pilot-Windows`
-- One macOS and one Windows group for each later rollout ring
-
-Assign applications and scripts to device groups rather than user groups so installation runs in the machine context and remains predictable on shared devices.
-
-Intune application and script assignments target Microsoft Entra groups (or the broad **All users**/**All devices** virtual groups), not individual objects. Direct user assignment to the Agentdesktop Enterprise Application does not replace the Intune pilot device group. If the operator cannot create groups, a tenant administrator should create and maintain the pilot group; do not use **All devices** as a shortcut for an unsigned or untested package.
-
-For a manually enrolled pilot Mac that is not yet in Apple Business Manager:
-
-1. Download and install [Microsoft Company Portal for macOS](https://go.microsoft.com/fwlink/?linkid=853070).
-2. Sign in with the licensed pilot user's Entra account and complete the management-profile prompts in macOS System Settings.
-3. Confirm the Mac appears under **Devices > All devices** in Intune and add it to `AgentDesktop-Pilot-macOS`.
-4. Confirm `/Library/Intune/Microsoft Intune Agent.app` is installed before expecting shell-script or unmanaged-PKG delivery.
-
-For corporate Macs, configure [Apple Automated Device Enrollment](https://learn.microsoft.com/en-us/intune/device-enrollment/apple/setup-automated-macos):
-
-1. Add the Apple MDM push certificate and Apple Business Manager enrollment-program token in Intune.
-2. Go to **Devices > Device onboarding > Enrollment > macOS > Enrollment program tokens**.
-3. Create a macOS enrollment policy with **User affinity**, **Setup Assistant with modern authentication**, **Await final configuration**, and **Locked enrollment**.
-4. Assign the Company Portal and the enrollment policy to the pilot devices.
-5. Verify `/Library/Intune/Microsoft Intune Agent.app` is installed before expecting PKG or shell-script delivery.
-
-For corporate Windows devices, enable [automatic MDM enrollment](https://learn.microsoft.com/en-us/intune/device-enrollment/windows/enable-automatic-mdm):
-
-1. Confirm the tenant has Intune and Microsoft Entra ID P1 or P2 licensing.
-2. Go to **Devices > Device onboarding > Enrollment > Windows > Automatic Enrollment**.
-3. Set **MDM user scope** to the pilot users first, then expand it with the rollout.
-4. Enroll organization-owned devices through Windows Autopilot or Microsoft Entra join.
-
-The Intune Management Extension installs automatically when a Win32 app is assigned. Intune's app and script channels are asynchronous: force **Sync** from the device record or **Check status** in Company Portal during the pilot, but allow for normal agent check-in delays in rollout planning.
-
-### Create the endpoint bootstrap
-
-The endpoint bootstrap contains only the controller connection. Gateway and developer-tool policy still comes from the controller.
-
-Use this file when the controller certificate chains to a root already trusted by the operating system:
-
-```yaml
-controller:
-  address: https://agentdesktop.example.com
-  heartbeatInterval: 30s
-```
-
-For a private controller CA, macOS uses:
-
-```yaml
-controller:
-  address: https://agentdesktop.example.com
-  caCertificatePath: /etc/agentdesktop/controller-ca.pem
-  heartbeatInterval: 30s
-```
-
-Windows uses `C:/ProgramData/AgentDesktop/controller-ca.pem` for the private CA path. The controller address must use HTTPS.
-
-### Deploy macOS through Intune
-
-The Agent Desktop PKG installs:
-
-- `/Applications/agentdesktop.app`.
-- The `dev.agentdesktop.daemon` system LaunchDaemon.
-- `/etc/agentdesktop/config.yaml` when it does not already exist.
-- Private state under `/var/lib/agentdesktop`.
-
-Upload the signed and notarized PKG using Microsoft's [unmanaged macOS PKG app](https://learn.microsoft.com/en-us/intune/app-management/deployment/add-unmanaged-pkg-macos) workflow:
-
-Before upload, require all three local checks to pass:
-
-```sh
-pkgutil --check-signature AgentDesktop.pkg
-spctl --assess --type install --verbose=4 AgentDesktop.pkg
-xcrun stapler validate AgentDesktop.pkg
-```
-
-The package must report a trusted **Developer ID Installer** signature, Gatekeeper must accept it, and the notarization ticket must validate. Intune's unmanaged-PKG channel can technically accept an unsigned package, but that is not a production exception to macOS signing and notarization requirements.
-
-1. Go to **Apps > All Apps > Create**.
-2. Select **macOS app (PKG)** and upload the approved PKG. The file must be smaller than 8 GB and must install successfully with macOS `installer` before upload.
-3. Set the minimum operating system to macOS 12 or later, matching Intune's shell-script requirement.
-4. Under detection rules, retain only the installed application with bundle ID `dev.agentdesktop.tray` and the release's bundle version. Set **Ignore app version** to **No**.
-5. Assign the app as **Required** to `AgentDesktop-Pilot-macOS`.
-
-Intune's unmanaged macOS PKG type has no **Uninstall** assignment. Remove Agent Desktop with a dedicated offboarding script before retiring a Mac from Intune.
-
-When using the GCP deployment templates, render the environment-specific script from the controller hostname and public CA instead of manually editing a PEM block:
-
-```sh
-source deploy/gcp/.env.production
-
-./deploy/gcp/scripts/render-intune-bootstrap.sh \
-  "${CONTROLLER_HOSTNAME}" \
-  deploy/gcp/agentdesktop-pki/controller-ca.pem \
-  deploy/gcp/generated/agentdesktop-bootstrap.sh
-```
-
-The renderer is committed; the generated output is ignored because it is deployment-specific. The controller CA is public trust material, not the device CA or any private key. Upload the generated `agentdesktop-bootstrap.sh` to Intune.
-
-For another platform or a manual workflow, create `agentdesktop-bootstrap.sh` with the following contents. Replace the controller address and the complete PEM block. When using public trust, remove `caCertificatePath`, `CA_PATH`, and the second `write_managed_file` call.
-
-```sh
-#!/bin/sh
-set -eu
-
-CONFIG_DIR=/etc/agentdesktop
-CONFIG_PATH="${CONFIG_DIR}/config.yaml"
-CA_PATH="${CONFIG_DIR}/controller-ca.pem"
-changed=0
-
-write_managed_file() {
-  target="$1"
-  mode="$2"
-  temporary=$(/usr/bin/mktemp "${target}.XXXXXX")
-  /bin/cat > "${temporary}"
-
-  if [ -f "${target}" ] && /usr/bin/cmp -s "${temporary}" "${target}"; then
-    /bin/rm -f "${temporary}"
-    /usr/sbin/chown root:wheel "${target}"
-    /bin/chmod "${mode}" "${target}"
-    return
-  fi
-
-  /usr/sbin/chown root:wheel "${temporary}"
-  /bin/chmod "${mode}" "${temporary}"
-  /bin/mv -f "${temporary}" "${target}"
-  changed=1
-}
-
-/usr/bin/install -d -o root -g wheel -m 0755 "${CONFIG_DIR}"
-
-write_managed_file "${CONFIG_PATH}" 0600 <<'YAML'
-controller:
-  address: https://agentdesktop.example.com
-  caCertificatePath: /etc/agentdesktop/controller-ca.pem
-  heartbeatInterval: 30s
-YAML
-
-write_managed_file "${CA_PATH}" 0644 <<'PEM'
------BEGIN CERTIFICATE-----
-REPLACE_WITH_THE_COMPLETE_CONTROLLER_CA_CERTIFICATE
------END CERTIFICATE-----
-PEM
-
-if [ "${changed}" -eq 1 ] &&
-  /bin/launchctl print system/dev.agentdesktop.daemon >/dev/null 2>&1; then
-  /bin/launchctl kickstart -k system/dev.agentdesktop.daemon
-fi
-
-console_user=$(/usr/bin/stat -f '%Su' /dev/console)
-case "${console_user}" in
-  "" | root | loginwindow | _mbsetupuser) ;;
-  *)
-    if ! /usr/sbin/dseditgroup -o checkmember -m "${console_user}" \
-      agentdesktop 2>/dev/null | /usr/bin/grep -q 'yes'; then
-      /usr/sbin/dseditgroup -o edit -a "${console_user}" -t user agentdesktop
-    fi
-    ;;
-esac
-```
-
-Upload it using Intune's [macOS shell-script](https://learn.microsoft.com/en-us/intune/device-management/tools/run-shell-scripts-macos) workflow:
-
-1. Go to **Devices > By platform > macOS > Manage devices > Scripts > Add**.
-2. Upload `agentdesktop-bootstrap.sh`.
-3. Set **Run script as signed-in user** to **No**, which runs it as root.
-4. Set **Hide script notifications** according to support policy, **Script frequency** to **Every 1 day**, and retries to **3**.
-5. Assign the script to `AgentDesktop-Pilot-macOS`.
-
-After creating both assignments, select the Mac under **Devices > All devices** and choose **Sync**. On the Mac, open Company Portal, select the device, and choose **Check settings**. Intune's normal agent check-in can otherwise take several hours.
-
-The script is safe to assign before or after the PKG. It restarts the daemon only when file content changes; the PKG preserves a configuration that arrived first. Intune macOS shell scripts require macOS 12 or later, the Intune management agent, and direct internet connectivity; Microsoft does not support this script channel through a proxy.
-
-The PKG creates the local `agentdesktop` group and adds existing local users. The daily bootstrap script also adds the current console user, covering accounts created after package installation. The user may need to sign out and back in before existing processes receive new group membership. Verify a pilot Mac locally and in the Intune app and script device-status reports:
-
-```sh
-pkgutil --pkg-info dev.agentdesktop.installer
-launchctl print system/dev.agentdesktop.daemon
-"/Applications/agentdesktop.app/Contents/MacOS/agentdesktop" status
-```
-
-### Deploy Windows through Intune
-
-Deliver the signed MSI, bootstrap, optional controller CA, and installation logic as one [Windows app (Win32)](https://learn.microsoft.com/en-us/intune/app-management/deployment/add-win32). Do not mix a line-of-business MSI assignment with Win32 packages during Windows Autopilot enrollment.
-
-On a Windows packaging host, create this directory:
-
-```text
-C:\Intune\AgentDesktop\
-  agentdesktop.msi
-  config.yaml
-  controller-ca.pem
-  install.ps1
-```
-
-Omit `controller-ca.pem` when using public trust, and remove `caCertificatePath` from `config.yaml`. Save `config.yaml` as UTF-8 without a BOM.
-
-Create `install.ps1`:
-
-```powershell
-$ErrorActionPreference = "Stop"
-$releaseVersion = "0.1.0"
-$msi = Join-Path $PSScriptRoot "agentdesktop.msi"
-$configSource = Join-Path $PSScriptRoot "config.yaml"
-$caSource = Join-Path $PSScriptRoot "controller-ca.pem"
-$root = Join-Path $env:ProgramData "AgentDesktop"
-$configDestination = Join-Path $root "config.yaml"
-$caDestination = Join-Path $root "controller-ca.pem"
-$stateKey = "HKLM:\SOFTWARE\AgentDesktop\Intune"
-
-$signature = Get-AuthenticodeSignature $msi
-if ($signature.Status -ne "Valid") {
-  throw "Agent Desktop MSI signature is $($signature.Status)"
-}
-
-$process = Start-Process msiexec.exe -ArgumentList @(
-  "/i", "`"$msi`"", "/qn", "/norestart"
-) -Wait -PassThru
-if ($process.ExitCode -notin @(0, 3010)) {
-  throw "Agent Desktop MSI failed with exit code $($process.ExitCode)"
-}
-
-New-Item -ItemType Directory -Path $root -Force | Out-Null
-Copy-Item $configSource $configDestination -Force
-if (Test-Path $caSource) {
-  Copy-Item $caSource $caDestination -Force
-} elseif (Test-Path $caDestination) {
-  Remove-Item $caDestination -Force
-}
-
-& icacls.exe $root /inheritance:r /grant:r `
-  "*S-1-5-18:(OI)(CI)F" "*S-1-5-32-544:(OI)(CI)F" `
-  /T /C | Out-Null
-if ($LASTEXITCODE -ne 0) {
-  throw "Could not restrict $root"
-}
-
-Restart-Service AgentDesktop
-$service = Get-Service AgentDesktop
-$service.WaitForStatus("Running", [TimeSpan]::FromSeconds(30))
-
-$executable = Join-Path $env:ProgramFiles "Agent Desktop\agentdesktop.exe"
-& $executable status | Out-Null
-if ($LASTEXITCODE -ne 0) {
-  throw "Agent Desktop service is not reachable"
-}
-
-New-Item -Path $stateKey -Force | Out-Null
-New-ItemProperty -Path $stateKey -Name ReleaseVersion `
-  -Value $releaseVersion -PropertyType String -Force | Out-Null
-New-ItemProperty -Path $stateKey -Name ConfigSha256 `
-  -Value (Get-FileHash $configDestination -Algorithm SHA256).Hash `
-  -PropertyType String -Force | Out-Null
-$caHash = if (Test-Path $caDestination) {
-  (Get-FileHash $caDestination -Algorithm SHA256).Hash
-} else {
-  ""
-}
-New-ItemProperty -Path $stateKey -Name CaSha256 `
-  -Value $caHash -PropertyType String -Force | Out-Null
-```
-
-Update `$releaseVersion` for every release. The script validates the MSI signature, installs silently as `SYSTEM`, writes the bootstrap files, restricts their ACL, restarts the service, verifies the local API, and records expected file hashes for detection.
-
-Download the latest [Microsoft Win32 Content Prep Tool](https://github.com/microsoft/Microsoft-Win32-Content-Prep-Tool) outside the source directory, then package all four files:
-
-```powershell
-IntuneWinAppUtil.exe `
-  -c C:\Intune\AgentDesktop `
-  -s install.ps1 `
-  -o C:\Intune\Output `
-  -q
-```
-
-Create `detect.ps1` separately and save it as UTF-8 with a BOM:
-
-```powershell
-$expectedVersion = "0.1.0"
-
-try {
-  $root = Join-Path $env:ProgramData "AgentDesktop"
-  $state = Get-ItemProperty `
-    "HKLM:\SOFTWARE\AgentDesktop\Intune" -ErrorAction Stop
-  $config = Join-Path $root "config.yaml"
-  $ca = Join-Path $root "controller-ca.pem"
-  $executable = Join-Path $env:ProgramFiles "Agent Desktop\agentdesktop.exe"
-  $service = Get-Service AgentDesktop -ErrorAction Stop
-
-  if (-not (Test-Path $executable) -or
-      -not (Test-Path $config) -or
-      $state.ReleaseVersion -ne $expectedVersion -or
-      $service.Status -ne "Running" -or
-      (Get-FileHash $config -Algorithm SHA256).Hash -ne $state.ConfigSha256) {
-    exit 1
-  }
-  if ($state.CaSha256 -and
-      (-not (Test-Path $ca) -or
-       (Get-FileHash $ca -Algorithm SHA256).Hash -ne $state.CaSha256)) {
-    exit 1
-  }
-
-  Write-Output "Agent Desktop $($state.ReleaseVersion) is installed"
-  exit 0
-} catch {
-  exit 1
-}
-```
-
-Set `$expectedVersion` to the same value as `$releaseVersion` in `install.ps1` whenever a new app version is created.
-
-Add the package to Intune:
-
-1. Go to **Apps > All Apps > Create > Windows app (Win32)** and upload `install.intunewin`.
-2. Set the install command to `%SystemRoot%\Sysnative\WindowsPowerShell\v1.0\powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\install.ps1`.
-3. Set the uninstall command to `msiexec.exe /x ".\agentdesktop.msi" /qn /norestart`.
-4. Set **Install behavior** to **System** and **Device restart behavior** to **No specific action**.
-5. Select the package's matching x64 or ARM64 architecture and your supported minimum Windows version.
-6. Choose a custom detection script, upload `detect.ps1`, set **Run script as 32-bit process on 64-bit clients** to **No**, and configure signature enforcement according to your PowerShell policy.
-7. Assign the app as **Required** to `AgentDesktop-Pilot-Windows`.
-
-Build separate Win32 apps for x64 and ARM64. For an upgrade, create a new versioned app and supersede the old one with **Uninstall previous version** set to **No**, allowing the MSI's stable upgrade code to perform the upgrade. An Intune **Uninstall** assignment removes the MSI payload but is not complete device offboarding; follow the cleanup procedure below.
-
-### Enrollment timing
-
-The installer starts the machine daemon immediately, but an enrollment attempt begins only when the bootstrap contains a controller. On macOS, the PKG and idempotent script can arrive in either order. On Windows, `install.ps1` installs the MSI, writes the files, and restarts the service as one reported operation.
-
-Once the configured daemon starts, it immediately creates a 10-minute enrollment attempt. Wait for both macOS assignments, or the Windows Win32 app, to report success before notifying the user. The desktop app's **Enroll device** button opens the authorization URL already held by the daemon; it does not create a fresh attempt. If the user did not complete sign-in in that window, use a one-time Intune root/system script to restart the service immediately before they open Agent Desktop:
-
-```sh
-# macOS
-launchctl kickstart -k system/dev.agentdesktop.daemon
-```
-
-```powershell
-# Windows
-Restart-Service AgentDesktop
-```
-
-The user then opens Agent Desktop, selects **Enroll device**, and completes the OIDC flow in the default browser. The desktop UI polls the daemon until enrollment completes.
-
-Enrollment stores device metadata under the machine state directory. The private device key and OAuth tokens use the operating system credential store on macOS and Windows. On Linux they are owner-only files under the state directory.
+## 7. Deploy endpoints through MDM
+
+The endpoint-management platform must:
+
+- install the reviewed macOS PKG or per-machine Windows MSI in the machine context;
+- write the controller bootstrap and optional private controller CA with restricted permissions;
+- restart the service when managed content changes; and
+- report package, service, and local daemon health.
+
+The bootstrap and controller CA certificate are public configuration and trust
+material. Never distribute the device CA key, controller TLS key, gateway
+signing key, database URL, provider credentials, or any other secret through
+MDM.
+
+Follow [Deploy through Microsoft Intune](../intune/) for the complete macOS and
+Windows runbook. For Jamf Pro, Kandji, or Fleet, use the [MDM
+integrations](../mdm-integrations/) mappings.
 
 ## 8. Validate a pilot endpoint
 
@@ -897,6 +582,9 @@ If local sign-out cannot run, the current product has no privileged purge comman
 | TLS hostname or trust failure | Certificate SAN, full intermediate chain, endpoint clock, DNS, and `caCertificatePath`. |
 | Enrollment RPC fails behind a load balancer | Confirm L4 TLS passthrough and HTTP/2; the controller must terminate TLS and see the client certificate. |
 | OIDC initialization fails | Exact issuer match, HTTPS discovery, JWKS and UserInfo reachability, and public-client configuration. |
+| agentdesktop needs admin permission | Grant tenant-wide consent for `openid`, `profile`, `email`, and `offline_access`. |
+| `AADSTS50105` | Assign the user or an approved group to the enrollment Enterprise Application. |
+| Entra reports **App launch failed** for an unexpected app ID | Compare the browser app ID with the client ID in the live controller Secret. The issuer tenant and client registration must match; reinstall the controller configuration when they do not. |
 | Enrollment page expired or UI remains unavailable | Restart the machine daemon to create a new 10-minute enrollment attempt. |
 | Device certificate expired before renewal | Use Agent Desktop to sign out locally, restart the daemon, and enroll again; do not only delete the state directory. |
 | Desktop UI cannot reach the macOS daemon | Check the `agentdesktop` group, socket permissions, and whether the user signed in again after group assignment. |

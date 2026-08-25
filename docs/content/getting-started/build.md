@@ -1,6 +1,6 @@
 ---
 title: Build and install
-description: Build the device app, command-line client, controller, and embedded web interfaces from source.
+description: Build and install the agentdesktop desktop app, CLI, device daemon, controller, and embedded web interfaces from source.
 weight: 1
 ---
 

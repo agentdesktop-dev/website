@@ -13,7 +13,7 @@ Usage: deploy.sh COMMAND
 Commands:
   infra       Create or update GCP infrastructure, then print DNS records.
   build       Build and push the local controller image for AMD64 and ARM64.
-  install     Install PostgreSQL and the Agentdesktop controller.
+  install     Install PostgreSQL and the agentdesktop controller.
   verify      Check workloads, the reserved address, and the TLS endpoint.
   backup      Start an on-demand PostgreSQL backup and wait for completion.
   destroy     Destroy this deployment's Terraform-owned GCP resources.
@@ -189,9 +189,9 @@ run_build() {
 
   local default_source_directory
   default_source_directory="$(cd "$script_directory/../../.." && pwd)/agentdesktop"
-  prompt_value AGENTDESKTOP_SOURCE_DIR "Agentdesktop source directory" "$default_source_directory"
+  prompt_value AGENTDESKTOP_SOURCE_DIR "agentdesktop source directory" "$default_source_directory"
   if [[ ! -f "$AGENTDESKTOP_SOURCE_DIR/Dockerfile" || ! -f "$AGENTDESKTOP_SOURCE_DIR/Cargo.toml" ]]; then
-    printf 'AGENTDESKTOP_SOURCE_DIR is not an Agentdesktop source tree: %s\n' "$AGENTDESKTOP_SOURCE_DIR" >&2
+    printf 'AGENTDESKTOP_SOURCE_DIR is not an agentdesktop source tree: %s\n' "$AGENTDESKTOP_SOURCE_DIR" >&2
     exit 1
   fi
 

@@ -1,6 +1,6 @@
 ---
 title: Quickstart
-description: Build agentdesktop, then choose local YAML for one device or a controller for fleet management.
+description: Build agentdesktop and choose standalone local YAML or a controller-managed deployment for AI developer tool configuration.
 weight: 1
 ---
 

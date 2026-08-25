@@ -12,11 +12,12 @@ deployment. It covers:
    static IP, PostgreSQL backups, IAM, and Secret Manager.
 2. Provider-neutral DNS, including Cloudflare **DNS only** configuration.
 3. Local AMD64/ARM64 controller image build and Artifact Registry publication.
-4. Current Microsoft Entra public-client registration and exact issuer
-   discovery.
+4. Current Microsoft Entra public-client registration through the portal or GA
+   Azure CLI, plus exact issuer discovery.
 5. Private deployment PKI, PostgreSQL, controller installation, and live
    verification.
-6. Intune macOS package assignment and generated bootstrap delivery.
+6. Intune macOS package assignment, generated bootstrap delivery, and optional
+   Azure CLI/Graph beta shell-script automation.
 7. Backups and Terraform-owned teardown.
 
 Start with:
