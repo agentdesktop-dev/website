@@ -28,7 +28,7 @@ Download and extract the deployment kit directly from this website:
 ```sh
 curl --fail --location \
   --output agentdesktop-gcp-deployment-kit.zip \
-  https://agentdesktop.io/docs/downloads/agentdesktop-gcp-deployment-kit.zip
+  https://agentdesktop.dev/docs/downloads/agentdesktop-gcp-deployment-kit.zip
 
 unzip agentdesktop-gcp-deployment-kit.zip
 cd agentdesktop-gcp-deployment-kit

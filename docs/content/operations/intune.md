@@ -104,11 +104,13 @@ Enrollment](https://learn.microsoft.com/en-us/intune/device-enrollment/apple/set
 For corporate Windows devices, enable [automatic MDM
 enrollment](https://learn.microsoft.com/en-us/intune/device-enrollment/windows/enable-automatic-mdm):
 
-1. Confirm the tenant has Intune and Microsoft Entra ID P1 or P2 licensing.
-2. Go to **Devices > Device onboarding > Enrollment > Windows > Automatic
+1. Use Windows Pro, Enterprise, or Education. Windows Home and Windows in S mode
+  do not support the Intune Management Extension required for Win32 apps.
+2. Confirm the tenant has Intune and Microsoft Entra ID P1 or P2 licensing.
+3. Go to **Devices > Device onboarding > Enrollment > Windows > Automatic
    Enrollment**.
-3. Set **MDM user scope** to the pilot users, then expand it with the rollout.
-4. Enroll organization-owned devices through Windows Autopilot or Microsoft
+4. Set **MDM user scope** to the pilot users, then expand it with the rollout.
+5. Enroll organization-owned devices through Windows Autopilot or Microsoft
    Entra join.
 
 The Intune Management Extension installs automatically when a Win32 app is
@@ -570,6 +572,41 @@ Add the package to Intune:
   policy.
 6. On **Assignments**, assign the app as **Required** to
   `AgentDesktop-Pilot-Windows`.
+
+### Troubleshoot Windows agent installation
+
+If Intune reports **Agent installation failed** with error `0x0`, check the
+Microsoft Intune Management Extension before debugging the MSI. This status
+usually means Intune's agent failed or was ineligible, so `install.ps1` did not
+run.
+
+Run these checks in PowerShell:
+
+```powershell
+Get-ComputerInfo -Property WindowsProductName, WindowsEditionId
+Get-Service IntuneManagementExtension -ErrorAction SilentlyContinue
+dsregcmd /status | Select-String `
+  'AzureAdJoined|WorkplaceJoined|DeviceAuthStatus|MdmUrl'
+```
+
+- On Windows Home or Windows in S mode, move the pilot to Windows Pro,
+  Enterprise, or Education. Retrying the app cannot install the extension on an
+  unsupported edition.
+- If the service is missing on a supported edition, confirm the device is
+  enrolled in Intune, not only signed in to Company Portal or listed under
+  **Your accounts**. Under **Settings > Accounts > Access work or school**, the
+  managed connection should expose **Info** and **Sync**.
+- Confirm the user is in the Intune **MDM user scope**, has an Intune license,
+  and the device appears under **Devices > All devices**. Then sync from Company
+  Portal or the Intune device record.
+- Once the service exists, inspect `IntuneManagementExtension.log` and
+  `AppWorkload.log` under
+  `C:\ProgramData\Microsoft\IntuneManagementExtension\Logs`. You can also use
+  **Collect logs** from the failed app's **Installation details** pane.
+
+After the Intune Management Extension is running, a later app failure points to
+the package or wrapper. Verify the MSI signature reports `Valid`, then inspect
+the same logs for the `install.ps1` error.
 
 Build separate Win32 apps for x64 and ARM64. For an upgrade, create a new
 versioned app and supersede the old one with **Uninstall previous version** set

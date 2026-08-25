@@ -1,10 +1,10 @@
 # agentdesktop website
 
 <!-- markdownlint-disable-next-line MD033 -->
-<a href="https://agentdesktop.io"><img src="./src/app/icon.svg" alt="agentdesktop" width="48"></a>
+<a href="https://agentdesktop.dev"><img src="./src/app/icon.svg" alt="agentdesktop" width="48"></a>
 
-[Website](https://agentdesktop.io) ·
-[Documentation](https://agentdesktop.io/docs/) ·
+[Website](https://agentdesktop.dev) ·
+[Documentation](https://agentdesktop.dev/docs/) ·
 [Project source](https://github.com/agentdesktop-dev/agentdesktop)
 
 ---
@@ -84,4 +84,4 @@ npx wrangler pages project create agentdesktop-website --production-branch main
 npm run deploy:cloudflare
 ```
 
-After the first deployment, add `agentdesktop.io` under the Pages project's **Custom domains** settings. The apex domain must be a zone in the same Cloudflare account.
+After the first deployment, add `agentdesktop.dev` under the Pages project's **Custom domains** settings. The apex domain must be a zone in the same Cloudflare account.

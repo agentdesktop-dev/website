@@ -8,7 +8,7 @@ create yourself.
 
 For a start-to-finish path from a new Google Cloud project through Entra,
 Intune, and one enrolled pilot Mac, follow the published
-[Deploy on Google Cloud walkthrough](https://agentdesktop.io/docs/operations/gcp/).
+[Deploy on Google Cloud walkthrough](https://agentdesktop.dev/docs/operations/gcp/).
 This README remains the source-tree operator reference for the commands and
 files in this directory.
 
