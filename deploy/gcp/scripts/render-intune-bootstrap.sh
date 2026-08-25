@@ -6,7 +6,7 @@ usage() {
 Usage: render-intune-bootstrap.sh CONTROLLER_HOSTNAME CONTROLLER_CA [OUTPUT]
 
 Renders an idempotent Intune macOS root script. The generated script writes the
-Agentdesktop bootstrap and public controller CA, restarts an installed daemon
+agentdesktop bootstrap and public controller CA, restarts an installed daemon
 when content changes, and adds the current console user to the local
 agentdesktop group.
 EOF

@@ -112,7 +112,7 @@ button { color: inherit; }
 
 .page-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding-top: 34px; margin-top: 70px; }
 .page-nav a { display: flex; min-height: 82px; flex-direction: column; justify-content: center; padding: 15px; background: var(--paper); border: 0; border-radius: 4px; }
-.page-nav a:last-child { text-align: right; }
+.page-nav-next { grid-column: 2; text-align: right; }
 .page-nav span { color: #777d94; font-size: 14px; }
 .page-nav strong { margin-top: 5px; font-size: 15px; }
 .page-nav a:hover { background: #e9ddff; }
@@ -211,7 +211,7 @@ button { color: inherit; }
   .article-header h1 { font-size: clamp(40px, 12vw, 50px); overflow-wrap: anywhere; }
   .prose h2 { font-size: 36px; }
   .page-nav { grid-template-columns: 1fr; }
-  .page-nav a:last-child { text-align: left; }
+  .page-nav-next { grid-column: 1; text-align: left; }
   .docs-hero, .quick-paths, .contribute-section, .home-content { padding: 72px 20px; }
   .docs-hero h1 { font-size: clamp(42px, 12.5vw, 54px); }
   .hero-summary { font-size: 16px; }

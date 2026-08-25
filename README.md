@@ -30,6 +30,11 @@ npm run dev:docs  # http://localhost:1313/docs/
 
 Next.js proxies `/docs/*` to Hugo during local development, so the combined site is available at [http://localhost:3000](http://localhost:3000).
 
+The development and production build commands regenerate the downloadable GCP
+deployment kit at `public/downloads/agentdesktop-gcp-deployment-kit.zip` from
+an explicit source-file allowlist. Run `npm run build:deployment-kit` to rebuild
+only that archive.
+
 ## Contributing
 
 Run the full validation suite before opening a pull request:

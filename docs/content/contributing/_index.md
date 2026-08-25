@@ -1,6 +1,6 @@
 ---
 title: Contributing
-description: Build the Rust workspace and frontends, run CI checks, and find each component.
+description: Build and test the agentdesktop Rust workspace and frontends, and find the components that own discovery, enrollment, and fleet management.
 weight: 2
 ---
 
@@ -45,4 +45,4 @@ git diff --exit-code -- schema
 
 Keep changes within the owning crate or frontend package. Read the nearest test before changing behavior and add a regression test for an escaped defect.
 
-Agentdesktop owns discovery, configuration reconciliation, enrollment, gateway credential delivery, and selected telemetry. Inference-gateway routing and provider policy remain in the configured gateway.
+agentdesktop owns discovery, configuration reconciliation, enrollment, gateway credential delivery, and selected telemetry. Inference-gateway routing and provider policy remain in the configured gateway.

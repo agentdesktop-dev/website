@@ -1,10 +1,16 @@
-# Agentdesktop production deployment on GCP
+# agentdesktop production deployment on GCP
 
-This directory creates a regional GKE cluster and installs Agentdesktop with an
+This directory creates a regional GKE cluster and installs agentdesktop with an
 in-cluster PostgreSQL database. DNS stays with your existing provider. The
 workflow asks for the controller hostname before it creates infrastructure,
 reserves a public IPv4 address, and prints the A and optional CNAME records to
 create yourself.
+
+For a start-to-finish path from a new Google Cloud project through Entra,
+Intune, and one enrolled pilot Mac, follow the published
+[Deploy on Google Cloud walkthrough](https://agentdesktop.io/docs/operations/gcp/).
+This README remains the source-tree operator reference for the commands and
+files in this directory.
 
 Before applying Terraform, run the [local Kind smoke test](../kind/). It uses
 the same PostgreSQL chart and controller overlay with local-only platform
@@ -121,8 +127,8 @@ the image to the private Artifact Registry created by Terraform instead. The
 controller image embeds the management UI, so this is the only project image
 that must be built.
 
-From the website repository, point the build command at the current
-Agentdesktop source tree:
+From the extracted deployment kit root, point the build command at the current
+agentdesktop source tree:
 
 ```sh
 AGENTDESKTOP_SOURCE_DIR=../agentdesktop \
@@ -180,10 +186,56 @@ curl --fail --silent --show-error \
 Pass that output unchanged as `OIDC_ISSUER` and use the app registration's
 Application (client) ID as `OIDC_CLIENT_ID`.
 
+The issuer and client must belong to the same tenant. Verify both in the Azure
+CLI session used to create the application:
+
+```sh
+TENANT_ID="$(az account show --query tenantId --output tsv)"
+
+test "$OIDC_ISSUER" = \
+   "https://login.microsoftonline.com/${TENANT_ID}/v2.0"
+
+az ad app show \
+   --id "$OIDC_CLIENT_ID" \
+   --query '{appId:appId,displayName:displayName,signInAudience:signInAudience}' \
+   --output table
+```
+
+The test must succeed and the application query must return the enrollment app.
+Do not install the controller with an issuer copied from one tenant and a client
+ID created in another.
+
+Alternatively, create or converge the single-tenant registration and Enterprise
+Application with GA Azure CLI commands:
+
+```sh
+az login --tenant TENANT_ID
+./deploy/gcp/scripts/create-entra-app.sh
+```
+
+The helper creates no secret, declares only the `openid`, `profile`, `email`,
+and `offline_access` delegated scopes, enables Assignment required, and prints
+the exact `OIDC_ISSUER` and `OIDC_CLIENT_ID` exports. Run it with `--dry-run` to
+inspect the commands without making changes.
+
+Because Assignment required is enabled, a Global Administrator must grant
+tenant-wide consent before anyone can enroll:
+
+```sh
+az ad app permission admin-consent --id OIDC_CLIENT_ID
+```
+
+The command grants only the four delegated scopes declared by the helper. The
+same action is available under **App registrations > agentdesktop enrollment >
+API permissions > Grant admin consent**. Without it, Entra reports that
+agentdesktop needs permission that only an administrator can grant.
+
 Under **Enterprise applications**, enable **Assignment required** for the
-Agentdesktop enrollment application and assign the pilot users who may enroll.
-Individual user assignment is valid. This identity assignment is separate from
-Intune app and script assignment, which uses Microsoft Entra groups.
+agentdesktop enrollment application and assign the pilot users who may enroll.
+Individual user assignment is valid. An assigned user who still receives an
+`AADSTS50105` error should sign out and start enrollment again after the
+assignment propagates. This identity assignment is separate from Intune app and
+script assignment, which uses Microsoft Entra groups.
 
 ## 4. Prepare certificates
 
@@ -200,9 +252,10 @@ CONTROLLER_DNS_ALIASES=fleet.example.com \
 Omit `CONTROLLER_DNS_ALIASES` when no CNAME aliases were requested. Every
 hostname used by a daemon must be present in the certificate SAN.
 
-The directory is ignored because the repository ignores PEM files. Back it up
-to an approved secret-management workflow before removing local private keys.
-Distribute `controller-ca.pem` to endpoints through MDM.
+The generated directory is not part of the deployment kit. Back it up to an
+approved secret-management workflow before removing local private keys. Do not
+redistribute it with the kit. Distribute only `controller-ca.pem` to endpoints
+through MDM.
 
 To use a publicly issued controller certificate, create a directory with the
 same filenames and replace `controller.pem` and `controller-key.pem` with the
@@ -248,6 +301,20 @@ GKE address, enables the backend-service L4 load balancer, adds TCP startup and
 readiness probes, disables the unused service-account token, and changes
 controller upgrades to `Recreate`.
 
+Before enrolling a device, confirm the deployed controller contains the same
+issuer and client ID verified above:
+
+```sh
+kubectl -n agentdesktop get secret agentdesktop-controller-config \
+   -o jsonpath='{.data.controller\.yaml}' |
+   base64 --decode |
+   awk '/^oidc:/{show=1} show{print} show && /^$/{exit}'
+```
+
+If either value is stale, rerun `deploy.sh install` with the correct explicit
+`OIDC_ISSUER` and `OIDC_CLIENT_ID`. The command briefly rolls the controller
+while preserving PostgreSQL, PKI, DNS, and the recorded image.
+
 ## 6. Verify
 
 After DNS propagation:
@@ -264,19 +331,21 @@ Manager for the check.
 The management UI remains loopback-only:
 
 ```sh
-kubectl -n agentdesktop port-forward deployment/agentdesktop 8080:8080
+./deploy/gcp/scripts/port-forward-admin.sh
 ```
 
-Open <http://127.0.0.1:8080> while the port-forward is active.
+Open <http://127.0.0.1:18080> while the helper is active. It re-resolves the
+Ready controller Pod and reconnects when GKE closes a long-lived streaming
+session or a rollout replaces the Pod. Press `Ctrl-C` to stop it.
 
-If local port 8080 is already in use, choose another local port without changing
-the Pod port:
+To choose a different local port, pass it as the only argument:
 
 ```sh
-kubectl -n agentdesktop port-forward deployment/agentdesktop 18080:8080
+./deploy/gcp/scripts/port-forward-admin.sh 28080
 ```
 
-Then open <http://127.0.0.1:18080>.
+Then open <http://127.0.0.1:28080>. The helper always binds only to IPv4
+loopback and forwards to Pod port 8080.
 
 The public hostname exposes the TLS fleet API, not the management UI. Opening
 its root URL in a browser is therefore not an application-UI health check. The
@@ -306,6 +375,22 @@ Before enrolling or targeting a Mac:
    broad All users/devices targets), even if Entra Enterprise Application access
    was assigned directly to an individual user.
 
+An Azure subscription does not include Intune. If Graph reports `Request not
+applicable to target tenant`, add Microsoft Intune Plan 1 or its trial to this
+same Entra tenant, set the MDM authority to Microsoft Intune under **Tenant
+administration > Tenant status**, and assign an Intune license to the enrolling
+pilot user or an eligible device-only license. A later `403 Forbidden` indicates
+that the Azure CLI identity still lacks the Intune role or admin-consented Graph
+permission.
+
+Use a native work or school account in the tenant for the licensed pilot, not a
+personal Microsoft account represented by an external `#EXT#` identity. Create
+the user in the Microsoft Entra admin center and set its **Usage location**.
+Then use **Billing > Purchase services** in the Microsoft 365 admin center to
+add Intune Plan 1 or its trial and **Users > Active users > Licenses and apps**
+to assign the seat. Grant **Intune Administrator** for ongoing setup and remove
+any temporary Global Administrator access after activation.
+
 Render the exact root script to upload to Intune:
 
 ```sh
@@ -322,13 +407,63 @@ installs the public controller CA, restarts an existing LaunchDaemon only when
 content changes, and adds the current console user to the local `agentdesktop`
 group. It is safe to assign before or after the PKG.
 
-Use a signed and notarized release PKG. Before upload, require these commands to
-pass on macOS:
+### Build, sign, and notarize the PKG
+
+The checks below verify a release package; they do not sign an unsigned local
+build. Production distribution requires membership in the Apple Developer
+Program and two certificates, with their private keys, installed in a keychain:
+
+- **Developer ID Application** signs `agentdesktop.app`.
+- **Developer ID Installer** signs the outer PKG.
+
+Confirm that macOS can find both identities:
 
 ```sh
-pkgutil --check-signature AgentDesktop.pkg
-spctl --assess --type install --verbose=4 AgentDesktop.pkg
-xcrun stapler validate AgentDesktop.pkg
+security find-identity -v -p codesigning | grep "Developer ID Application"
+security find-identity -v -p basic | grep "Developer ID Installer"
+```
+
+From the agentdesktop source repository, build with the dedicated PKG command,
+not the generic `dist` command. Replace the example identity names with the
+exact values printed above:
+
+```sh
+cd frontend
+pnpm install --frozen-lockfile
+
+export APPLE_SIGNING_IDENTITY="Developer ID Application: Example, Inc. (TEAMID)"
+export APPLE_INSTALLER_SIGNING_IDENTITY="Developer ID Installer: Example, Inc. (TEAMID)"
+
+pnpm --filter @agentdesktop/desktop-web dist:mac
+```
+
+The command prints the generated path below `target/release/bundle/pkg`. When
+the installer identity is in a non-default keychain, also set
+`APPLE_INSTALLER_KEYCHAIN` to that keychain path before building.
+
+Assign the printed path to `PKG`, then submit the signed package to Apple's
+notary service and staple the accepted ticket. Create the `agentdesktop-notary`
+keychain profile once with `xcrun notarytool store-credentials` if it does not
+already exist:
+
+```sh
+PKG="/absolute/path/printed/by-the-build/Agent Desktop_VERSION_ARCH.pkg"
+
+xcrun notarytool submit "$PKG" \
+   --keychain-profile agentdesktop-notary \
+   --wait
+xcrun stapler staple "$PKG"
+```
+
+Before upload, require all three release checks to pass on macOS. A `Status: no
+signature` result means the package was built without
+`APPLE_INSTALLER_SIGNING_IDENTITY` and must be rebuilt after both signing
+identities are available:
+
+```sh
+pkgutil --check-signature "$PKG"
+spctl --assess --type install --verbose=4 "$PKG"
+xcrun stapler validate "$PKG"
 ```
 
 In Intune:
@@ -385,6 +520,16 @@ The command first disables cluster deletion protection, then destroys the full
 stack and removes the generated deployment-coordinate file. It does not touch
 other clusters or Artifact Registry repositories in the Google Cloud project.
 
+## Troubleshooting enrollment
+
+| Symptom | Check |
+| --- | --- |
+| agentdesktop needs permission only an administrator can grant | Grant tenant-wide consent for the four declared delegated scopes. |
+| `AADSTS50105` | Assign the user or an approved group to the agentdesktop Enterprise Application. |
+| **App launch failed** names an unexpected app ID | Compare that ID with the live controller Secret. Rerun `deploy.sh install` with the current tenant issuer and client ID. |
+| The named app ID does not exist | Authenticate Azure CLI to the issuer's tenant and verify the client was created there. |
+| Enrollment page expired | Restart the endpoint daemon to create another 10-minute enrollment attempt. |
+
 ## Files
 
 | Path | Purpose |
@@ -397,13 +542,16 @@ other clusters or Artifact Registry repositories in the Google Cloud project.
 | `terraform/.terraform.lock.hcl` | Reviewed provider dependency lock |
 | `helm/postgresql/` | kagent-aligned PostgreSQL workload and backup CronJob |
 | `daemon.empty.yaml` | Empty initial policy for enrollment-only validation |
+| `scripts/create-entra-app.sh` | Creates or converges the Entra public-client app with GA Azure CLI commands |
+| `scripts/upsert-intune-bootstrap.sh` | Creates or updates the Intune macOS bootstrap through Microsoft Graph beta |
 | `scripts/render-intune-bootstrap.sh` | Renders a tenant-specific Intune macOS bootstrap from hostname and public CA |
+| `scripts/port-forward-admin.sh` | Reconnects a loopback-only management UI port-forward across controller rollouts |
 | `scripts/generate-pki.sh` | Optional private deployment PKI generator |
 | `scripts/controller-post-renderer.sh` | Controller chart production overlay |
 | `deploy.sh` | Infrastructure, image build, installation, validation, backup, and teardown commands |
 
-The repository intentionally excludes local Terraform state and provider
+The downloadable kit intentionally excludes local Terraform state and provider
 downloads, `.env.production`, private PKI files, and `generated/` tenant
 payloads. Back up Terraform state and private PKI through approved encrypted
-systems; regenerate the Intune bootstrap from the committed renderer whenever
+systems; regenerate the Intune bootstrap from the included renderer whenever
 the hostname or controller CA changes.

@@ -1,6 +1,6 @@
 ---
 title: agentdesktop documentation
-description: Learn how agentdesktop discovers and configures AI developer tools across employee devices.
+description: Deploy and manage agentdesktop across Linux, macOS, and Windows. Configure AI developer tools, MCP servers, skills, MDM enrollment, and inference gateways.
 ---
 
 ## Project overview

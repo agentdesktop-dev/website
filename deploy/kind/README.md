@@ -17,7 +17,7 @@ The test installs:
 - the same PostgreSQL chart used by the GCP deployment, with the Kind
   `standard` StorageClass and cloud backups disabled;
 - an in-cluster Dex issuer for OIDC discovery; and
-- the local Agentdesktop controller chart through the same production
+- the local agentdesktop controller chart through the same production
   post-renderer in Kind mode.
 
 It verifies PostgreSQL TLS, data persistence across Pod replacement, OIDC
@@ -32,7 +32,7 @@ inspection with:
 KEEP_CLUSTER=true ./deploy/kind/smoke-test.sh
 ```
 
-If the Agentdesktop source is elsewhere:
+If the agentdesktop source is elsewhere:
 
 ```sh
 AGENTDESKTOP_SOURCE=/path/to/agentdesktop ./deploy/kind/smoke-test.sh

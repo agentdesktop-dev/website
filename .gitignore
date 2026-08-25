@@ -21,6 +21,7 @@
 /docs/public/
 /docs/resources/_gen/
 /docs/.hugo_build.lock
+/public/downloads/agentdesktop-gcp-deployment-kit.zip
 
 # production
 /build

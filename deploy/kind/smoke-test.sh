@@ -31,7 +31,7 @@ usage() {
   cat <<'EOF'
 Usage: smoke-test.sh
 
-Builds Agentdesktop from the adjacent source checkout, creates an isolated Kind
+Builds agentdesktop from the adjacent source checkout, creates an isolated Kind
 cluster, installs the GCP PostgreSQL chart with local overrides, and verifies
 the controller end to end. The cluster is deleted on exit by default.
 
@@ -195,7 +195,7 @@ if [[ ! "$fleet_host_port" =~ ^[0-9]+$ || ! "$fleet_node_port" =~ ^3[0-2][0-9]{3
   exit 1
 fi
 if [[ ! -f "$agentdesktop_source/Dockerfile" || ! -f "$agentdesktop_source/deploy/helm/agentdesktop-controller/Chart.yaml" ]]; then
-  printf 'Agentdesktop source checkout not found at %s. Set AGENTDESKTOP_SOURCE.\n' "$agentdesktop_source" >&2
+  printf 'agentdesktop source checkout not found at %s. Set AGENTDESKTOP_SOURCE.\n' "$agentdesktop_source" >&2
   exit 1
 fi
 if kind get clusters 2>/dev/null | grep -qx "$cluster_name"; then
@@ -329,7 +329,7 @@ data:
       skipApprovalScreen: true
     staticClients:
       - id: agentdesktop-kind
-        name: Agentdesktop Kind smoke test
+        name: agentdesktop Kind smoke test
         public: true
         redirectURIs:
           - http://127.0.0.1:51327/callback
@@ -425,7 +425,7 @@ kubectl_smoke -n "$namespace" create secret generic agentdesktop-controller-tls 
   --from-file="device-ca-key.pem=$pki_directory/device-ca-key.pem" \
   --from-file="postgres-ca.pem=$pki_directory/postgres-ca.pem"
 
-printf '\nInstalling Agentdesktop controller\n'
+printf '\nInstalling agentdesktop controller\n'
 CONTROLLER_PLATFORM=kind \
 CONTROLLER_KIND_NODE_PORT="$fleet_node_port" \
 CONTROLLER_RELEASE_NAME=agentdesktop \
