@@ -622,11 +622,10 @@
   text-align: left;
 }
 
-.fleetTable th:first-child { width: 24%; }
-.fleetTable th:nth-child(2) { width: 25%; }
-.fleetTable th:nth-child(3) { width: 16%; }
-.fleetTable th:nth-child(4) { width: 20%; }
-.fleetTable th:nth-child(5) { width: 15%; }
+.fleetTable th:first-child { width: 28%; }
+.fleetTable th:nth-child(2) { width: 24%; }
+.fleetTable th:nth-child(3) { width: 25%; }
+.fleetTable th:nth-child(4) { width: 23%; }
 
 .fleetTable td {
   padding: 13px 14px;
@@ -638,6 +637,7 @@
 
 .deviceIdentity,
 .toolIdentity,
+.syncedState,
 .gatewayState {
   display: flex;
   min-width: 0;
@@ -667,27 +667,12 @@
 }
 
 .deviceIdentity small { margin-top: 3px; color: #8f95aa; font-size: 11px; }
-.toolIdentity { gap: 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.toolIdentity { gap: 7px; white-space: nowrap; }
 .toolIdentity svg { flex: 0 0 auto; color: #a887ee; }
-.mcpState { color: #c2c6d8; white-space: nowrap; }
+.syncedState { gap: 6px; color: #bde3cd; white-space: nowrap; }
+.syncedState svg { flex: 0 0 auto; color: #55b783; }
 .gatewayState { gap: 7px; white-space: nowrap; }
-.gatewayState svg { flex: 0 0 auto; color: #a887ee; }
-
-.statusPill {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 11px;
-  border-radius: 99px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.statusGood { color: #8fdcb3; background: rgba(85, 183, 131, 0.14); border: 1px solid rgba(85, 183, 131, 0.4); }
-.statusWarn { color: #ecd28a; background: rgba(228, 195, 87, 0.12); border: 1px solid rgba(228, 195, 87, 0.38); }
-.statusBad { color: #f0a29a; background: rgba(219, 98, 86, 0.14); border: 1px solid rgba(219, 98, 86, 0.42); }
+.gatewayState > i { width: 7px; height: 7px; flex: 0 0 auto; background: #55b783; border-radius: 50%; }
 
 .fleetControl {
   display: flex;
@@ -885,7 +870,7 @@
   .fleetTable td { display: block; padding: 9px 6px; border: 0; }
   .fleetTable td::before { display: block; margin-bottom: 6px; color: #7f869c; content: attr(data-label); font-size: 10px; font-weight: 650; }
   .fleetTable td:first-child,
-  .fleetTable td:nth-child(5) { grid-column: 1 / -1; }
+  .fleetTable td:nth-child(4) { grid-column: 1 / -1; }
   .fleetTable td:first-child { padding-top: 4px; padding-bottom: 10px; border-bottom: 1px solid #292f43; }
   .deviceIdentity > i { width: 32px; height: 32px; }
   .fleetControl { align-items: flex-start; flex-direction: column; padding: 14px; }

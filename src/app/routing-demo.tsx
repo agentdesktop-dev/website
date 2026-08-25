@@ -1,32 +1,11 @@
-import { Bot, Check, KeyRound, Laptop, RefreshCw, ShieldCheck } from "lucide-react";
+import { Bot, Check, Laptop, Network, ShieldCheck } from "lucide-react";
 import styles from "./marketing.module.css";
 
 const devices = [
-  {
-    name: "ENG-042",
-    tools: "Claude Code · Codex",
-    mcp: "6 approved",
-    identity: "Short-lived JWT",
-    status: "Managed",
-    statusStyle: "statusGood",
-  },
-  {
-    name: "FIN-018",
-    tools: "Claude Desktop",
-    mcp: "2 unapproved",
-    identity: "Short-lived JWT",
-    status: "Drift detected",
-    statusStyle: "statusWarn",
-  },
-  {
-    name: "ENG-107",
-    tools: "OpenCode · Claude Code",
-    mcp: "4 approved",
-    identity: "API key on disk",
-    status: "Ungoverned",
-    statusStyle: "statusBad",
-  },
-] as const;
+  { name: "ENG-042", tool: "Claude Code" },
+  { name: "FIN-018", tool: "OpenCode" },
+  { name: "ENG-107", tool: "Codex" },
+];
 
 export function RoutingDemo() {
   return (
@@ -44,10 +23,9 @@ export function RoutingDemo() {
           <thead>
             <tr>
               <th>Device</th>
-              <th>Agent tools</th>
-              <th>MCP servers</th>
-              <th>Gateway identity</th>
-              <th>Status</th>
+              <th>Detected tool</th>
+              <th>Configuration</th>
+              <th>Gateway</th>
             </tr>
           </thead>
           <tbody>
@@ -59,22 +37,14 @@ export function RoutingDemo() {
                     <span><strong>{device.name}</strong><small>agentdesktop active</small></span>
                   </span>
                 </td>
-                <td data-label="Agent tools">
-                  <span className={styles.toolIdentity}><Bot size={17} aria-hidden="true" />{device.tools}</span>
+                <td data-label="Detected tool">
+                  <span className={styles.toolIdentity}><Bot size={17} aria-hidden="true" />{device.tool}</span>
                 </td>
-                <td data-label="MCP servers">
-                  <span className={styles.mcpState}>{device.mcp}</span>
+                <td data-label="Configuration">
+                  <span className={styles.syncedState}><Check size={15} aria-hidden="true" />Revision 12</span>
                 </td>
-                <td data-label="Gateway identity">
-                  <span className={styles.gatewayState}>
-                    <KeyRound size={14} aria-hidden="true" />
-                    {device.identity}
-                  </span>
-                </td>
-                <td data-label="Status">
-                  <span className={`${styles.statusPill} ${styles[device.statusStyle]}`}>
-                    {device.status}
-                  </span>
+                <td data-label="Gateway">
+                  <span className={styles.gatewayState}><i aria-hidden="true" />Connected</span>
                 </td>
               </tr>
             ))}
@@ -87,9 +57,9 @@ export function RoutingDemo() {
             <div><small>Fleet controller</small><strong>Desired configuration: revision 12</strong></div>
           </div>
           <div className={styles.controlFacts}>
-            <span><Check size={15} aria-hidden="true" />1 device in sync</span>
-            <span><RefreshCw size={15} aria-hidden="true" />Reconciling drift</span>
-            <span><KeyRound size={15} aria-hidden="true" />Rotating static key</span>
+            <span><Check size={15} aria-hidden="true" />3 devices synced</span>
+            <span><Network size={15} aria-hidden="true" />Gateway configured</span>
+            <span><Bot size={15} aria-hidden="true" />Selected events only</span>
           </div>
         </div>
       </div>
