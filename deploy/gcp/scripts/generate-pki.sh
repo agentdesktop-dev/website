@@ -134,7 +134,7 @@ controller_ca_certificate="$output_directory/controller-ca.pem"
 controller_key="$output_directory/controller-key.pem"
 controller_leaf="$workdir/controller-leaf.pem"
 
-create_ca "Agentdesktop Controller CA" "$controller_ca_key" "$controller_ca_certificate"
+create_ca "agentdesktop Controller CA" "$controller_ca_key" "$controller_ca_certificate"
 create_server_certificate \
   "$controller_hostname" \
   "$controller_subject_alt_names" \
@@ -146,13 +146,13 @@ create_server_certificate \
 cat "$controller_leaf" "$controller_ca_certificate" >"$output_directory/controller.pem"
 
 create_ca \
-  "Agentdesktop Device Issuing CA" \
+  "agentdesktop Device Issuing CA" \
   "$output_directory/device-ca-key.pem" \
   "$output_directory/device-ca.pem"
 
 postgres_ca_key="$output_directory/postgres-ca-key.pem"
 postgres_ca_certificate="$output_directory/postgres-ca.pem"
-create_ca "Agentdesktop PostgreSQL CA" "$postgres_ca_key" "$postgres_ca_certificate"
+create_ca "agentdesktop PostgreSQL CA" "$postgres_ca_key" "$postgres_ca_certificate"
 create_server_certificate \
   "postgres.agentdesktop.svc.cluster.local" \
   "DNS:postgres,DNS:postgres.agentdesktop,DNS:postgres.agentdesktop.svc,DNS:postgres.agentdesktop.svc.cluster.local" \

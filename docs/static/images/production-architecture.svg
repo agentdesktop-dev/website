@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" width="1200" height="760" role="img" aria-labelledby="title description">
-  <title id="title">Agentdesktop production architecture</title>
+  <title id="title">agentdesktop production architecture</title>
   <desc id="description">An MDM platform installs and configures the device daemon. The user authenticates with an OIDC provider. The daemon exchanges configuration, inventory, telemetry, and credentials with the controller over mutual TLS. Developer tools send model traffic directly to agentgateway, which forwards requests to the model provider.</desc>
   <defs>
     <marker id="arrow-purple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">

@@ -1,12 +1,12 @@
 ---
 title: Controller-managed
-description: Enroll a device, distribute configuration, and issue short-lived inference-gateway credentials.
+description: Enroll agentdesktop devices with a controller, distribute managed AI tool configuration, and issue short-lived inference gateway credentials.
 weight: 3
 ---
 
 In managed mode, the daemon enrolls with the agentdesktop controller and receives desired configuration from it. The controller provides a fleet management UI, stores inventory and selected telemetry, and can issue short-lived JWTs for an inference gateway such as agentgateway.
 
-This local quickstart runs all components on one machine. In production, the controller and inference gateway normally run remotely. Follow [Production deployment](../../operations/production/) for certificates, Kubernetes, MDM, endpoint enrollment, and operations.
+This local quickstart runs all components on one machine. In production, the controller and inference gateway normally run remotely. Follow [Production deployment](../../operations/production/) for platform-neutral guidance or [Deploy on Google Cloud](../../operations/gcp/) for the complete GKE, Entra, Intune, and pilot-enrollment walkthrough.
 
 ## What you will run
 
@@ -127,7 +127,7 @@ Refresh the [controller UI](http://127.0.0.1:8080) to inspect the enrolled devic
 agentdesktop
 ```
 
-Run `claude` normally to test model traffic. Claude Code shows the `Managed by Agentdesktop` announcement and obtains a short-lived gateway JWT through the daemon. agentgateway validates that JWT before forwarding the request to Anthropic.
+Run `claude` normally to test model traffic. Claude Code shows the `Managed by agentdesktop` announcement and obtains a short-lived gateway JWT through the daemon. agentgateway validates that JWT before forwarding the request to Anthropic.
 
 ## Stop the local scenario
 

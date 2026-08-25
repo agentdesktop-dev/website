@@ -108,7 +108,7 @@ resource "google_compute_router_nat" "gke" {
 resource "google_service_account" "gke_nodes" {
   project      = var.project_id
   account_id   = substr("${var.name}-gke-nodes", 0, 30)
-  display_name = "Agentdesktop GKE nodes"
+  display_name = "agentdesktop GKE nodes"
 
   depends_on = [google_project_service.required]
 }
@@ -283,7 +283,7 @@ resource "google_artifact_registry_repository" "controller" {
   project       = var.project_id
   location      = var.region
   repository_id = var.name
-  description   = "Locally built Agentdesktop controller images"
+  description   = "Locally built agentdesktop controller images"
   format        = "DOCKER"
   labels        = local.labels
 
@@ -349,7 +349,7 @@ resource "google_storage_bucket" "postgres_backups" {
 resource "google_service_account" "postgres_backup" {
   project      = var.project_id
   account_id   = substr("${var.name}-postgres-backup", 0, 30)
-  display_name = "Agentdesktop PostgreSQL backup writer"
+  display_name = "agentdesktop PostgreSQL backup writer"
 
   depends_on = [google_project_service.required]
 }

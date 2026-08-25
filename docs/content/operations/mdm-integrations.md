@@ -1,12 +1,12 @@
 ---
 title: MDM integrations
-description: Map agentdesktop installation, bootstrap configuration, and remediation onto Microsoft Intune, Jamf Pro, Kandji, or Fleet.
-weight: 2
+description: Deploy agentdesktop with Microsoft Intune, Jamf Pro, Kandji, or Fleet using package installation, bootstrap configuration, and remediation.
+weight: 4
 ---
 
-Agentdesktop does not depend on a Microsoft Intune API or policy format. Intune is the detailed production walkthrough because it covers both macOS and Windows, but any endpoint-management platform can deploy agentdesktop if it satisfies the same machine-level contract.
+Any endpoint-management platform can deploy agentdesktop if it satisfies the machine-level contract below. The [Microsoft Intune runbook](../intune/) covers macOS and Windows in detail; this page maps the same work to Jamf Pro, Kandji, and Fleet.
 
-These mappings assume your organization uses the signed endpoint installers from a reviewed Agentdesktop release, verifies their checksums and platform signatures, and validates them on representative devices before assignment. Do not substitute an unsigned local development package for a production rollout.
+These mappings assume your organization uses the signed endpoint installers from a reviewed agentdesktop release, verifies their checksums and platform signatures, and validates them on representative devices before assignment. Do not substitute an unsigned local development package for a production rollout.
 
 ## Deployment contract
 
@@ -23,22 +23,27 @@ Keep the MDM payload small. It installs the application, writes the controller b
 
 The bootstrap and controller CA certificate are not secrets. Never distribute the device CA key, controller TLS key, gateway signing key, database URL, upstream provider credentials, or other secrets through an MDM payload.
 
-These local checks prove that the package, service, and daemon API are present. They do not prove that the user completed enrollment, the controller is connected, or the remote configuration applied. Verify those states in the Agent Desktop UI and controller management UI during each rollout ring.
+Use these local checks to confirm that the package, service, and daemon API are present. Verify enrollment, controller connectivity, and remote configuration separately in the Agent Desktop UI and controller management UI during each rollout ring.
 
 ## Platform comparison
 
-| Platform | Endpoint coverage | Agentdesktop mapping | Important boundary |
+| Platform | Endpoint coverage | agentdesktop mapping | Important boundary |
 | --- | --- | --- | --- |
-| [Microsoft Intune](../production/#deploy-through-microsoft-intune) | macOS and Windows | macOS PKG plus root script; Windows Win32 app containing the MSI and bootstrap | Full walkthrough is included in this documentation. |
+| [Microsoft Intune](../intune/) | macOS and Windows | macOS PKG plus root script; Windows Win32 app containing the MSI and bootstrap | Full walkthrough is included in this documentation. |
 | [Jamf Pro](https://www.jamf.com/resources/product-documentation/jamf-pro-administrators-guide/) | Apple devices | Package and policy for the PKG; script payload for bootstrap, CA, restart, and inventory result | Use another platform for Windows endpoints. |
 | [Kandji](https://support.kandji.io/kb/custom-apps-overview) | Apple devices | Custom App for the PKG; Custom Script for bootstrap and remediation | Custom scripts always run as root; no Windows endpoint path. |
 | [Fleet](https://fleetdm.com/guides/deploy-software-packages) | macOS, Windows, and Linux hosts | Custom packages, post-install scripts, policy checks, labels, API, or GitOps | Software deployment and automatic enrollment features described here require Fleet Premium. |
 
 Use separate pilot and rollout groups in every platform. Scope x64 and ARM64 packages so a device can match only one architecture-specific installer.
 
+Workspace ONE UEM, JumpCloud, and Mosyle can likely satisfy the same contract,
+but these mappings have not been tested. Validate installer context, file
+permissions, restart behavior, architecture targeting, and detection semantics
+before publishing a copy-paste runbook.
+
 ## Jamf Pro
 
-Jamf Pro is a natural fit for organizations that already manage Macs with Apple Business Manager and Jamf.
+Jamf Pro deploys agentdesktop to Macs through a package, computer policy, script payload, and extension attribute.
 
 1. Upload the signed and notarized Agent Desktop PKG as a Jamf package.
 2. Add the PKG to a computer policy scoped first to a static or smart pilot group.
@@ -47,13 +52,13 @@ Jamf Pro is a natural fit for organizations that already manage Macs with Apple 
 5. Build a smart group from that extension-attribute value for local compliance reporting. Its result is only as current as the last inventory update.
 6. Expand policy scope only after the Agent Desktop and controller UIs also show healthy enrollment and applied configuration for the pilot.
 
-The PKG preserves a bootstrap file that arrives first, so package and bootstrap delivery do not need a fragile ordering dependency. Adapt the macOS script from the [Intune walkthrough](../production/#deploy-macos-through-intune); only the assignment and reporting mechanism changes.
+The PKG preserves a bootstrap file that arrives first, so package and bootstrap delivery can occur in either order. Adapt the macOS script from the [Intune runbook](../intune/#deploy-macos); Jamf supplies the assignment and reporting mechanism.
 
 Jamf Pro is Apple-focused. A mixed Jamf and Windows environment still needs Intune, Fleet, Workspace ONE, or another Windows-capable endpoint platform for the MSI.
 
 ## Kandji
 
-Kandji provides two useful enforcement surfaces for Agent Desktop:
+Kandji deploys agentdesktop through a Custom App and enforces its bootstrap through a separate Custom Script:
 
 1. Create a **Custom App** with the signed PKG and assign it to a pilot Blueprint.
 2. Select **Audit and enforce** and use an audit script to check the package version and local daemon health. A failed audit prompts Kandji to reinstall the Custom App.
@@ -64,11 +69,11 @@ Kandji provides two useful enforcement surfaces for Agent Desktop:
 
 Kandji supports PKG pre-install and post-install scripts, but keeping tenant bootstrap in a separate Custom Script lets operators rotate the controller URL or private CA without rebuilding the application item. See Kandji's [Custom Scripts overview](https://support.kandji.io/kb/custom-scripts-overview) for root execution, frequencies, remediation, and status behavior.
 
-Kandji manages Apple devices. It is not a replacement for the Windows Win32 deployment path in the production walkthrough.
+Pair Kandji with Intune, Fleet, Workspace ONE, or another Windows-capable platform when the fleet also includes Windows devices.
 
 ## Fleet
 
-Fleet is the closest alternative for organizations that prefer API- and GitOps-driven endpoint operations across several operating systems.
+Fleet deploys agentdesktop across macOS and Windows with custom packages, osquery policies, labels, and API or GitOps automation.
 
 1. Add the macOS PKG and Windows MSI as [custom packages](https://fleetdm.com/guides/deploy-software-packages) in the target fleet.
 2. Use package targets or labels to separate macOS Intel, macOS Apple silicon, Windows x64, and Windows ARM64.
@@ -88,11 +93,3 @@ Fleet can provide [Apple MDM](https://fleetdm.com/guides/apple-mdm-setup) and [W
 Fleet labels do not apply during setup experience: when several packages represent the same software, Fleet installs the package added first. Avoid architecture-specific setup-experience installation unless the first package is valid for every target; otherwise install after enrollment when label targeting applies.
 
 Fleet can target Linux hosts, but the agentdesktop repository does not yet include a production Linux package or systemd unit. Build and support that packaging layer before presenting Linux deployment as production-ready.
-
-## Choosing a platform
-
-- Use **Intune** when Microsoft Entra, Windows Autopilot, and a mixed macOS/Windows fleet already define endpoint operations.
-- Use **Jamf Pro** or **Kandji** when the managed fleet is Apple-only or those products already own Mac provisioning.
-- Use **Fleet** when cross-platform inventory, API or GitOps workflows, and Fleet Premium are acceptable operational dependencies.
-
-Workspace ONE UEM, JumpCloud, and Mosyle can likely satisfy the same package-and-script contract, but this documentation does not yet provide tested mappings for them. Validate installer context, file permissions, restart behavior, architecture targeting, and detection semantics before publishing a copy-paste runbook.
