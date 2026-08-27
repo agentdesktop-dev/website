@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: process.env.CF_PAGES === "1" ? "export" : undefined,
+  images: {
+    unoptimized: process.env.CF_PAGES === "1",
+  },
   trailingSlash: true,
   ...(process.env.NODE_ENV === "development"
     ? {
