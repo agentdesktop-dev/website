@@ -1,0 +1,25 @@
+WEBVTT
+
+00:00.000 --> 00:05.269
+Product demo, agentdesktop client application. Starting on the managed device: organization access, the local daemon, gateway configuration, and discovered tools.
+
+00:05.269 --> 00:11.200
+agentdesktop client application, Tools. The daemon inventories developer tools, MCP servers, skills, and local models without reading secret values.
+
+00:11.200 --> 00:13.497
+agentdesktop fleet management UI.
+
+00:13.497 --> 00:16.060
+agentdesktop fleet management UI, Overview. This is where operators manage configuration and monitor rollout state across the fleet.
+
+00:16.060 --> 00:20.755
+agentdesktop fleet management UI, Configuration. Configuration in the left navigation manages fleet-wide gateway authentication, telemetry, and per-tool policy.
+
+00:20.755 --> 00:24.654
+agentdesktop fleet management UI, Rollout. The fleet overview shows the active revision and reconciliation state across managed devices.
+
+00:24.654 --> 00:30.609
+agentdesktop fleet management UI, Device. Device details confirm the applied revision and attribute selected session and tool activity.
+
+00:30.609 --> 00:35.280
+agentdesktop fleet management UI, Settings. Settings confirm mTLS, OIDC enrollment, and short-lived gateway JWT issuance.

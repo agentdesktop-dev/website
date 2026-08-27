@@ -1,5 +1,4 @@
 import {
-  Activity,
   ArrowRight,
   BookOpen,
   Check,
@@ -8,11 +7,12 @@ import {
   HardDrive,
   KeyRound,
   Menu,
-  ScanSearch,
   Server,
   SlidersHorizontal,
   X,
 } from "lucide-react";
+import { CapabilityCarousel } from "./capability-carousel";
+import { HowItWorksVideo } from "./how-it-works-video";
 import { RoutingDemo } from "./routing-demo";
 import styles from "./marketing.module.css";
 import { siteConfig } from "./site-config";
@@ -54,33 +54,6 @@ const pillars = [
     sourceLabel: "Cloud Security Alliance, 2026",
     sourceNum: 3,
     icon: SlidersHorizontal,
-  },
-];
-
-const capabilities = [
-  {
-    category: "Discovery",
-    title: "Know what’s running.",
-    body: "Build the agent inventory security frameworks now call for: every harness, version, MCP server, and skill across the fleet, attributed to a device and its signed-in user. Surface shadow AI without reading secrets — no command arguments, environment variables, headers, or skill bodies.",
-    icon: ScanSearch,
-  },
-  {
-    category: "Policy",
-    title: "Decide how it behaves.",
-    body: "Set policy once and enforce it everywhere. Managed settings are written into each tool’s native configuration format, previewed before anything is written, and continuously reconciled back to the desired state when devices drift.",
-    icon: SlidersHorizontal,
-  },
-  {
-    category: "Identity",
-    title: "Control what it reaches.",
-    body: "Treat agents as non-human identities with least-privilege access. Devices enroll through OIDC, bind to the signed-in user, and receive short-lived, just-in-time credentials for your inference gateway — no standing API keys on disk.",
-    icon: KeyRound,
-  },
-  {
-    category: "Observability",
-    title: "See what it did.",
-    body: "End-to-end session inspection across every harness. Opt-in session and tool-use events stream to the controller, attributed to user and device — the audit trail agent governance requires, collected only for the events you select.",
-    icon: Activity,
   },
 ];
 
@@ -249,27 +222,7 @@ export default function Home() {
               device and one controller for the fleet.
             </p>
           </div>
-          <div className={styles.whatGrid}>
-            <div className={styles.capStack}>
-              {capabilities.map((cap) => (
-                <article className={styles.capCard} key={cap.category}>
-                  <span className={styles.capCategory}>
-                    <cap.icon size={16} aria-hidden="true" />
-                    {cap.category}
-                  </span>
-                  <h3>{cap.title}</h3>
-                  <p>{cap.body}</p>
-                </article>
-              ))}
-            </div>
-            <div className={styles.whatVisual}>
-              <img
-                src="/images/device-details.png"
-                alt="agentdesktop device details view showing discovered developer tools, MCP servers and skills, configuration state, recent agent activity, and enrollment identity"
-                loading="lazy"
-              />
-            </div>
-          </div>
+          <CapabilityCarousel />
         </section>
 
         <section className={styles.routingSection} id="routing">
@@ -280,38 +233,7 @@ export default function Home() {
               chain to your inference gateway.
             </p>
           </div>
-          <div className={styles.processFlow} aria-label="agentdesktop processing flow">
-            <div className={styles.processTrack} aria-hidden="true"><i /></div>
-            <div className={styles.processStages}>
-              <article>
-                <h3>Reconcile on the device</h3>
-                <p>The daemon discovers installed tools, MCP servers, and skills, then writes managed settings into each harness&rsquo;s native format &mdash; previewed with a dry run, and pulled back to the desired state when configs drift.</p>
-                <dl className={styles.stageEvidence}>
-                  <div><dt>Discovery</dt><dd>Tools · MCP · Skills</dd></div>
-                  <div><dt>Preview</dt><dd>Dry-run</dd></div>
-                  <div><dt>Drift</dt><dd>Reconciled</dd></div>
-                </dl>
-              </article>
-              <article>
-                <h3>Distribute from the controller</h3>
-                <p>Devices enroll through OIDC with a device-bound key. The controller distributes versioned configuration, records fleet state for the management UI, and collects only the telemetry events you select.</p>
-                <dl className={styles.stageEvidence}>
-                  <div><dt>Enrollment</dt><dd>OIDC + device key</dd></div>
-                  <div><dt>Configuration</dt><dd>Versioned</dd></div>
-                  <div><dt>Telemetry</dt><dd>Opt-in</dd></div>
-                </dl>
-              </article>
-              <article>
-                <h3>Broker identity to the gateway</h3>
-                <p>Agents request short-lived JWTs through the daemon; the gateway verifies them against the controller and attributes every request to a user and device. The API key never reaches the laptop.</p>
-                <dl className={styles.stageEvidence}>
-                  <div><dt>Credentials</dt><dd>Short-lived JWT</dd></div>
-                  <div><dt>Verification</dt><dd>Controller JWKS</dd></div>
-                  <div><dt>API keys</dt><dd>Never on device</dd></div>
-                </dl>
-              </article>
-            </div>
-          </div>
+          <HowItWorksVideo />
           <div className={styles.configPanel}>
             <div className={styles.configCopy}>
               <h3>One configuration, every tool.</h3>
