@@ -110,6 +110,14 @@ claude-desktop  1.25927.0       /Applications/Claude.app/Contents/MacOS/Claude
 vscode  1.131.0 /opt/homebrew/bin/code
 ```
 
+The optional desktop app shows the same local state. Run `agentdesktop`, then open **Runtime** under **Status** to confirm that the daemon is running in standalone mode and that the desktop and daemon versions match.
+
+{{< docs-screenshot src="images/desktop-standalone-runtime.png" width="820" height="316" alt="Agent Desktop Runtime panel showing standalone mode on macOS with matching desktop and daemon versions." caption="The Runtime panel confirms that this device is using local standalone configuration." >}}
+
+Open **Tools** to inspect the discovered developer tools, MCP servers, skills, and local models reported by the daemon.
+
+{{< docs-screenshot src="images/desktop-discovered-tools.png" width="1100" height="900" alt="Agent Desktop Tools page showing discovered VS Code, Claude Code, and Codex installations, capability totals, and local Ollama models." caption="The Tools page presents the same local inventory returned by the discover command." >}}
+
 Launch `claude` normally. Claude Code connects directly to agentgateway using the base URL written by agentdesktop. Its credential helper asks the daemon for the user's OIDC access token.
 
 Claude Desktop managed configuration requires system mode. Stop the user-mode daemon with Ctrl-C before switching modes. The original checked-in configuration already enables Claude Desktop, so run it as root:

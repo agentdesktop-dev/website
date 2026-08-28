@@ -121,7 +121,15 @@ agentdesktop config
 agentdesktop discover
 ```
 
-Refresh the [controller UI](http://127.0.0.1:8080) to inspect the enrolled device, discovered tools, configuration status, and selected telemetry. The optional desktop UI shows the same local daemon state:
+Refresh the [controller UI](http://127.0.0.1:8080). The **Devices** page shows each enrolled device's connectivity, discovered tools, and latest configuration result.
+
+{{< docs-screenshot src="images/controller-managed-devices.png" width="1280" height="430" alt="Agentdesktop controller Devices page with macOS, Linux, and Windows devices and their connectivity, tools, and configuration status." caption="The Devices page summarizes fleet connectivity and configuration rollout state." >}}
+
+Open the enrolled device to inspect its identity, applied configuration revision, recent activity, and discovered developer tools.
+
+{{< docs-screenshot src="images/controller-managed-device.png" width="1180" height="867" alt="Agentdesktop controller device details showing an online macOS device, applied configuration revision, recent activity, and discovered tools." caption="Device details show what the daemon has reported and whether it applied the desired configuration." >}}
+
+The optional desktop UI shows the same local daemon state:
 
 ```sh
 agentdesktop

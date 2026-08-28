@@ -118,6 +118,11 @@ button { color: inherit; }
 .architecture-figure img { display: block; width: 100%; min-width: 860px; height: auto; }
 .architecture-figure figcaption { max-width: 760px; margin: 12px auto 0; color: #6b7188; font-size: 14px; line-height: 1.5; text-align: center; }
 
+.docs-screenshot { width: calc(100% + 140px); margin: 30px 0 38px -70px; }
+.docs-screenshot-viewport { width: 100%; overflow-x: auto; background: var(--paper-bright); border-radius: 5px; overscroll-behavior-inline: contain; }
+.docs-screenshot img { display: block; width: 100%; min-width: 860px; height: auto; }
+.docs-screenshot figcaption { max-width: 760px; margin: 12px auto 0; color: #6b7188; font-size: 14px; line-height: 1.5; text-align: center; }
+
 .page-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding-top: 34px; margin-top: 70px; }
 .page-nav a { display: flex; min-height: 82px; flex-direction: column; justify-content: center; padding: 15px; background: var(--paper); border: 0; border-radius: 4px; }
 .page-nav-next { grid-column: 2; text-align: right; }
@@ -188,7 +193,7 @@ button { color: inherit; }
   .toc-panel { display: none; }
   .docs-header { grid-template-columns: 250px minmax(240px, 1fr) auto; }
   .doc-article { padding-right: 50px; padding-left: 50px; }
-  .architecture-figure { width: calc(100% + 100px); margin-left: -50px; }
+  .architecture-figure, .docs-screenshot { width: calc(100% + 100px); margin-left: -50px; }
 }
 
 @media (max-width: 820px) {
@@ -205,8 +210,8 @@ button { color: inherit; }
   .nav-scrim { position: fixed; z-index: 50; inset: 0; display: block; visibility: hidden; background: rgba(15, 17, 14, 0.48); border: 0; opacity: 0; transition: opacity 180ms ease, visibility 180ms ease; }
   .nav-open .nav-scrim { visibility: visible; opacity: 1; }
   .doc-article { padding: 45px 30px 90px; }
-  .architecture-figure { width: 100%; margin-left: 0; }
-  .architecture-figure figcaption { text-align: left; }
+  .architecture-figure, .docs-screenshot { width: 100%; margin-left: 0; }
+  .architecture-figure figcaption, .docs-screenshot figcaption { text-align: left; }
   .quick-grid { grid-template-columns: 1fr; }
   .quick-grid > a { min-height: 245px; }
 }

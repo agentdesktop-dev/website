@@ -1,0 +1,6 @@
+<figure class="docs-screenshot">
+  <div class="docs-screenshot-viewport" role="region" aria-label="{{ .Get "caption" }}" tabindex="0">
+    <img src="{{ .Get "src" | relURL }}" width="{{ .Get "width" }}" height="{{ .Get "height" }}" alt="{{ .Get "alt" }}" loading="lazy" decoding="async">
+  </div>
+  <figcaption>{{ .Get "caption" }}</figcaption>
+</figure>
