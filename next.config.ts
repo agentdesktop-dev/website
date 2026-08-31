@@ -11,6 +11,22 @@ const nextConfig: NextConfig = {
         async rewrites() {
           return [
             {
+              source: "/blog/:file.:ext",
+              destination: "http://localhost:1314/blog/:file.:ext",
+            },
+            {
+              source: "/blog/:path*/:file.:ext",
+              destination: "http://localhost:1314/blog/:path*/:file.:ext",
+            },
+            {
+              source: "/blog/",
+              destination: "http://localhost:1314/blog/",
+            },
+            {
+              source: "/blog/:path*/",
+              destination: "http://localhost:1314/blog/:path*/",
+            },
+            {
               source: "/docs/:file.:ext",
               destination: "http://localhost:1313/docs/:file.:ext",
             },

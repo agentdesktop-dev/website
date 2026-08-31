@@ -116,6 +116,7 @@ export default function Home() {
           <a href="#what">What it does</a>
           <a href="#routing">How it works</a>
           <a href="#deployments">Deployments</a>
+          <a href="/blog/">Blog</a>
         </nav>
         <div className={styles.headerActions}>
           <a
@@ -143,6 +144,7 @@ export default function Home() {
             <a href="#what">What it does</a>
             <a href="#routing">How it works</a>
             <a href="#deployments">Deployments</a>
+            <a href="/blog/">Blog</a>
             <a href="/docs/">Documentation</a>
             <a href={githubUrl}>GitHub</a>
           </nav>
@@ -325,7 +327,7 @@ programs:
           <p className={styles.createdBy}>Created by <a href="https://solo.io/" target="_blank" rel="noopener noreferrer">Solo.io</a>, alongside <a href="https://agentgateway.dev/" target="_blank" rel="noopener noreferrer">agentgateway</a>.</p>
         </div>
         <nav aria-label="Footer navigation">
-          <a href="/docs/">Documentation</a><a href={githubUrl}>GitHub</a><a href={`${githubUrl}/issues`}>Issues</a><a href="/docs/contributing/">Contribute</a>
+          <a href="/blog/">Blog</a><a href="/docs/">Documentation</a><a href={githubUrl}>GitHub</a><a href={`${githubUrl}/issues`}>Issues</a><a href="/docs/contributing/">Contribute</a>
         </nav>
       </footer>
     </div>

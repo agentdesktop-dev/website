@@ -4,6 +4,7 @@
 <a href="https://agentdesktop.dev"><img src="./src/app/icon.svg" alt="agentdesktop" width="48"></a>
 
 [Website](https://agentdesktop.dev) ·
+[Blog](https://agentdesktop.dev/blog/) ·
 [Documentation](https://agentdesktop.dev/docs/) ·
 [Project source](https://github.com/agentdesktop-dev/agentdesktop)
 
@@ -11,7 +12,7 @@
 
 **agentdesktop** discovers AI developer tools, inventories MCP servers and skills, reconciles managed configuration, and connects employee devices to a shared inference gateway. This repository contains the public website and documentation for the project.
 
-The marketing site is a Next.js application under `src/app/`. The documentation is a Hugo site under `docs/` and is published at `/docs/` on the same domain.
+The marketing site is a Next.js application under `src/app/`. The documentation and blog are Hugo sites under `docs/` and `blog/`, published at `/docs/` and `/blog/` on the same domain.
 
 ## Local development
 
@@ -21,14 +22,25 @@ Install the dependencies:
 npm install
 ```
 
-Run the marketing and documentation servers in separate terminals:
+Run the marketing, documentation, and blog servers in separate terminals:
 
 ```bash
 npm run dev       # http://localhost:3000
 npm run dev:docs  # http://localhost:1313/docs/
+npm run dev:blog  # http://localhost:1314/blog/
 ```
 
-Next.js proxies `/docs/*` to Hugo during local development, so the combined site is available at [http://localhost:3000](http://localhost:3000).
+Next.js proxies `/docs/*` and `/blog/*` to their Hugo servers during local development, so the combined site is available at [http://localhost:3000](http://localhost:3000).
+
+Create a draft blog post with:
+
+```bash
+npm run new:post -- posts/my-post.md
+```
+
+Posts live in `blog/content/posts/`. Set `draft: false` when a post is ready to publish. Use categories for broad sections and tags for specific topics; both generate archive pages and RSS feeds.
+
+Blog builds generate a branded `1200x630` Open Graph card under `/blog/og/` for every post. Set `ogImage` and `ogImageAlt` in a post's front matter to use a custom social image instead.
 
 The development and production build commands regenerate the downloadable GCP
 deployment kit at `public/downloads/agentdesktop-gcp-deployment-kit.zip` from
@@ -43,7 +55,7 @@ Run the full validation suite before opening a pull request:
 npm run check
 ```
 
-This runs ESLint, builds the Next.js site, and builds the Hugo documentation. Product code and product-level issues belong in the [agentdesktop project repository](https://github.com/agentdesktop-dev/agentdesktop).
+This runs ESLint, builds the Next.js site, and builds the Hugo documentation and blog. Product code and product-level issues belong in the [agentdesktop project repository](https://github.com/agentdesktop-dev/agentdesktop).
 
 ## Production deployment
 
@@ -55,7 +67,7 @@ bootstrap, backup, teardown, and local smoke-test assets are indexed under
 
 ## Cloudflare Pages
 
-Build one static artifact containing the Next.js marketing site at `/` and the Hugo documentation at `/docs/`:
+Build one static artifact containing the Next.js marketing site at `/`, the Hugo documentation at `/docs/`, and the Hugo blog at `/blog/`:
 
 ```bash
 npm run build:cloudflare

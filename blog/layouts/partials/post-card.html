@@ -1,0 +1,13 @@
+<article class="post-card">
+  {{ with index .Params.categories 0 }}
+    <a class="post-category" href="{{ printf "categories/%s/" (. | urlize) | relURL }}">{{ . }}</a>
+  {{ end }}
+  <div class="post-card-meta">
+    <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 2, 2006" }}</time>
+    <span aria-hidden="true">·</span>
+    <span>{{ .Params.author | default site.Params.author }}</span>
+  </div>
+  <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+  <p>{{ .Description | default .Summary | plainify }}</p>
+  <a class="post-card-link" href="{{ .RelPermalink }}">Read full article <span aria-hidden="true">→</span></a>
+</article>
