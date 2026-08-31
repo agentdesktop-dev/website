@@ -79,6 +79,13 @@ The artifact is written to `out/`. Preview it with Cloudflare's local runtime:
 npm run preview:cloudflare
 ```
 
+The [publish workflow](.github/workflows/publish.yml) builds and deploys the site after every push to `main`, including merged pull requests. It can also be started manually from the Actions tab. Configure these GitHub Actions repository secrets:
+
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_API_TOKEN`
+
+The `agentdesktop-website` Cloudflare Pages project must already exist. The workflow runs `npm run build:cloudflare`, then publishes the generated `out/` directory with Wrangler.
+
 For Git integration, import this repository into Cloudflare Pages with these settings:
 
 | Setting | Value |
