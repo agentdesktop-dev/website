@@ -12,6 +12,7 @@ export default function robots(): MetadataRoute.Robots {
     sitemap: [
       `${siteConfig.url}/sitemap.xml`,
       `${siteConfig.url}/docs/sitemap.xml`,
+      `${siteConfig.url}/blog/sitemap.xml`,
     ],
     host: siteConfig.url,
   };

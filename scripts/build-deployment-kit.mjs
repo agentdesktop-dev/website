@@ -5,6 +5,8 @@ import { fileURLToPath } from "node:url";
 
 import { ZipArchive } from "archiver";
 
+import "./generate-blog-og.mjs";
+
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const outputPath = join(
   projectRoot,

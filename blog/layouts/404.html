@@ -1,0 +1,11 @@
+{{ define "main" }}
+  <section class="not-found">
+    <p class="eyebrow">404</p>
+    <h1>This post does not exist.</h1>
+    <p>The URL may have changed, or the article may have moved back into drafts.</p>
+    <div>
+      <a class="header-cta" href="{{ site.Home.RelPermalink }}">Read the latest posts</a>
+      <a href="{{ "search/" | relURL }}">Search the blog</a>
+    </div>
+  </section>
+{{ end }}

@@ -278,7 +278,7 @@ DAEMON_CONFIG_FILE=./deploy/gcp/daemon.empty.yaml \
 
 The included empty policy lets you validate enrollment before managing any
 developer tools. Gateway JWT issuance is disabled by default; set
-`ENABLE_GATEWAY_JWT=true` only when the policy configures an inference gateway
+`ENABLE_GATEWAY_JWT=true` only when the policy configures an `llmGateway`
 that uses controller-issued credentials. `DAEMON_CONFIG_REVISION` defaults to 1
 and must increase whenever the distributed policy changes.
 

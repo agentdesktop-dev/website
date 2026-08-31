@@ -1,0 +1,18 @@
+{{ $logo := resources.Get "imgs/logo-light.svg" | fingerprint }}
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <a class="footer-logo" href="{{ site.Params.marketingURL }}" aria-label="agentdesktop website">
+        <img src="{{ $logo.RelPermalink }}" width="152" height="40" alt="agentdesktop">
+      </a>
+      <p>Engineering notes from the open-source governance layer for AI agents on desktops.</p>
+    </div>
+    <nav aria-label="Footer navigation">
+      <a href="{{ site.Home.RelPermalink }}">Blog</a>
+      <a href="{{ "search/" | relURL }}">Search</a>
+      <a href="{{ site.Params.docsURL }}">Documentation</a>
+      <a href="{{ site.Params.github }}">GitHub</a>
+      <a href="{{ "index.xml" | relURL }}">RSS</a>
+    </nav>
+  </div>
+</footer>
