@@ -154,6 +154,12 @@ Agentgateway validates the JWT using the controller's public signing keys before
 
 Agentdesktop establishes this managed path, but each layer retains a distinct responsibility. MDM manages the underlying device and can prevent alternate access paths; Agentdesktop discovers and configures supported AI tools and supplies user-and-device identity; Agentgateway enforces model policy, injects provider credentials, and records inference usage. MCP connections are inventoried but are not automatically proxied through Agentgateway.
 
+## See Agentdesktop in action
+
+The fastest way to understand Agentdesktop is to watch it work:
+
+{{< vidyard id="XRXWt9AoQToJhPahqzHZ5V" title="Introducing agentdesktop" >}}
+
 ## From evaluation to production
 
 Standalone mode provides a low-friction way to evaluate Agentdesktop on one workstation. In a production deployment, MDM can install and configure the endpoint daemon, while the controller runs centrally, such as on Kubernetes, and integrates with the organization's existing identity provider, PKI, database, and LLM gateway.

@@ -100,6 +100,9 @@ img { max-width: 100%; }
 .article-body pre { padding: 24px; overflow-x: auto; color: #edeef7; background: #0b0e18; border-radius: 5px; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 15px; line-height: 1.7; }
 .article-body pre code { padding: 0; color: inherit; background: transparent; font-size: inherit; }
 .article-body img { display: block; height: auto; border-radius: 5px; }
+.vidyard-embed-player { overflow: hidden; background: #0b0e18; border-radius: 5px; box-shadow: 0 20px 48px -34px rgba(11, 14, 24, 0.72); }
+.vidyard-embed .vidyard-player-embed { width: 100%; margin: 0 auto; }
+.vidyard-embed figcaption { margin-top: 10px; color: var(--ink-soft); font-size: 14px; line-height: 1.5; text-align: center; }
 .article-body hr { height: 1px; margin: 48px 0; background: var(--line); border: 0; }
 .article-footer { width: min(100% - 64px, 760px); padding: 30px 0 110px; margin: 0 auto; }
 .tag-list { display: flex; flex-wrap: wrap; gap: 9px; }
