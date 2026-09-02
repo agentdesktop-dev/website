@@ -1,0 +1,24 @@
+{{- $id := .Get "id" -}}
+{{- $title := .Get "title" | default "Vidyard video" -}}
+{{- if not $id -}}
+  {{- errorf "vidyard shortcode requires an id: %s" .Position -}}
+{{- end -}}
+{{- if not (findRE `^[A-Za-z0-9_-]+$` $id) -}}
+  {{- errorf "vidyard shortcode received an invalid id %q: %s" $id .Position -}}
+{{- end -}}
+<figure class="vidyard-embed">
+  <div class="vidyard-embed-player">
+    <script type="text/javascript" async src="https://play.vidyard.com/embed/v4.js"></script>
+    <img
+      class="vidyard-player-embed"
+      src="https://play.vidyard.com/{{ $id }}.jpg"
+      data-uuid="{{ $id }}"
+      data-v="4"
+      data-type="inline"
+      data-width="640"
+      data-height="360"
+      alt="{{ $title }}"
+    >
+  </div>
+  <figcaption>{{ $title }}</figcaption>
+</figure>
