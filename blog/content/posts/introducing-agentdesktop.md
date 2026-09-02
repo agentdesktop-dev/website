@@ -3,7 +3,7 @@ title: Introducing Agentdesktop
 description: An open-source visibility and management layer for AI tools across a desktop fleet.
 date: 2026-09-01T09:00:00Z
 lastmod: 2026-09-01T09:00:00Z
-draft: true
+draft: false
 author: Idit Levine (solo.io), Christian Posta (solo.io)
 categories:
   - Announcement
