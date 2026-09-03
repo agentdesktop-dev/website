@@ -23,7 +23,7 @@ import styles from "./marketing.module.css";
 import { siteConfig } from "./site-config";
 
 const githubUrl = siteConfig.githubUrl;
-const discordUrl = "https://discord.gg/uKX2FvCVp";
+const discordUrl = "https://discord.gg/uKX2FvCVpS";
 const blogPostsDirectory = join(process.cwd(), "blog/content/posts");
 
 type BlogAnnouncement = {
