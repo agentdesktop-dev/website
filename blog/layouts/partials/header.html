@@ -1,15 +1,13 @@
 {{ $logo := resources.Get "imgs/logo-color.svg" | fingerprint }}
 <header class="site-header">
   <div class="header-inner">
-    <a class="blog-brand" href="{{ site.Home.RelPermalink }}" aria-label="agentdesktop blog home">
+    <a class="blog-brand" href="{{ site.Params.marketingURL }}" aria-label="agentdesktop website home">
       <img src="{{ $logo.RelPermalink }}" width="152" height="40" alt="agentdesktop">
       <span>blog</span>
     </a>
     <nav class="site-nav" aria-label="Blog navigation">
-      <a href="{{ site.Home.RelPermalink }}">Latest</a>
+      <a href="{{ site.Home.RelPermalink }}">Home</a>
       <a href="{{ "posts/" | relURL }}">All posts</a>
-      <a href="{{ "categories/" | relURL }}">Categories</a>
-      <a href="{{ "search/" | relURL }}">Search</a>
       <a href="{{ site.Params.docsURL }}">Docs</a>
     </nav>
     <div class="header-links">
@@ -21,11 +19,9 @@
         <span aria-hidden="true"><i></i><i></i><i></i></span>
       </summary>
       <nav aria-label="Mobile blog navigation">
-        <a href="{{ site.Home.RelPermalink }}">Latest</a>
+        <a href="{{ site.Home.RelPermalink }}">Home</a>
         <a href="{{ "posts/" | relURL }}">All posts</a>
-        <a href="{{ "categories/" | relURL }}">Categories</a>
         <a href="{{ "tags/" | relURL }}">Tags</a>
-        <a href="{{ "search/" | relURL }}">Search</a>
         <a href="{{ site.Params.docsURL }}">Documentation</a>
         <a href="{{ "index.xml" | relURL }}">RSS</a>
       </nav>

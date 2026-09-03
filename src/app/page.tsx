@@ -1,3 +1,6 @@
+import { readdir, readFile } from "node:fs/promises";
+import { basename, extname, join } from "node:path";
+import matter from "gray-matter";
 import {
   ArrowRight,
   BookOpen,
@@ -7,6 +10,8 @@ import {
   HardDrive,
   KeyRound,
   Menu,
+  MessageCircle,
+  Megaphone,
   Server,
   SlidersHorizontal,
   X,
@@ -18,6 +23,76 @@ import styles from "./marketing.module.css";
 import { siteConfig } from "./site-config";
 
 const githubUrl = siteConfig.githubUrl;
+const discordUrl = "https://discord.gg/uKX2FvCVp";
+const blogPostsDirectory = join(process.cwd(), "blog/content/posts");
+
+type BlogAnnouncement = {
+  href: string;
+  publishedAt: number;
+  title: string;
+};
+
+function isAnnouncementCategory(value: unknown) {
+  const categories = Array.isArray(value) ? value : [value];
+
+  return categories.some(
+    (category) =>
+      typeof category === "string" &&
+      category.toLowerCase() === "announcement",
+  );
+}
+
+function parsePostDate(value: unknown) {
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? null : value;
+  }
+
+  if (typeof value !== "string" && typeof value !== "number") {
+    return null;
+  }
+
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+async function getLatestAnnouncement(): Promise<BlogAnnouncement | null> {
+  const filenames = await readdir(blogPostsDirectory);
+  const now = Date.now();
+  const announcements = await Promise.all(
+    filenames
+      .filter((filename) => filename.endsWith(".md") && filename !== "_index.md")
+      .map(async (filename) => {
+        const source = await readFile(join(blogPostsDirectory, filename), "utf8");
+        const { data } = matter(source);
+        const date = parsePostDate(data.date);
+
+        if (
+          data.draft === true ||
+          !date ||
+          date.getTime() > now ||
+          typeof data.title !== "string" ||
+          !isAnnouncementCategory(data.categories)
+        ) {
+          return null;
+        }
+
+        const customSlug = typeof data.slug === "string" ? data.slug.trim() : "";
+        const slug = customSlug || basename(filename, extname(filename));
+        const year = date.getUTCFullYear();
+        const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+
+        return {
+          href: `/blog/${year}/${month}/${slug}/`,
+          publishedAt: date.getTime(),
+          title: data.title,
+        };
+      }),
+  );
+
+  return announcements
+    .filter((announcement): announcement is BlogAnnouncement => announcement !== null)
+    .sort((first, second) => second.publishedAt - first.publishedAt)[0] ?? null;
+}
 
 const pillars = [
   {
@@ -100,13 +175,26 @@ function Brand({ inverted = false }: { inverted?: boolean }) {
   );
 }
 
-export default function Home() {
+export default async function Home() {
+  const latestAnnouncement = await getLatestAnnouncement();
+
   return (
-    <div className={styles.page}>
+    <div className={`${styles.page} ${latestAnnouncement ? styles.pageWithAnnouncement : ""}`}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
+      {latestAnnouncement ? (
+        <aside className={styles.announcementBanner} aria-label="Announcement">
+          <a href={latestAnnouncement.href}>
+            <Megaphone size={15} aria-hidden="true" />
+            <span className={styles.announcementLabel}>New</span>
+            <strong>{latestAnnouncement.title}</strong>
+            <span className={styles.announcementDescription}>Read the latest announcement</span>
+            <ArrowRight className={styles.announcementArrow} size={15} aria-hidden="true" />
+          </a>
+        </aside>
+      ) : null}
       <header className={styles.header}>
         <a className={styles.logoLink} href="#top" aria-label="agentdesktop home">
           <Brand />
@@ -307,13 +395,19 @@ programs:
             <span><Code2 size={24} aria-hidden="true" /></span>
             <div>
               <h2 id="github-cta-heading">Inspect the code and shape the roadmap.</h2>
-              <small>100% open source, end to end. Browse the source, open an issue, or contribute.</small>
+              <small>100% open source, end to end. Browse the source, contribute, or join the community on Discord.</small>
             </div>
           </div>
-          <a href={githubUrl} target="_blank" rel="noopener noreferrer">
-            View on GitHub
-            <ArrowRight size={18} aria-hidden="true" />
-          </a>
+          <div className={styles.githubCtaActions}>
+            <a className={styles.githubCtaPrimary} href={githubUrl} target="_blank" rel="noopener noreferrer">
+              View on GitHub
+              <ArrowRight size={18} aria-hidden="true" />
+            </a>
+            <a className={styles.githubCtaSecondary} href={discordUrl} target="_blank" rel="noopener noreferrer">
+              <MessageCircle size={18} aria-hidden="true" />
+              Join Discord
+            </a>
+          </div>
         </section>
       </main>
 
