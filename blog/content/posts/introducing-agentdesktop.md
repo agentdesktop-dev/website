@@ -158,7 +158,7 @@ Agentdesktop establishes this managed path, but each layer retains a distinct re
 
 The fastest way to understand agentdesktop is to watch it work:
 
-{{< vidyard id="XRXWt9AoQToJhPahqzHZ5V" title="Introducing agentdesktop" >}}
+{{< vidyard id="42cW5j5uUKF1pstykKJzGX" title="Introducing agentdesktop" >}}
 
 ## From evaluation to production
 
