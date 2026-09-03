@@ -23,7 +23,7 @@ const pillars = [
   {
     category: "Visibility",
     question: "Do you know what’s running?",
-    body: "Every laptop is quietly accumulating agent harnesses, MCP servers, and skills that no inventory captures. The first step analysts recommend for agent governance: build the inventory.",
+    body: "Every laptop is quietly accumulating agent harnesses, MCP servers, and skills that no inventory captures. You can't govern what you don't know about: a live inventory of agents is the foundation for all governance.",
     statValue: "52%",
     statLine: "of employees run unapproved AI tools at work.",
     sourceHref:
@@ -34,10 +34,10 @@ const pillars = [
   },
   {
     category: "Security",
-    question: "What can it reach?",
-    body: "Agents authenticate with long-lived API keys sitting in plaintext config files — the exact credentials harvested at scale when supply-chain attacks weaponized AI tools on developer laptops.",
+    question: "What can it access?",
+    body: "Agents authenticate with long-lived API keys sitting in plaintext config files, the exact credentials harvested at scale when supply-chain attacks weaponized AI tools on developer laptops.",
     statValue: "28M+",
-    statLine: "hardcoded secrets leaked on GitHub in 2026.",
+    statLine: "hardcoded secrets leaked on GitHub in a single year.",
     sourceHref: "https://blog.gitguardian.com/the-state-of-secrets-sprawl-2026/",
     sourceLabel: "GitGuardian, State of Secrets Sprawl 2026",
     sourceNum: 2,
@@ -46,7 +46,7 @@ const pillars = [
   {
     category: "Control",
     question: "Who decides how it behaves?",
-    body: "Every harness has its own settings format, its own admin console, its own drift. Policy you set once should hold everywhere — on every device, in every tool, continuously reconciled.",
+    body: "Every harness has its own settings format, its own admin console, its own drift. Policy you set once should hold everywhere: on every device, in every tool, continuously reconciled.",
     statValue: "86%",
     statLine: "of enterprises don’t enforce AI identity policies.",
     sourceHref:
@@ -156,13 +156,10 @@ export default function Home() {
           <div className={styles.heroGrid}>
             <div className={styles.heroCopy}>
               <h1>
-                Your largest agent runtime has the <em className={styles.heroEm}>least amount of governance.</em>
+                Production starts at the <em className={styles.heroEm}>desktop</em>
               </h1>
               <p className={styles.heroText}>
-                AI agents run in agent harnesses on every developer and employee desktop in your organization. 
-                These agents integrate models with production data, APIs, and endpoints while running outside of 
-                existing governance controls. Agentdesktop brings visibility, security, and control to agents 
-                where they actually run - on the desktop.
+                Agentdesktop is an open-source visibility, policy, and management layer for the AI tools across your desktop fleet.
               </p>
               <div className={styles.heroActions}>
                 <a className={styles.primaryCta} href="/docs/">
@@ -220,8 +217,8 @@ export default function Home() {
             <h2>Answers with agentdesktop</h2>
             <p>
               An agent inventory, managed policy, non-human identity, and
-              end-to-end observability &mdash; delivered by one daemon on the
-              device and one controller for the fleet.
+              end-to-end observability, delivered by one daemon on the device
+              and one controller for the fleet.
             </p>
           </div>
           <CapabilityCarousel />
@@ -241,15 +238,15 @@ export default function Home() {
               <h3>One configuration, every tool.</h3>
               <p>
                 A single declarative config manages the gateway connection,
-                telemetry, and per-tool policy &mdash; reconciled into Claude
-                Code, Claude Desktop, Codex, and OpenCode in their own formats.
+                telemetry, and per-tool policy, reconciled into Claude Code,
+                Claude Desktop, Codex, and OpenCode in their own formats.
               </p>
               <p className={styles.configNote}>
                 Pairs with{" "}
                 <a href="https://agentgateway.dev/" target="_blank" rel="noopener noreferrer">
                   agentgateway
                 </a>{" "}
-                &mdash; or any inference gateway that verifies JWTs.
+                and works with any inference gateway that verifies JWTs.
               </p>
             </div>
             <pre className={styles.configCode}>
@@ -279,8 +276,8 @@ programs:
           <div className={styles.deploymentGrid}>
             <article>
               <div className={styles.deploymentTopline}><HardDrive size={24} aria-hidden="true" /></div>
-              <h3>Standalone</h3>
-              <p>Keep configuration local. Preview and apply changes from YAML without a controller or device identity, and authenticate directly to your gateway.</p>
+              <h3>Standalone mode</h3>
+              <p>Local governance on a single machine in minutes. Preview and apply changes from YAML without a controller or device identity, and authenticate directly to your gateway.</p>
               <ul>
                 <li><Check size={16} aria-hidden="true" /> Local YAML configuration</li>
                 <li><Check size={16} aria-hidden="true" /> Direct OIDC gateway auth</li>
@@ -293,14 +290,14 @@ programs:
             </div>
             <article>
               <div className={styles.deploymentTopline}><Server size={24} aria-hidden="true" /></div>
-              <h3>Controller-managed</h3>
-              <p>Enroll devices and let the controller distribute versioned configuration. It also issues short-lived gateway JWTs and records fleet state for the management UI.</p>
+              <h3>Fleet mode</h3>
+              <p>Centralized management, policy, and visibility across every desktop in your organization. The controller distributes versioned configuration, issues short-lived gateway JWTs, and records fleet state for the management UI.</p>
               <ul>
                 <li><Check size={16} aria-hidden="true" /> User + device enrollment</li>
                 <li><Check size={16} aria-hidden="true" /> Versioned configuration</li>
                 <li><Check size={16} aria-hidden="true" /> Opt-in session + tool events</li>
               </ul>
-              <a href="/docs/getting-started/managed/">Set up managed mode <ArrowRight size={16} aria-hidden="true" /></a>
+              <a href="/docs/getting-started/managed/">Set up fleet mode <ArrowRight size={16} aria-hidden="true" /></a>
             </article>
           </div>
         </section>
@@ -323,7 +320,7 @@ programs:
       <footer className={styles.footer}>
         <div>
           <Brand inverted />
-          <p>The open-source governance layer for AI agents on desktops.</p>
+          <p>An open-source visibility, policy, and management layer for the AI tools across your desktop fleet.</p>
           <p className={styles.createdBy}>Created by <a href="https://solo.io/" target="_blank" rel="noopener noreferrer">Solo.io</a>, alongside <a href="https://agentgateway.dev/" target="_blank" rel="noopener noreferrer">agentgateway</a>.</p>
         </div>
         <nav aria-label="Footer navigation">

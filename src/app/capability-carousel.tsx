@@ -19,7 +19,7 @@ const capabilities = [
   {
     category: "Discovery",
     title: "Know what’s running.",
-    body: "Build the agent inventory security frameworks now call for: every harness, version, MCP server, and skill across the fleet, attributed to a device and its signed-in user. Surface shadow AI without reading secrets — no command arguments, environment variables, headers, or skill bodies.",
+    body: "Build a live inventory of every harness, model, MCP server, and skill across the fleet, attributed to a device and the associated user. Know exactly what's running and where. Surface shadow AI without reading secrets: no command arguments, environment variables, headers, or skill bodies.",
     image: "/images/capability-discovery-glasswing-v2.png",
     imageAlt:
       "Agentdesktop device inventory showing discovered developer tools, MCP servers, skills, and local models",
@@ -29,7 +29,7 @@ const capabilities = [
   {
     category: "Policy",
     title: "Decide how it behaves.",
-    body: "Set policy once and enforce it everywhere. Managed settings are written into each tool’s native configuration format, previewed before anything is written, and continuously reconciled back to the desired state when devices drift.",
+    body: "Declare configuration centrally and agentdesktop applies it to every harness, previews every change, and continuously reconciles drift. Ensure consistent and uniform security posture across every installation.",
     image: "/images/capability-policy-glasswing-v2.png",
     imageAlt:
       "Agentdesktop configuration builder showing managed gateway, telemetry, and developer tool policy",
@@ -39,7 +39,7 @@ const capabilities = [
   {
     category: "Identity",
     title: "Control what it reaches.",
-    body: "Treat agents as non-human identities with least-privilege access. Devices enroll through OIDC, bind to the signed-in user, and receive short-lived, just-in-time credentials for your inference gateway — no standing API keys on disk.",
+    body: "Treat agents as non-human identities with least-privilege access. Devices enroll, bind to their user through OIDC, and receive short-lived, just-in-time credentials identifying the specific combination of device, user, and agent. Eliminate the blast radius and unpredictable attack vectors of long-lived secrets stored locally.",
     image: "/images/capability-identity-glasswing-v2.png",
     imageAlt:
       "Agentdesktop controller identity controls showing OIDC enrollment and short-lived gateway credentials",
@@ -49,7 +49,7 @@ const capabilities = [
   {
     category: "Observability",
     title: "See what it did.",
-    body: "End-to-end session inspection across every harness. Opt-in session and tool-use events stream to the controller, attributed to user and device — the audit trail agent governance requires, collected only for the events you select.",
+    body: "Opt-in session and tool-use telemetry, attributed to user and device, from only the events you select. Real-time awareness of agent activity.",
     image: "/images/capability-observability-glasswing-v2.png",
     imageAlt:
       "Agentdesktop recent activity view showing attributed agent sessions and selected tool-use events",
