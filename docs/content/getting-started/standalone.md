@@ -6,7 +6,7 @@ weight: 2
 
 In standalone mode, the agentdesktop daemon reads local YAML and reconciles developer-tool settings on one device. It does not enroll the device or connect to the fleet controller.
 
-The repository's standalone example runs Dex and Agentgateway locally. agentdesktop signs the user in through OIDC, configures Claude Code to use Agentgateway as its Anthropic base URL, and supplies the resulting access token through Claude's credential helper.
+The repository's standalone example runs Dex and Agentgateway locally. Agentdesktop signs the user in through OIDC, configures Claude Code to use Agentgateway as its Anthropic base URL, and supplies the resulting access token through Claude's credential helper.
 
 ## Prerequisites
 

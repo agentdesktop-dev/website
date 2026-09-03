@@ -10,7 +10,7 @@
 
 This repository contains the [public website](https://agentdesktop.dev), documentation, blog, and deployment resources for [agentdesktop](https://github.com/agentdesktop-dev/agentdesktop).
 
-## About Agentdesktop
+## About agentdesktop
 
 Agentdesktop gives platform teams visibility and control over AI developer tools running on employee workstations. It complements MDM with an AI-tool-aware layer that can:
 
@@ -27,7 +27,7 @@ Agentdesktop supports standalone use on one workstation and controller-managed f
 | `src/app/` | Next.js marketing site served at `/` |
 | `docs/` | Hugo documentation served at `/docs/` |
 | `blog/` | Hugo blog served at `/blog/` |
-| `deploy/` | Agentdesktop production deployment and local smoke-test assets |
+| `deploy/` | agentdesktop production deployment and local smoke-test assets |
 | `scripts/` | Blog image and downloadable deployment-kit generators |
 | `public/` | Shared static images, videos, downloads, redirects, and headers |
 
@@ -81,6 +81,6 @@ npm run check
 
 This runs ESLint, builds the Next.js site, and builds the Hugo documentation and blog. Product code and product-level issues belong in the [agentdesktop project repository](https://github.com/agentdesktop-dev/agentdesktop).
 
-## Agentdesktop production resources
+## agentdesktop production resources
 
-The [production deployment guide](docs/content/operations/production.md) covers Agentdesktop architecture, identity, PKI, controller, MDM, pilot, and operating requirements. GCP Terraform, Helm, image-build, PKI, Intune bootstrap, backup, teardown, and local smoke-test assets are indexed under [deploy/](deploy/README.md). These resources deploy Agentdesktop itself, not this website.
+The [production deployment guide](docs/content/operations/production.md) covers agentdesktop architecture, identity, PKI, controller, MDM, pilot, and operating requirements. GCP Terraform, Helm, image-build, PKI, Intune bootstrap, backup, teardown, and local smoke-test assets are indexed under [deploy/](deploy/README.md). These resources deploy agentdesktop itself, not this website.
