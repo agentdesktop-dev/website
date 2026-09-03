@@ -263,7 +263,7 @@ Omit `gatewayJwt` if it is not used. `adminListen` must remain loopback; the con
 Next create `daemon.yaml`, the policy sent to enrolled endpoints:
 
 ```yaml
-inferenceGateway:
+llmGateway:
   url: https://gateway.example.com
   authentication:
     type: controllerJwt
@@ -450,7 +450,7 @@ Skip this section when no inference gateway is used.
 
 Configure the gateway to:
 
-- Accept traffic at the exact URL in `inferenceGateway.url`.
+- Accept traffic at the exact URL in `useLlmGateway.url`.
 - Validate RS256 JWTs against the controller's public JWKS URL.
 - Require issuer `agentdesktop-controller` and audience `agentgateway`, or the values selected in your configuration.
 - Authorize the `client_id` claim for each supported developer tool.

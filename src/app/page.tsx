@@ -250,7 +250,7 @@ export default function Home() {
               </p>
             </div>
             <pre className={styles.configCode}>
-              <code>{`inferenceGateway:
+              <code>{`llmGateway:
   url: https://gateway.example.com
   authentication:
     type: controllerJwt
