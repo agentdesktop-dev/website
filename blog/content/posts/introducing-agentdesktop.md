@@ -1,5 +1,5 @@
 ---
-title: Introducing Agentdesktop
+title: Introducing agentdesktop
 description: An open-source visibility and management layer for AI tools across a desktop fleet.
 date: 2026-09-01T09:00:00Z
 lastmod: 2026-09-01T09:00:00Z
@@ -12,14 +12,14 @@ tags:
   - AI tools
   - device management
 cover: /blog/images/announcement/controller-ui.png
-coverAlt: Agentdesktop controller user interface
+coverAlt: agentdesktop controller user interface
 ---
 
 Every organization is struggling with AI agent and tooling sprawl. We at Solo.io are no different. Claude? Codex? Every week some new tool is being released. Grok Bot? OpenClaw 2.0 connected to Fireworks.ai? Tools, API keys, hundreds of providers and zero visibility. We built and are open-sourcing something we think can help.
 
 Agentdesktop is an open-source, AI tool visibility and management layer. It complements MDM solutions with AI-specific discovery, tool configuration, and device/user identity for rich policy enforcement across a desktop fleet. Laptops and desktops are the first real production environment for AI agents and organizations need visibility and control designed for those tools, not just the underlying devices themselves. Before we see how it works, let's look at what it can do:
 
-Features of Agentdesktop:
+Features of agentdesktop:
 
 - **AI tool/harness discovery and inventory**: detect AI tools, MCP servers, skills and models
 - **Tool-native config management**: centrally manage, version, and reconcile native settings for tools such as Claude Code, Codex, VS Code, and others
@@ -36,19 +36,19 @@ MDM remains the right layer for enrolling devices, deploying software, and enfor
 
 And none of the previous MDM configuration really touches the runtime credential sprawl problem. Each tool and provider tends to bring its own credential model, leaving long-lived API keys and OAuth tokens scattered across environment variables, configuration files, and operating-systems. Those bearer credentials are difficult to inventory, attribute, rotate, and revoke, and a leaked credential can remain useful independently of the user or device to which it was originally issued. Agentdesktop instead gives tools short-lived credentials carrying the enrolled user, device, and an allowed client label, while provider API keys remain at the gateway and transparently injecrted rather than being distributed to workstations.
 
-## How Agentdesktop Works
+## How agentdesktop works
 
-MDM remains the device layer described above. Agentdesktop builds on that foundation and the layers work together: MDM deploys the local Agentdesktop daemon and its bootstrap configuration. Agentdesktop discovers and configures AI tools, MCP servers, skills, and models, applies sandbox policy through their native configuration, then supplies short-lived credentials carrying user, device, and tool context to Agentgateway.
+MDM remains the device layer described above. Agentdesktop builds on that foundation and the layers work together: MDM deploys the local agentdesktop daemon and its bootstrap configuration. Agentdesktop discovers and configures AI tools, MCP servers, skills, and models, applies sandbox policy through their native configuration, then supplies short-lived credentials carrying user, device, and tool context to [agentgateway](https://agentgateway.dev).
 
-![Agentdesktop layers](/blog/images/announcement/layers-sandbox.png)
+![agentdesktop layers](/blog/images/announcement/layers-sandbox.png)
 
 Teams do not need to adopt the entire architecture at once. Agentdesktop supports an incremental path: begin on a single workstation in standalone mode, then introduce the controller when centralized inventory, configuration, identity, and reporting are needed across a fleet. The same endpoint daemon and tool-native configuration model are used in both modes.
 
 ### Standalone mode
 
-In standalone mode, Agentdesktop reads configuration from a local YAML file, discovers supported AI tools, and previews or reconciles their native configuration. That local configuration can express sandbox policy and connectivity to a compatible LLM gateway as well as any tool-specific configuration. The daemon orchestrates an SSO login to the enterprise identity provider allowing future calls from the AI harness to carry the user's enterprise identity.
+In standalone mode, agentdesktop reads configuration from a local YAML file, discovers supported AI tools, and previews or reconciles their native configuration. That local configuration can express sandbox policy and connectivity to a compatible LLM gateway as well as any tool-specific configuration. The daemon orchestrates an SSO login to the enterprise identity provider allowing future calls from the AI harness to carry the user's enterprise identity.
 
-Standalone mode provides a low-friction way to evaluate Agentdesktop while applying local execution boundaries and user-aware gateway policy.
+Standalone mode provides a low-friction way to evaluate agentdesktop while applying local execution boundaries and user-aware gateway policy.
 
 ```yaml
 sandbox:
@@ -75,7 +75,7 @@ programs:
     permissions:
       defaultMode: plan
     companyAnnouncements:
-    - Managed by Agentdesktop
+    - Managed by agentdesktop
 
   codex: {}
 ```
@@ -84,13 +84,13 @@ The `sandbox` and `llmGateway` blocks express two complementary policies. The sa
 
 ![Standalone](/blog/images/announcement/standalone.png)
 
-When Agentdesktop starts, it opens the browser for user SSO authentication, reconciles the tools’ native configuration, and installs credential-helpers. When a tool needs gateway access, the daemon supplies the user’s current SSO credential. With this configuration, LLM requests from the managed Claude Code and Codex (and other) clients are sent through Agentgateway and authenticated using the user’s identity. The actual provider tokens/keys are injected by the gateway. Clients don't see them directly. For more detailed identity (ie, user+device+agent), see the next section.
+When agentdesktop starts, it opens the browser for user SSO authentication, reconciles the tools’ native configuration, and installs credential-helpers. When a tool needs gateway access, the daemon supplies the user’s current SSO credential. With this configuration, LLM requests from the managed Claude Code and Codex (and other) clients are sent through Agentgateway and authenticated using the user’s identity. The actual provider tokens/keys are injected by the gateway. Clients don't see them directly. For more detailed identity (ie, user+device+agent), see the next section.
 
 ### Controller-managed mode
 
-Controller-managed mode introduces a central Agentdesktop controller for fleet inventory, versioned configuration, user and device enrollment, and gateway credential issuance. It gives platform teams a fleet-wide view of enrolled devices, authenticated users, applied configuration revisions, installed AI tools, MCP servers, skills, and models.
+Controller-managed mode introduces a central agentdesktop controller for fleet inventory, versioned configuration, user and device enrollment, and gateway credential issuance. It gives platform teams a fleet-wide view of enrolled devices, authenticated users, applied configuration revisions, installed AI tools, MCP servers, skills, and models.
 
-![Agentdesktop Controller UI](/blog/images/announcement/controller-ui.png)
+![agentdesktop controller UI](/blog/images/announcement/controller-ui.png)
 
 MDM can deploy the same endpoint daemon used in standalone mode, along with a small bootstrap configuration that tells it where to find and how to trust the controller:
 
@@ -136,7 +136,7 @@ programs:
         name: Company model
 ```
 
-Agentdesktop writes each tool's native gateway and credential-helper configuration. When Claude Code, Codex, or OpenCode needs to call the gateway, its helper asks the local Agentdesktop daemon for a credential using an allowed client label such as `claude-code` or `codex`.
+Agentdesktop writes each tool's native gateway and credential-helper configuration. When Claude Code, Codex, or OpenCode needs to call the gateway, its helper asks the local agentdesktop daemon for a credential using an allowed client label such as `claude-code` or `codex`.
 
 The daemon authenticates to the controller with the device certificate and the user's SSO credential. After verifying both identities and checking the requested label against the allowlist, the controller issues a short-lived JWT containing:
 
@@ -152,18 +152,24 @@ At the moment (to be improved in future), the `client_id` is an **asserted clien
 
 Agentgateway validates the JWT using the controller's public signing keys before accepting the request. The resulting gateway logs can associate inference activity with the authenticated user, enrolled device, and asserted tool label, while the model-provider API key remains at the gateway.
 
-Agentdesktop establishes this managed path, but each layer retains a distinct responsibility. MDM manages the underlying device and can prevent alternate access paths; Agentdesktop discovers and configures supported AI tools and supplies user-and-device identity; Agentgateway enforces model policy, injects provider credentials, and records inference usage. MCP connections are inventoried but are not automatically proxied through Agentgateway.
+Agentdesktop establishes this managed path, but each layer retains a distinct responsibility. MDM manages the underlying device and can prevent alternate access paths; agentdesktop discovers and configures supported AI tools and supplies user-and-device identity; Agentgateway enforces model policy, injects provider credentials, and records inference usage. MCP connections are inventoried but are not automatically proxied through Agentgateway.
 
-## See Agentdesktop in action
+## See agentdesktop in action
 
-The fastest way to understand Agentdesktop is to watch it work:
+The fastest way to understand agentdesktop is to watch it work:
 
 {{< vidyard id="XRXWt9AoQToJhPahqzHZ5V" title="Introducing agentdesktop" >}}
 
 ## From evaluation to production
 
-Standalone mode provides a low-friction way to evaluate Agentdesktop on one workstation. In a production deployment, MDM can install and configure the endpoint daemon, while the controller runs centrally, such as on Kubernetes, and integrates with the organization's existing identity provider, PKI, database, and LLM gateway.
+Standalone mode provides a low-friction way to evaluate agentdesktop on one workstation. In a production deployment, MDM can install and configure the endpoint daemon, while the controller runs centrally, such as on Kubernetes, and integrates with the organization's existing identity provider, PKI, database, and LLM gateway.
 
 Agentdesktop is open source under the Apache 2.0 license. Organizations can inspect what the endpoint daemon collects, audit its identity and credential boundaries, extend integrations as AI tools evolve, and use their existing infrastructure rather than adopting a vertically bundled platform.
 
-To get started, install Agentdesktop and run standalone mode with `--dry-run` to preview the sandbox, gateway, and tool-native configuration it would apply. Add the controller when centralized inventory, identity, configuration, and reporting are needed across the fleet.
+To get started, install agentdesktop and run standalone mode with `--dry-run` to preview the sandbox, gateway, and tool-native configuration it would apply. Add the controller when centralized inventory, identity, configuration, and reporting are needed across the fleet.
+
+## Get involved
+
+- Join the community on [Discord](https://discord.gg/uKX2FvCVpS)
+- Learn more on [GitHub](https://github.com/agentdesktop-dev/agentdesktop)
+- Visit the agentdesktop [website](https://agentdesktop.dev)

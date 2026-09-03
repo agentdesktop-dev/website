@@ -22,7 +22,7 @@ const capabilities = [
     body: "Build a live inventory of every harness, model, MCP server, and skill across the fleet, attributed to a device and the associated user. Know exactly what's running and where. Surface shadow AI without reading secrets: no command arguments, environment variables, headers, or skill bodies.",
     image: "/images/capability-discovery-glasswing-v2.png",
     imageAlt:
-      "Agentdesktop device inventory showing discovered developer tools, MCP servers, skills, and local models",
+      "agentdesktop device inventory showing discovered developer tools, MCP servers, skills, and local models",
     imageLabel: "Device inventory",
     icon: ScanSearch,
   },
@@ -32,7 +32,7 @@ const capabilities = [
     body: "Declare configuration centrally and agentdesktop applies it to every harness, previews every change, and continuously reconciles drift. Ensure consistent and uniform security posture across every installation.",
     image: "/images/capability-policy-glasswing-v2.png",
     imageAlt:
-      "Agentdesktop configuration builder showing managed gateway, telemetry, and developer tool policy",
+      "agentdesktop configuration builder showing managed gateway, telemetry, and developer tool policy",
     imageLabel: "Managed configuration",
     icon: SlidersHorizontal,
   },
@@ -42,7 +42,7 @@ const capabilities = [
     body: "Treat agents as non-human identities with least-privilege access. Devices enroll, bind to their user through OIDC, and receive short-lived, just-in-time credentials identifying the specific combination of device, user, and agent. Eliminate the blast radius and unpredictable attack vectors of long-lived secrets stored locally.",
     image: "/images/capability-identity-glasswing-v2.png",
     imageAlt:
-      "Agentdesktop controller identity controls showing OIDC enrollment and short-lived gateway credentials",
+      "agentdesktop controller identity controls showing OIDC enrollment and short-lived gateway credentials",
     imageLabel: "Identity controls",
     icon: KeyRound,
   },
@@ -52,7 +52,7 @@ const capabilities = [
     body: "Opt-in session and tool-use telemetry, attributed to user and device, from only the events you select. Real-time awareness of agent activity.",
     image: "/images/capability-observability-glasswing-v2.png",
     imageAlt:
-      "Agentdesktop recent activity view showing attributed agent sessions and selected tool-use events",
+      "agentdesktop recent activity view showing attributed agent sessions and selected tool-use events",
     imageLabel: "Selected telemetry",
     icon: Activity,
   },
@@ -123,7 +123,7 @@ export function CapabilityCarousel() {
     <div
       className={styles.whatCarousel}
       role="region"
-      aria-label="Agentdesktop capabilities"
+      aria-label="agentdesktop capabilities"
       aria-roledescription="carousel"
     >
       <div

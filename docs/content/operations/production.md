@@ -312,7 +312,7 @@ The command does not write files. A pre-existing managed file that agentdesktop 
 
 The controller UI's configuration builder generates YAML but does not save it. The watched `daemon.yaml` file remains the source of truth. Invalid replacements are rejected and the controller retains the last valid configuration.
 
-{{< docs-screenshot src="images/controller-configuration-builder.png" width="1180" height="769" alt="Agentdesktop controller configuration builder with inference gateway and telemetry controls beside the generated daemon YAML." caption="The configuration builder previews daemon YAML as settings change. Copy the result into the managed daemon configuration file." >}}
+{{< docs-screenshot src="images/controller-configuration-builder.png" width="1180" height="769" alt="agentdesktop controller configuration builder with inference gateway and telemetry controls beside the generated daemon YAML." caption="The configuration builder previews daemon YAML as settings change. Copy the result into the managed daemon configuration file." >}}
 
 ### Managed client behavior
 
