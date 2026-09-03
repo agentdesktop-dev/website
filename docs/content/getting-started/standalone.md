@@ -32,7 +32,7 @@ In `/tmp/agentdesktop-standalone.yaml`, remove or comment out this active block:
 
 ```yaml
 claudeDesktop:
-  useInferenceGateway: true
+  useLlmGateway: true
 ```
 
 ## Start the example services
