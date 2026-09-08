@@ -4,7 +4,7 @@ slug: what-is-agentdesktop-how-to-and-why
 description: Why the workstation is the real production environment for AI agents, and a hands-on walkthrough of installing agentdesktop, running the controller and agentgateway, and enrolling your first device.
 date: 2026-09-08T15:00:00Z
 lastmod: 2026-09-08T15:00:00Z
-draft: true
+draft: false
 author: Michael Levan
 categories:
   - Engineering
