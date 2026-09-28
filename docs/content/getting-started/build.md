@@ -17,13 +17,12 @@ After installation, you can launch the desktop app and run the command-line tool
 
 ## Before you begin
 
-On your macOS, Linux, or Windows workstation, install the tools for your chosen installation method:
+On macOS, Linux, or Windows, install the tools for your chosen method:
 
-- Git to clone the GitHub repository.
-- `curl` or PowerShell to download a GitHub release.
-- Rust 1.98 (through rustup) and Node.js 26.8.1 to build from source.
-- Make and Corepack to run the source build and its pnpm commands.
-- Docker Desktop, or Docker Engine with Compose on Linux, to run the local quickstarts.
+- Git to clone the repository.
+- `curl` or PowerShell to download a release.
+- Rust 1.98, Node.js 26.8.1, Make, and Corepack to build from source.
+- Docker Desktop, or Docker Engine with Compose on Linux, for the quickstarts.
 
 ## Download from GitHub Releases
 
@@ -40,7 +39,7 @@ Download an `agentdesktop` executable from [GitHub Releases](https://github.com/
    | Linux, ARM64 | `aarch64` | `agentdesktop-linux-arm64` |
    | Linux, Intel or AMD 64-bit | `x86_64` | `agentdesktop-linux-amd64` |
 
-2. Download the binary. Replace the asset name in the first line with your choice from the table:
+2. Download the binary. Replace the asset name in the first line with your choice from the table.
 
    ```sh
    AGENTDESKTOP_ASSET=agentdesktop-darwin-arm64
@@ -48,29 +47,27 @@ Download an `agentdesktop` executable from [GitHub Releases](https://github.com/
      "https://github.com/agentdesktop-dev/agentdesktop/releases/latest/download/$AGENTDESKTOP_ASSET"
    ```
 
-3. Install the executable in your user binary directory:
+3. Install the executable in your user binary directory.
 
    ```sh
    mkdir -p "$HOME/.local/bin"
    install -m 755 "$AGENTDESKTOP_ASSET" "$HOME/.local/bin/agentdesktop"
    ```
 
-4. Add the installation directory to the current shell's `PATH`:
+4. Add the installation directory to the current shell's `PATH`. For new terminals, add the same line to `~/.zshrc` for zsh or `~/.bashrc` for Bash.
 
    ```sh
    export PATH="$HOME/.local/bin:$PATH"
    ```
 
-   For new terminals, add this `export` line to your shell's startup file. Use `~/.zshrc` for zsh or `~/.bashrc` for Bash.
-
-5. Verify the installation:
+5. Verify the installation. On Linux, install any missing WebKitGTK 4.1 or desktop tray libraries from your distribution.
 
    ```sh
    command -v agentdesktop
    agentdesktop --help
    ```
 
-   Example output on macOS, abbreviated:
+   Example output on macOS (Linux paths normally start with `/home/yourname/`):
 
    ```console
    /Users/yourname/.local/bin/agentdesktop
@@ -79,11 +76,9 @@ Download an `agentdesktop` executable from [GitHub Releases](https://github.com/
    Usage: agentdesktop [OPTIONS] [COMMAND]
    ```
 
-   On Linux, the path normally starts with `/home/yourname/`. The executable uses WebKitGTK 4.1 and desktop tray libraries. If Linux reports a missing shared library, install the corresponding runtime package from your distribution.
-
 ### Windows
 
-1. In PowerShell, download the executable for your processor. Use `arm64` instead of `amd64` in the asset name for an ARM64 workstation:
+1. In PowerShell, download the executable for your processor. Use `arm64` instead of `amd64` in the asset name for an ARM64 workstation.
 
    ```powershell
    $AgentdesktopAsset = "agentdesktop-windows-amd64.exe"
@@ -94,15 +89,13 @@ Download an `agentdesktop` executable from [GitHub Releases](https://github.com/
      -OutFile "$AgentdesktopBin\agentdesktop.exe"
    ```
 
-2. Add the installation directory to the current session's `PATH`:
+2. Add the installation directory to the current session's `PATH`. For new terminals, add `%LOCALAPPDATA%\agentdesktop\bin` to your user **Path** through Windows **Environment Variables**.
 
    ```powershell
    $env:Path = "$AgentdesktopBin;$env:Path"
    ```
 
-   For new terminals, add `%LOCALAPPDATA%\agentdesktop\bin` to your user **Path** through Windows **Environment Variables**.
-
-3. Verify the installation:
+3. Verify the installation.
 
    ```powershell
    (Get-Command agentdesktop).Source
@@ -131,18 +124,14 @@ The source build commands use a macOS or Linux shell.
 
 ### Prepare your build environment
 
-1. If you do not have a local copy, clone the source repository:
+1. Clone the source repository, or change to the root of your existing clone. Run all build commands from the repository root.
 
    ```sh
    git clone https://github.com/agentdesktop-dev/agentdesktop.git
    cd agentdesktop
    ```
 
-   If you already have a clone, change to the repository root instead. Run all build commands from the repository root.
-
-2. Select the toolchain versions from `rust-toolchain.toml` and `frontend/.nvmrc`: Rust 1.98 and Node.js 26.8.1.
-
-   With [rustup](https://www.rust-lang.org/tools/install), the repository's Rust toolchain selection is automatic. If you use nvm, select Node.js with these commands:
+2. Select Rust 1.98 and Node.js 26.8.1 from `rust-toolchain.toml` and `frontend/.nvmrc`. With [rustup](https://www.rust-lang.org/tools/install), Rust selection is automatic. If you use nvm, select Node.js with these commands.
 
    ```sh
    nvm install "$(cat frontend/.nvmrc)"
@@ -153,17 +142,15 @@ The source build commands use a macOS or Linux shell.
 
    - **macOS**
 
-     If you do not have Apple's Xcode command-line tools, install the tools:
+     If you do not have Apple's Xcode command-line tools, install the tools and wait for installation to finish.
 
      ```sh
      xcode-select --install
      ```
 
-     Continue after the installation finishes.
-
    - **Linux**
 
-     On Ubuntu, install the compiler tools and desktop libraries:
+     On Ubuntu, install the compiler tools and desktop libraries. For other distributions, see the [Linux prerequisites](https://v2.tauri.app/start/prerequisites/#linux).
 
      ```sh
      sudo apt-get update
@@ -177,17 +164,11 @@ The source build commands use a macOS or Linux shell.
        librsvg2-dev
      ```
 
-     For other distributions, see the [Linux prerequisites](https://v2.tauri.app/start/prerequisites/#linux).
-
    - **Windows**
 
-     Follow the [Windows prerequisites](https://v2.tauri.app/start/prerequisites/#windows) to install Microsoft C++ Build Tools and the Microsoft Edge WebView2 runtime. For C++ Build Tools, select the **Desktop development with C++** workload.
+     Follow the [Windows prerequisites](https://v2.tauri.app/start/prerequisites/#windows) to install Microsoft C++ Build Tools and the Microsoft Edge WebView2 runtime. Select the **Desktop development with C++** workload. Windows builds also require a compatible shell and Make for this guide's commands.
 
-     Windows builds also require a compatible shell and Make. The source build commands and paths in this guide use macOS and Linux conventions.
-
-4. Enable pnpm through [Corepack](https://github.com/nodejs/corepack#how-to-install). The build uses the pnpm version from `frontend/package.json`.
-
-   If `corepack` is missing, install Corepack with `npm install --global corepack` first.
+4. Enable the pnpm version from `frontend/package.json` through [Corepack](https://github.com/nodejs/corepack#how-to-install). If `corepack` is missing, run `npm install --global corepack` first.
 
    ```sh
    corepack enable
@@ -195,15 +176,13 @@ The source build commands use a macOS or Linux shell.
 
 ### Build and install for the quickstarts
 
-1. From the repository root, build and install both executables:
+1. From the repository root, build and install both executables. This command builds both interfaces and installs the executables into Cargo's binary directory, normally `~/.cargo/bin`.
 
    ```sh
    make install
    ```
 
-   The `make install` command installs frontend dependencies and builds both interfaces. The release executables go into Cargo's binary directory, normally `~/.cargo/bin`.
-
-2. Confirm that your shell can find both executables:
+2. Confirm that your shell can find both executables.
 
    ```sh
    command -v agentdesktop
@@ -217,15 +196,13 @@ The source build commands use a macOS or Linux shell.
    /Users/yourname/.cargo/bin/agentdesktop-controller
    ```
 
-   On Linux, the paths normally start with `/home/yourname/`. If either path is missing or points to an older installation, put Cargo's binary directory first on `PATH`:
+   If either path is missing or points to an older installation, put Cargo's binary directory first on `PATH` and repeat the check. Use your custom Cargo directory if applicable. For new terminals, add the `export` line to your shell's startup file.
 
    ```sh
    export PATH="$HOME/.cargo/bin:$PATH"
    ```
 
-   Repeat the path check after this change. For new terminals, add the `export` line to your shell's startup file. If you customized Cargo's installation directory, use that directory instead.
-
-3. Confirm that both executables run:
+3. Confirm that both executables run.
 
    ```sh
    agentdesktop --help
@@ -240,36 +217,28 @@ The source build commands use a macOS or Linux shell.
    Usage: agentdesktop-controller [OPTIONS]
    ```
 
-   Continue to [Next steps](#next-steps) to choose a quickstart.
-
 ### Build without installing
 
 Use this option to create debug executables without installing them.
 
-1. After you [prepare your build environment](#prepare-your-build-environment), build the executables:
+1. After you [prepare your build environment](#prepare-your-build-environment), build the executables in `target/debug/`.
 
    ```sh
    make build
    ```
 
-   The build writes the debug executables to `target/debug/`.
-
-2. Verify the executables from the repository root:
+2. Verify the executables from the repository root. Expect the help headings from [Build and install for the quickstarts](#build-and-install-for-the-quickstarts).
 
    ```sh
    ./target/debug/agentdesktop --help
    ./target/debug/agentdesktop-controller --help
    ```
 
-   The commands print the help headings from [Build and install for the quickstarts](#build-and-install-for-the-quickstarts).
-
-3. To use these executables in a quickstart, add the build directory to the current shell's `PATH`:
+3. To use these executables in a quickstart, add the build directory to `PATH` in each terminal, from the repository root.
 
    ```sh
    export PATH="$PWD/target/debug:$PATH"
    ```
-
-   Run this `export` command from the repository root in each terminal that you use for the quickstart.
 
 ## Next steps
 
@@ -280,7 +249,7 @@ Choose one quickstart to set up and run the services:
 - [Standalone](../standalone/): configure one workstation with a local YAML file. Start with this quickstart to try agentdesktop with Claude Code.
 - [Controller-managed](../managed/): enroll your workstation with a local controller. This quickstart requires both executables.
 
-Both quickstarts use example files from the source repository. If you downloaded a release and need a repository clone, get the example files:
+Both quickstarts use example files from the source repository. If you downloaded a release and need a repository clone, get the example files.
 
 ```sh
 git clone https://github.com/agentdesktop-dev/agentdesktop.git
