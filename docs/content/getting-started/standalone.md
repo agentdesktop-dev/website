@@ -186,7 +186,7 @@ The daemon needs your identity to supply gateway credentials. The example uses y
 
    With a valid sign-in, the daemon can skip the browser flow. Continue to the status check in step 5.
 
-   {{< docs-screenshot src="images/agentdesktop-connect-login.png" width="760" height="780" alt="Connect Agentdesktop page with required Organization sign-in and a Continue to sign in button." caption="Start the sign-in flow for your local workstation." >}}
+   {{< docs-screenshot src="images/agentdesktop-connect-login.png" height="300" contained=true alt="Connect Agentdesktop page with required Organization sign-in and a Continue to sign in button." caption="Start the sign-in flow for your local workstation." >}}
 
 3. Sign in with the example Dex account:
 
@@ -197,7 +197,7 @@ The daemon needs your identity to supply gateway credentials. The example uses y
 
 4. When **Agentdesktop connected** appears, close the browser tab. Keep the daemon running in your terminal.
 
-   {{< docs-screenshot src="images/agentdesktop-connect-success.png" width="760" height="780" alt="Agentdesktop connected page with Organization sign-in complete." caption="After sign-in, you can close the browser tab." >}}
+   {{< docs-screenshot src="images/agentdesktop-connect-success.png" height="300" contained=true alt="Agentdesktop connected page with Organization sign-in complete." caption="After sign-in, you can close the browser tab." >}}
 
 5. In another terminal, verify that the daemon responds:
 
@@ -245,13 +245,13 @@ Use the app to inspect the daemon, large language model (LLM) gateway, and disco
 
    The number of discovered tools depends on your workstation.
 
-   {{< docs-screenshot src="images/agentdesktop-landing.png" width="2104" height="1584" alt="Agent Desktop Status page showing a running local daemon, a configured LLM gateway, and discovered tools." caption="The Status page summarizes the local daemon, gateway configuration, and tool inventory." >}}
+   {{< docs-screenshot src="images/agentdesktop-landing.png" width="2104" height="1584" contained=true alt="Agent Desktop Status page showing a running local daemon, a configured LLM gateway, and discovered tools." caption="The Status page summarizes the local daemon, gateway configuration, and tool inventory." >}}
 
 3. Expand **Runtime** with the **View** button.
 
    The **Mode** value should be **Standalone**. The desktop and daemon versions should match.
 
-   {{< docs-screenshot src="images/desktop-standalone-runtime.png" width="820" height="316" alt="Expanded Runtime panel with standalone mode on macOS and matching desktop and daemon versions." caption="The Runtime panel shows the local standalone configuration." >}}
+   {{< docs-screenshot src="images/desktop-standalone-runtime.png" width="820" height="316" contained=true alt="Expanded Runtime panel with standalone mode on macOS and matching desktop and daemon versions." caption="The Runtime panel shows the local standalone configuration." >}}
 
 4. Open **Tools** to inspect the local inventory.
 

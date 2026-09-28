@@ -282,13 +282,13 @@ Use the command-line tools and controller interface to inspect the enrolled devi
 
    The page shows each device's connection status, discovered tools, and latest configuration result.
 
-   {{< docs-screenshot src="images/controller-managed-devices.png" width="1280" height="430" alt="Controller Devices page with connection status, discovered tools, and configuration results." caption="The Devices page shows connection and configuration status across the fleet." >}}
+   {{< docs-screenshot src="images/controller-managed-devices.png" width="1280" height="430" contained=true alt="Controller Devices page with connection status, discovered tools, and configuration results." caption="The Devices page shows connection and configuration status across the fleet." >}}
 
 5. Open your enrolled device.
 
    The details include the device identity, applied configuration revision, recent activity, and discovered tools.
 
-   {{< docs-screenshot src="images/controller-managed-device.png" width="1180" height="867" alt="Device details with the applied configuration revision, recent activity, and discovered tools." caption="The device details show the daemon's latest report and configuration result." >}}
+   {{< docs-screenshot src="images/controller-managed-device.png" width="1180" height="867" contained=true alt="Device details with the applied configuration revision, recent activity, and discovered tools." caption="The device details show the daemon's latest report and configuration result." >}}
 
 6. Optional: Open the desktop app to inspect the local daemon:
 
