@@ -1,150 +1,417 @@
 ---
 title: Controller-managed
-description: Enroll agentdesktop devices with a controller, distribute managed AI tool configuration, and issue short-lived inference gateway credentials.
+description: Enroll a workstation with a local controller and configure Claude Code to send model requests through agentgateway.
 weight: 3
 ---
 
-In managed mode, the daemon enrolls with the agentdesktop controller and receives desired configuration from it. The controller provides a fleet management UI, stores inventory and selected telemetry, and can issue short-lived JWTs for an inference gateway such as agentgateway.
+Use this quickstart to enroll your workstation with an agentdesktop controller. The local daemon receives tool configuration from the controller. You can inspect the device in the controller interface and send a model request through agentgateway.
 
-This local quickstart runs all components on one machine. In production, the controller and inference gateway normally run remotely. Follow [Production deployment](../../operations/production/) for platform-neutral guidance or [Deploy on Google Cloud](../../operations/gcp/) for the complete GKE, Entra, Intune, and pilot-enrollment walkthrough.
+All components run on your workstation for this quickstart. In production, the controller and inference gateway normally run on separate infrastructure. See [Production deployment](../../operations/production/) or [Deploy on Google Cloud](../../operations/gcp/) for deployment guidance.
 
 ## What you will run
 
 | Component | Address | Purpose |
 | --- | --- | --- |
-| Dex | `127.0.0.1:5556` | Local OIDC provider for enrollment |
-| Controller fleet API | `127.0.0.1:8443` | Device enrollment, configuration, and telemetry |
-| Controller UI | `127.0.0.1:8080` | Fleet inventory and configuration status |
+| Dex | `127.0.0.1:5556` | Local OpenID Connect (OIDC) provider for enrollment |
+| Controller fleet application programming interface (API) | `127.0.0.1:8443` | Device enrollment, configuration, and telemetry |
+| Controller interface | `127.0.0.1:8080` | Fleet inventory and configuration status |
 | agentgateway | `127.0.0.1:4000` | Authenticated model traffic |
 | Device daemon | Local socket | Tool discovery, configuration, and credentials |
 
-## Prerequisites
+## Before you begin
 
-- Docker with Compose.
+- Docker with Compose. On Docker Desktop 4.34 or later, [enable host networking](https://docs.docker.com/engine/network/drivers/host/#docker-desktop) under **Settings > Resources > Network**. Select **Apply & restart**.
 - Bash, OpenSSL, and curl.
 - Claude Code and an Anthropic API key.
 - A local clone of the agentdesktop repository.
 - `agentdesktop` and `agentdesktop-controller` on `PATH`. Follow [Build and install](../build/) if needed.
 
-Run every command below from the repository root. The controller and device daemon remain in the foreground, so use a separate terminal for each.
+Run all shell commands from the repository root in a macOS or Linux shell. Use separate terminals for the controller and device daemon. Both processes stay in the foreground.
 
-## 1. Generate development keys
+## Step 1: Generate development keys
 
-Generate the controller TLS certificate, device CA, and gateway JWT signing key required by `examples/claude/controller.yaml`:
+The controller configuration in `examples/claude/controller.yaml` requires keys and certificates for three purposes:
 
-```sh
-./examples/claude/create-keys.sh
-```
+- Transport Layer Security (TLS) for controller connections.
+- A certificate authority (CA) for device enrollment.
+- JSON Web Token (JWT) signing for gateway authentication.
 
-The script writes five files under `/tmp/agentdesktop-keys`: the controller certificate and private key, the device CA certificate and private key, and the gateway JWT signing key. It refuses to run if any of those files already exist; remove the directory to generate a new set. These keys are only for local development.
+1. Generate the development keys and certificates:
 
-## 2. Start Dex
+   ```sh
+   ./examples/claude/create-keys.sh
+   ```
 
-```sh
-docker compose -f examples/claude/compose.yaml up -d dex
-```
+   Example output, after OpenSSL's key-generation progress:
 
-Confirm that its OIDC metadata is available:
+   ```console
+   Certificate request self-signature ok
+   subject=CN=localhost
+   Generated Agentdesktop development keys in /tmp/agentdesktop-keys
+   ```
 
-```sh
-curl --fail --silent \
-  --retry 10 --retry-all-errors --retry-delay 1 \
-  http://127.0.0.1:5556/dex/.well-known/openid-configuration \
-  > /dev/null && echo "Dex is ready"
-```
+   The script writes five files under `/tmp/agentdesktop-keys`: two controller files, two device CA files, and one gateway JWT signing key. If any key files already exist, the script stops. Use these keys only for local development.
 
-## 3. Start the controller
+## Step 2: Start Dex
 
-In a new terminal, run:
+Use the local Dex service to sign in during device enrollment.
 
-```sh
-agentdesktop-controller --config examples/claude/controller.yaml
-```
+1. Start the Dex container:
 
-The controller reports its fleet listener on `0.0.0.0:8443` and its admin UI on `127.0.0.1:8080`. Devices in this local scenario connect to the fleet API through `https://127.0.0.1:8443`. Leave the controller running. In another terminal, verify the admin API:
+   ```sh
+   docker compose -f examples/claude/compose.yaml up -d dex
+   ```
 
-```sh
-curl --fail http://127.0.0.1:8080/api/v1/settings
-```
+   Example output on the first run, after any image downloads:
 
-```json
-{"fleet_listen":"0.0.0.0:8443","admin_listen":"127.0.0.1:8080","oidc_enabled":true,"tls_enabled":true,"gateway_jwt_enabled":true}
-```
+   ```console
+   [+] Running 2/2
+   ✔ Network claude_default  Created
+   ✔ Container claude-dex-1  Started
+   ```
 
-The controller binary serves its embedded UI at [http://127.0.0.1:8080](http://127.0.0.1:8080). You do not need to start the controller frontend separately.
+2. Verify that the Dex OIDC metadata is available:
 
-## 4. Start agentgateway
+   ```sh
+   curl --fail --silent --show-error \
+     --retry 10 --retry-all-errors --retry-delay 1 \
+     http://127.0.0.1:5556/dex/.well-known/openid-configuration \
+     > /dev/null && echo "Dex is ready"
+   ```
 
-On Docker Desktop, enable host networking before continuing. In current versions, the setting is under **Settings > Resources > Network**. Linux supports host networking directly. Agentgateway uses host networking to fetch the controller's public JWKS from `127.0.0.1:8080`.
+   Expected output once Dex responds:
 
-Set your upstream Anthropic credential in the shell that starts Compose:
+   ```console
+   Dex is ready
+   ```
 
-```sh
-export ANTHROPIC_API_KEY=sk-ant-...
-test -n "${ANTHROPIC_API_KEY:-}"
-docker compose -f examples/claude/compose.yaml up -d agentgateway
-```
+## Step 3: Start the controller
 
-Confirm that the gateway is listening:
+The controller manages device enrollment and tool configuration. The controller executable also includes the fleet management interface.
 
-```sh
-docker compose -f examples/claude/compose.yaml ps agentgateway
-curl --fail --head --silent http://127.0.0.1:4000/ \
-  > /dev/null && echo "agentgateway is ready"
-```
+1. In a new terminal, start the controller:
 
-The `HEAD /` reachability route is defined by the example's `agentgateway.yaml`.
+   ```sh
+   agentdesktop-controller --config examples/claude/controller.yaml
+   ```
 
-## 5. Start and enroll the device daemon
+   Keep the controller running in this terminal. The fleet listener address is `0.0.0.0:8443`. Local devices connect through `https://127.0.0.1:8443`.
 
-Stop any other agentdesktop daemon before continuing. The checked-in managed configuration includes system-managed Claude Desktop settings, so this example runs the daemon with elevated privileges:
+2. In another terminal, verify the controller's admin API:
 
-```sh
-sudo "$(command -v agentdesktop)" daemon \
-  --config examples/claude/agentdesktop.yaml
-```
+   ```sh
+   curl --fail http://127.0.0.1:8080/api/v1/settings
+   ```
 
-Leave the daemon running. Its browser flow uses the checked-in Dex account:
+   Expected output:
 
-- Email: `admin@example.com`
-- Password: `password`
+   ```json
+   {"fleet_listen":"0.0.0.0:8443","admin_listen":"127.0.0.1:8080","oidc_enabled":true,"tls_enabled":true,"gateway_jwt_enabled":true}
+   ```
 
-The daemon creates its private device key locally, submits a certificate signing request after OIDC login, and receives a client certificate from the controller. The private key never leaves the device.
+   The controller interface is available at [http://127.0.0.1:8080](http://127.0.0.1:8080).
 
-## 6. Verify the managed device
+3. Verify that the public signing keys are available:
 
-In another terminal, query the local daemon:
+   ```sh
+   curl --fail --silent --show-error \
+     http://127.0.0.1:8080/.well-known/jwks.json \
+     > /dev/null && echo "Controller JWKS is ready"
+   ```
 
-```sh
-agentdesktop status
-agentdesktop config
-agentdesktop discover
-```
+   Expected output:
 
-Refresh the [controller UI](http://127.0.0.1:8080). The **Devices** page shows each enrolled device's connectivity, discovered tools, and latest configuration result.
+   ```console
+   Controller JWKS is ready
+   ```
 
-{{< docs-screenshot src="images/controller-managed-devices.png" width="1280" height="430" alt="agentdesktop controller Devices page with macOS, Linux, and Windows devices and their connectivity, tools, and configuration status." caption="The Devices page summarizes fleet connectivity and configuration rollout state." >}}
+   The gateway needs these keys to validate credentials. The endpoint returns the keys as a JSON Web Key Set (JWKS).
 
-Open the enrolled device to inspect its identity, applied configuration revision, recent activity, and discovered developer tools.
+## Step 4: Start agentgateway
 
-{{< docs-screenshot src="images/controller-managed-device.png" width="1180" height="867" alt="agentdesktop controller device details showing an online macOS device, applied configuration revision, recent activity, and discovered tools." caption="Device details show what the daemon has reported and whether it applied the desired configuration." >}}
+The `network_mode: host` setting gives the gateway access to the controller's public signing keys at `http://127.0.0.1:8080/.well-known/jwks.json`. On Docker Desktop, complete the host networking setup in [Before you begin](#before-you-begin). Keep the controller running.
 
-The optional desktop UI shows the same local daemon state:
+1. Set your Anthropic API key in the terminal for Compose. Replace `sk-ant-...` with your key:
 
-```sh
-agentdesktop
-```
+   ```sh
+   export ANTHROPIC_API_KEY='sk-ant-...'
+   test -n "${ANTHROPIC_API_KEY:-}"
+   ```
 
-Run `claude` normally to test model traffic. Claude Code shows the `Managed by agentdesktop` announcement and obtains a short-lived gateway JWT through the daemon. agentgateway validates that JWT before forwarding the request to Anthropic.
+2. Start the gateway:
 
-## Stop the local scenario
+   ```sh
+   docker compose -f examples/claude/compose.yaml up -d agentgateway
+   ```
 
-Stop the foreground daemon and controller with Ctrl-C. Then stop Dex and agentgateway:
+   Example output:
 
-```sh
-docker compose -f examples/claude/compose.yaml down
-```
+   ```console
+   [+] Running 1/1
+   ✔ Container claude-agentgateway-1  Started
+   ```
 
-The controller database and generated keys remain under `/tmp`, so stopping Compose does not reset the scenario. The daemon's identity metadata remains under `/var/lib/agentdesktop`. On Linux, its secrets are stored as owner-only files beneath that directory; macOS and Windows use the operating system credential store.
+3. Check that the gateway container stays running:
 
-For a cluster deployment, follow the [Kubernetes controller example](https://github.com/agentdesktop-dev/agentdesktop/tree/main/examples/kubernetes). It installs the controller Helm chart with development Dex and PostgreSQL dependencies and configures Agentgateway separately.
+   ```sh
+   docker compose -f examples/claude/compose.yaml ps --all agentgateway
+   ```
+
+   The container status should be `Up`. The Compose `Started` message confirms only that the container launched.
+
+4. Verify that the gateway accepts connections:
+
+   ```sh
+   curl --fail --head --silent --show-error \
+     --retry 10 --retry-all-errors --retry-delay 1 \
+     http://127.0.0.1:4000/ \
+     > /dev/null && echo "Agentgateway is ready"
+   ```
+
+   Expected output:
+
+   ```console
+   Agentgateway is ready
+   ```
+
+   The example's `agentgateway.yaml` defines the `HEAD /` route for this check.
+
+### If the gateway exits with a JWKS error
+
+The `failed to load JWKS` error can indicate that the gateway cannot reach the controller's signing keys.
+
+1. Inspect the stopped container:
+
+   ```sh
+   docker compose -f examples/claude/compose.yaml ps --all agentgateway
+   docker compose -f examples/claude/compose.yaml logs --tail 50 agentgateway
+   ```
+
+2. Repeat the [controller signing key check](#step-3-start-the-controller).
+
+3. If the check succeeds on your workstation, verify the Docker Desktop host networking setting.
+
+   Under **Settings > Resources > Network**, enable host networking. Select **Apply & restart**. Without host networking, the container cannot reach the controller through `127.0.0.1`.
+
+4. With the controller running, restart the gateway from the terminal where you set the API key:
+
+   ```sh
+   docker compose -f examples/claude/compose.yaml up -d agentgateway
+   ```
+
+5. Repeat the [gateway status and connection checks](#step-4-start-agentgateway).
+
+   Keep the example YAML unchanged for this Docker Desktop fix.
+
+## Step 5: Start and enroll the device daemon
+
+The example configuration includes Claude Desktop settings, which require system privileges. Run the daemon in system mode for this quickstart.
+
+1. If another foreground agentdesktop daemon is running, stop that daemon with **Ctrl+C** in its terminal.
+
+2. Start the device daemon:
+
+   ```sh
+   sudo "$(command -v agentdesktop)" daemon \
+     --config examples/claude/agentdesktop.yaml
+   ```
+
+   Keep the daemon running in this terminal.
+
+3. Sign in through the browser with the example Dex account:
+
+   | Field | Value |
+   | --- | --- |
+   | Email | `admin@example.com` |
+   | Password | `password` |
+
+   After sign-in, the daemon submits a certificate signing request to the controller. The controller returns a client certificate. The private device key stays on your workstation.
+
+## Step 6: Verify the managed device
+
+Use the command-line tools and controller interface to inspect the enrolled device. A model request from Claude Code tests the gateway connection.
+
+1. In another terminal, check that the local daemon responds:
+
+   ```sh
+   agentdesktop status
+   ```
+
+   Expected output:
+
+   ```console
+   ok
+   ```
+
+2. Inspect the daemon's startup configuration:
+
+   ```sh
+   agentdesktop config
+   ```
+
+   Example output:
+
+   ```yaml
+   controller:
+     address: https://127.0.0.1:8443
+     caCertificatePath: /tmp/agentdesktop-keys/device-ca.pem
+     heartbeatInterval: 1m
+   inventoryInterval: 15m
+   ```
+
+   This output shows the local startup configuration. The tool configuration comes from the controller. The controller interface shows whether the daemon applied that configuration.
+
+3. List the discovered developer tools:
+
+   ```sh
+   agentdesktop discover
+   ```
+
+   Example output on macOS. Tools, versions, and paths vary by workstation:
+
+   ```console
+   claude-code     2.1.284   /Users/<user>/.local/bin/claude
+   claude-desktop  2.9939.4  /Applications/Claude.app/Contents/MacOS/Claude
+   codex          0.158.0   /Users/<user>/.local/bin/codex
+   opencode       1.14.30   /Users/<user>/.opencode/bin/opencode
+   vscode         1.136.1   /usr/local/bin/code
+   cursor         3.22.7    /usr/local/bin/cursor
+   ```
+
+4. Open **Devices** in the [controller interface](http://127.0.0.1:8080).
+
+   The page shows each device's connection status, discovered tools, and latest configuration result.
+
+   {{< docs-screenshot src="images/controller-managed-devices.png" width="1280" height="430" alt="Controller Devices page with connection status, discovered tools, and configuration results." caption="The Devices page shows connection and configuration status across the fleet." >}}
+
+5. Open your enrolled device.
+
+   The details include the device identity, applied configuration revision, recent activity, and discovered tools.
+
+   {{< docs-screenshot src="images/controller-managed-device.png" width="1180" height="867" alt="Device details with the applied configuration revision, recent activity, and discovered tools." caption="The device details show the daemon's latest report and configuration result." >}}
+
+6. Optional: Open the desktop app to inspect the local daemon:
+
+   ```sh
+   agentdesktop
+   ```
+
+7. In a separate terminal, clear direct Anthropic credentials:
+
+   ```sh
+   unset ANTHROPIC_API_KEY ANTHROPIC_AUTH_TOKEN
+   ```
+
+8. Start Claude Code:
+
+   ```sh
+   claude
+   ```
+
+   The startup banner includes `Managed by Agentdesktop`. The daemon supplies a short-lived gateway JWT.
+
+9. In Claude Code, run `/status` to verify the gateway settings:
+
+   - Anthropic base URL: `http://localhost:4000/`.
+   - Credential source: `apiKeyHelper`.
+
+10. Send a short prompt, such as `Reply with hello.`
+
+    A successful response confirms the request path through the gateway to Anthropic. The gateway validates the JWT before forwarding the request.
+
+## Cleanup
+
+Stopping the containers or deleting files in `/tmp` does not restore tool settings. This quickstart writes Claude Code settings to a system directory:
+
+| Operating system | Claude Code managed file |
+| --- | --- |
+| macOS | `/Library/Application Support/ClaudeCode/managed-settings.d/50-agentdesktop.json` |
+| Linux | `/etc/claude-code/managed-settings.d/50-agentdesktop.json` |
+
+1. Exit Claude Code and Claude Desktop.
+
+2. Quit the agentdesktop app from its tray or menu bar menu.
+
+3. In each process's terminal, press **Ctrl+C** to stop the daemon and controller.
+
+   Keep both processes stopped during cleanup. A running daemon can reapply the controller's configuration.
+
+4. Create a temporary configuration that contains only `{}`:
+
+   ```sh
+   printf '{}\n' > /tmp/agentdesktop-cleanup.yaml
+   ```
+
+   This empty configuration tells the daemon to stop managing tools.
+
+5. Preview the cleanup in system mode:
+
+   ```sh
+   sudo "$(command -v agentdesktop)" daemon \
+     --config /tmp/agentdesktop-cleanup.yaml \
+     --dry-run
+   ```
+
+   The preview shows which managed files the cleanup removes. These files include Claude Code gateway settings and telemetry hooks, plus Claude Desktop settings and its credential helper. Files without agentdesktop ownership markers remain unchanged.
+
+6. After you resolve any `CONFLICT` in the preview, apply the cleanup once:
+
+   ```sh
+   sudo "$(command -v agentdesktop)" daemon \
+     --config /tmp/agentdesktop-cleanup.yaml \
+     --once
+   ```
+
+   Expected output:
+
+   ```console
+   Reconciliation complete.
+   ```
+
+   This command removes system tool configuration that agentdesktop owns, without connecting to the controller. Your personal Claude Code settings remain unchanged. If you also ran the standalone quickstart, complete the [user-mode cleanup](../standalone/#cleanup) to restore `~/.claude/settings.json`.
+
+7. Stop the Dex and agentgateway containers:
+
+   ```sh
+   docker compose -f examples/claude/compose.yaml down
+   ```
+
+   Example output:
+
+   ```console
+   [+] Running 3/3
+   ✔ Container claude-agentgateway-1  Removed
+   ✔ Container claude-dex-1           Removed
+   ✔ Network claude_default          Removed
+   ```
+
+8. Remove the temporary cleanup configuration:
+
+   ```sh
+   rm -f /tmp/agentdesktop-cleanup.yaml
+   ```
+
+9. In your Claude Code terminal, clear the example's environment variables:
+
+   ```sh
+   unset ANTHROPIC_BASE_URL ANTHROPIC_API_KEY ANTHROPIC_AUTH_TOKEN \
+     CLAUDE_CODE_API_KEY_HELPER_TTL_MS
+   ```
+
+10. Start Claude Code:
+
+    ```sh
+    claude
+    ```
+
+11. Sign in with `/login` or the sign-in prompt. If you normally use an API key, set your usual credential instead.
+
+12. Run `/status` to verify your usual connection settings.
+
+    The local gateway URL and agentdesktop credential helper should be absent. The startup banner should no longer include `Managed by Agentdesktop`. If these settings remain, check for configuration from the standalone quickstart.
+
+Cleanup leaves the controller database and generated keys under `/tmp`. The daemon's identity metadata stays in `/var/lib/agentdesktop`. On Linux, secrets stay in files under that directory with access limited to the owner. On macOS, secrets stay in the operating system's credential store.
+
+## Next steps
+
+For a cluster deployment, follow the [Kubernetes controller example](https://github.com/agentdesktop-dev/agentdesktop/tree/main/examples/kubernetes). The example includes the controller Helm chart, development Dex and PostgreSQL dependencies, and a separate agentgateway configuration.
