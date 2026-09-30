@@ -1,6 +1,6 @@
 ---
 title: Controller-managed
-description: Enroll a workstation with a local controller and configure Claude Code to send model requests through agentgateway.
+description: Enroll a workstation with a local controller from a source build, and configure Claude Code to send model requests through agentgateway.
 weight: 3
 ---
 
@@ -20,7 +20,7 @@ All components run on your workstation for this quickstart. In production, the c
 
 ## Before you begin
 
-- Docker with Compose. On Docker Desktop 4.34+, [enable host networking](https://docs.docker.com/engine/network/drivers/host/#docker-desktop).
+- Docker with Compose. On Docker Desktop, use version 4.34 or later and [enable host networking](https://docs.docker.com/engine/network/drivers/host/#docker-desktop).
 - Bash, OpenSSL, and curl.
 - Claude Code and an Anthropic API key.
 - The agentdesktop repository and both executables on `PATH`. See [Build and install](../build/).
@@ -28,6 +28,8 @@ All components run on your workstation for this quickstart. In production, the c
 Run commands from the repository root on macOS or Linux. Use separate terminals for the controller and daemon.
 
 ## Step 1: Generate development keys
+
+The controller, device enrollment, and gateway credentials use local keys. The example script creates development-only keys in `/tmp/agentdesktop-keys`.
 
 1. Generate the controller certificate, device CA, and gateway signing key for local development. The script stops if the key files already exist.
 
@@ -114,13 +116,12 @@ The controller manages device enrollment and tool configuration. The controller 
 
 ## Step 4: Start agentgateway
 
-The `network_mode: host` setting gives the gateway access to the controller's public signing keys at `http://127.0.0.1:8080/.well-known/jwks.json`. On Docker Desktop, complete the host networking setup in [Before you begin](#before-you-begin). Keep the controller running.
+The gateway validates the JSON Web Tokens (JWTs) that the daemon supplies to Claude Code, and forwards model requests to Anthropic. The example Compose file sets `network_mode: host` so that the gateway can reach the controller's public signing keys at `http://127.0.0.1:8080/.well-known/jwks.json`. On Docker Desktop, complete the host networking setup in [Before you begin](#before-you-begin). Keep the controller running.
 
 1. Set your Anthropic API key in the terminal for Compose. Replace `sk-ant-...` with your key.
 
    ```sh
    export ANTHROPIC_API_KEY='sk-ant-...'
-   test -n "${ANTHROPIC_API_KEY:-}"
    ```
 
 2. Start the gateway.
@@ -170,7 +171,7 @@ The `failed to load JWKS` error can indicate that the gateway cannot reach the c
 
 2. Repeat the [controller signing key check](#step-3-start-the-controller).
 
-3. If the check succeeds on your workstation, enable host networking under **Settings > Resources > Network** in Docker Desktop. Select **Apply & restart** so the container can reach the controller through `127.0.0.1`.
+3. If the check succeeds on your workstation, enable host networking in Docker Desktop under **Settings** > **Resources** > **Network**. Click **Apply & restart** so that the container can reach the controller through `127.0.0.1`.
 
 4. With the controller running, restart the gateway from the terminal where you set the API key.
 
@@ -182,7 +183,7 @@ The `failed to load JWKS` error can indicate that the gateway cannot reach the c
 
 ## Step 5: Start and enroll the device daemon
 
-The example configuration includes Claude Desktop settings, which require system privileges. Run the daemon in system mode for this quickstart.
+The daemon's local configuration, `examples/claude/agentdesktop.yaml`, contains only the controller connection. The controller delivers the tool configuration from `examples/claude/claude-code.yaml`. That configuration includes Claude Desktop settings, which require system privileges, so run the daemon in system mode for this quickstart.
 
 1. If another foreground agentdesktop daemon is running, stop that daemon with **Ctrl+C** in its terminal.
 
@@ -195,10 +196,8 @@ The example configuration includes Claude Desktop settings, which require system
 
 3. Sign in through the browser with the example Dex account. Enrollment returns a client certificate while the private device key stays on your workstation.
 
-   | Field | Value |
-   | --- | --- |
-   | Email | `admin@example.com` |
-   | Password | `password` |
+   * Email: `admin@example.com`
+   * Password: `password`
 
 ## Step 6: Verify the managed device
 
@@ -216,7 +215,7 @@ Use the command-line tools and controller interface to inspect the enrolled devi
    ok
    ```
 
-2. Inspect the daemon's local startup configuration. View the controller-delivered tool configuration and its status in the controller interface.
+2. Print the daemon's local startup configuration. The output shows only the controller connection. You inspect the controller-delivered tool configuration in the controller interface in a later step.
 
    ```sh
    agentdesktop config
@@ -243,10 +242,10 @@ Use the command-line tools and controller interface to inspect the enrolled devi
    ```console
    claude-code     2.1.284   /Users/<user>/.local/bin/claude
    claude-desktop  2.9939.4  /Applications/Claude.app/Contents/MacOS/Claude
-   codex          0.158.0   /Users/<user>/.local/bin/codex
-   opencode       1.14.30   /Users/<user>/.opencode/bin/opencode
-   vscode         1.136.1   /usr/local/bin/code
-   cursor         3.22.7    /usr/local/bin/cursor
+   codex           0.158.0   /Users/<user>/.local/bin/codex
+   opencode        1.14.30   /Users/<user>/.opencode/bin/opencode
+   vscode          1.136.1   /usr/local/bin/code
+   cursor          3.22.7    /usr/local/bin/cursor
    ```
 
 4. Open **Devices** in the [controller interface](http://127.0.0.1:8080) to inspect connection status, discovered tools, and configuration results.
@@ -284,7 +283,7 @@ Use the command-line tools and controller interface to inspect the enrolled devi
 
 ## Cleanup
 
-Stopping the containers or deleting files in `/tmp` does not restore tool settings. This quickstart writes Claude Code settings to a system directory:
+Stopping the containers or deleting files in `/tmp` does not restore tool settings. Cleanup also leaves the controller database and keys under `/tmp`, and the daemon's identity, stored credentials, and cached controller configuration in `/var/lib/agentdesktop`. This quickstart writes Claude Code settings to a system directory:
 
 | Operating system | Claude Code managed file |
 | --- | --- |
@@ -329,7 +328,7 @@ Stopping the containers or deleting files in `/tmp` does not restore tool settin
    [+] Running 3/3
    ✔ Container claude-agentgateway-1  Removed
    ✔ Container claude-dex-1           Removed
-   ✔ Network claude_default          Removed
+   ✔ Network claude_default           Removed
    ```
 
 5. Clear the example's environment variables and restart Claude Code. Sign in with `/login`, or set your usual API key.
@@ -340,9 +339,7 @@ Stopping the containers or deleting files in `/tmp` does not restore tool settin
    claude
    ```
 
-6. Run `/status` to confirm that the local gateway URL and agentdesktop credential helper are gone. The startup banner should no longer show `Managed by Agentdesktop`. If these settings remain, check for configuration from the standalone quickstart.
-
-Cleanup leaves the controller database and keys under `/tmp`, plus the daemon's identity and stored credentials.
+6. Run `/status` to confirm that the local gateway URL and agentdesktop credential helper are gone. The startup banner no longer shows `Managed by Agentdesktop`. If these settings remain, check for configuration from the standalone quickstart.
 
 ## Next steps
 

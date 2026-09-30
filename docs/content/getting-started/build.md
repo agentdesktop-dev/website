@@ -21,7 +21,7 @@ On macOS, Linux, or Windows, install the tools for your chosen method:
 
 - Git to clone the repository.
 - `curl` or PowerShell to download a release.
-- Rust 1.98, Node.js 26.8.1, Make, and Corepack to build from source.
+- Rust, Node.js, Make, and Corepack to build from source. [Prepare your build environment](#prepare-your-build-environment) lists the required versions.
 - Docker Desktop, or Docker Engine with Compose on Linux, for the quickstarts.
 
 ## Download from GitHub Releases
@@ -131,7 +131,9 @@ The source build commands use a macOS or Linux shell.
    cd agentdesktop
    ```
 
-2. Select Rust 1.98 and Node.js 26.8.1 from `rust-toolchain.toml` and `frontend/.nvmrc`. With [rustup](https://www.rust-lang.org/tools/install), Rust selection is automatic. If you use nvm, select Node.js with these commands.
+2. Select Rust 1.98 and Node.js 26.8.1 from `rust-toolchain.toml` and `frontend/.nvmrc`. 
+   * With [rustup](https://www.rust-lang.org/tools/install), Rust selection is automatic. 
+   * If you use nvm, select Node.js with the following commands.
 
    ```sh
    nvm install "$(cat frontend/.nvmrc)"

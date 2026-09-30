@@ -1,6 +1,6 @@
 ---
 title: Standalone
-description: Configure Claude Code on one workstation and send model requests through agentgateway without a fleet controller.
+description: Configure Claude Code on one workstation with a local YAML file, and send model requests through agentgateway without a fleet controller.
 weight: 2
 ---
 
@@ -154,25 +154,29 @@ The daemon needs your identity to supply gateway credentials. The example uses y
      --user
    ```
 
-2. If the **Connect Agentdesktop** page opens, click **Continue to sign in** under **Organization sign-in**. If you are already signed in, continue to step 5.
+2. On the **Connect Agentdesktop** page, click **Continue to sign in** under **Organization sign-in**. The daemon opens this page in your browser and prints its URL after `Open this URL to connect Agentdesktop:`. If you are already signed in, the page does not open. Continue to step 5.
 
    {{< docs-screenshot src="images/agentdesktop-connect-login.png" width="760" height="780" compact=true alt="Connect Agentdesktop page with required Organization sign-in and a Continue to sign in button." caption="Start the sign-in flow for your local workstation." >}}
 
 3. Sign in with the example Dex account.
 
-   | Field | Value |
-   | --- | --- |
-   | Email | `admin@example.com` |
-   | Password | `password` |
+   * Email: `admin@example.com`
+   * Password: `password`
 
 4. When **Agentdesktop connected** appears, close the browser tab. Keep the daemon running in your terminal.
 
    {{< docs-screenshot src="images/agentdesktop-connect-success.png" width="760" height="780" compact=true alt="Agentdesktop connected page with Organization sign-in complete." caption="After sign-in, you can close the browser tab." >}}
 
-5. In another terminal, verify that the daemon responds with `ok`.
+5. In another terminal, verify that the daemon responds.
 
    ```sh
    agentdesktop status
+   ```
+
+   Expected output:
+
+   ```console
+   ok
    ```
 
 6. List the discovered developer tools. The results can include Claude Desktop. This quickstart configures only Claude Code.
@@ -181,13 +185,13 @@ The daemon needs your identity to supply gateway credentials. The example uses y
    agentdesktop discover
    ```
 
-   Example output:
+   Example output on macOS (tools, versions, and paths vary):
 
    ```console
-   codex          unknown version  /opt/homebrew/bin/codex
-   claude-code    2.1.283           /Users/<user>/.local/bin/claude
-   claude-desktop 1.25927.0         /Applications/Claude.app/Contents/MacOS/Claude
-   vscode         1.131.0           /opt/homebrew/bin/code
+   claude-code     2.1.283          /Users/<user>/.local/bin/claude
+   claude-desktop  1.25927.0        /Applications/Claude.app/Contents/MacOS/Claude
+   codex           unknown version  /opt/homebrew/bin/codex
+   vscode          1.131.0          /opt/homebrew/bin/code
    ```
 
 ## Step 4: Open the agentdesktop app
@@ -251,9 +255,9 @@ Deleting files in `/tmp` does not restore Claude Code settings. Use an empty con
 
 1. Quit Claude Code and the agentdesktop app. Stop the daemon with **Ctrl+C** so it cannot reapply settings during cleanup.
 
-2. Preview cleanup with an empty configuration. The preview shows how cleanup restores previous settings and preserves unrelated preferences. A settings file created by the quickstart can be removed if no other settings remain.
+2. Preview cleanup with an empty configuration. The preview shows how cleanup restores previous settings and preserves unrelated preferences. If the quickstart created `~/.claude/settings.json` and no other settings remain, cleanup removes the file.
 
-   If you deleted the history beside `~/.claude/settings.json`, restore the affected values from your previous configuration. Keep your personal settings file.
+   Cleanup uses the merge history in `~/.claude/.settings.json.agentdesktop` to restore previous values. If you deleted that file, cleanup leaves the quickstart settings in place. Remove the quickstart settings from `~/.claude/settings.json` manually, and keep your personal settings.
 
    ```sh
    printf '{}\n' > /tmp/agentdesktop-cleanup.yaml
@@ -302,7 +306,7 @@ Deleting files in `/tmp` does not restore Claude Code settings. Use an empty con
    claude
    ```
 
-6. Run `/status` to confirm that the local gateway URL and agentdesktop credential helper are gone. The startup banner should no longer show the gateway announcement. If you also ran the controller-managed quickstart, complete the [system-mode cleanup](../managed/#cleanup).
+6. Run `/status` to confirm that the local gateway URL and agentdesktop credential helper are gone. The startup banner no longer shows the gateway announcement. If you also ran the controller-managed quickstart, complete the [system-mode cleanup](../managed/#cleanup).
 
 ## Next steps
 

@@ -28,7 +28,7 @@ git diff --exit-code -- schema
 
 Use these development servers when changing frontend code. For normal use, the desktop interface is included in `agentdesktop`, and `agentdesktop-controller` serves its embedded fleet UI. Neither quickstart needs a separate frontend process.
 
-First, complete the [standalone](../getting-started/standalone/) or [controller-managed](../getting-started/managed/) quickstart so there is a running daemon or controller to inspect. Install frontend dependencies from the repository root:
+First, complete the [standalone](../getting-started/standalone/) or [controller-managed](../getting-started/managed/) quickstart so that a daemon or controller is running for the development server to connect to. Install frontend dependencies from the repository root:
 
 ```sh
 cd frontend
@@ -43,13 +43,13 @@ pnpm dev:controller
 
 Open [http://127.0.0.1:1421](http://127.0.0.1:1421). The development server proxies `/api` requests to the controller on port 8080.
 
-For desktop UI development, run this from `frontend/` in a separate terminal:
+For desktop UI development, run the following command from `frontend/` in a separate terminal:
 
 ```sh
 pnpm dev:desktop
 ```
 
-This starts the Tauri desktop app with frontend reloading. Tauri provides the native window and tray integration for the web interface; the app connects to the local device daemon.
+The command starts the Tauri desktop app with frontend reloading. Tauri provides the native window and tray integration for the web interface. The app connects to the local device daemon.
 
 ## Code map
 
