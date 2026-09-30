@@ -8,12 +8,9 @@ agentdesktop is a Rust workspace with React and TypeScript frontends for the des
 
 ## Local setup and tests
 
-Install the Rust toolchain selected by `rust-toolchain.toml`, the Node version in `frontend/.nvmrc`, pnpm, and the Tauri dependencies for your platform. On Linux, the CI workflow lists the required WebKitGTK, AppIndicator, SSL, Xdo, and SVG development packages.
+Follow [Prepare your build environment](../getting-started/build/#prepare-your-build-environment) to clone the repository and install the toolchains and platform dependencies. From the repository root, run:
 
 ```sh
-git clone https://github.com/agentdesktop-dev/agentdesktop.git
-cd agentdesktop
-corepack enable
 make test
 make check
 ```
@@ -26,6 +23,33 @@ When changing configuration types, regenerate and verify the checked-in schemas:
 make generate-schema
 git diff --exit-code -- schema
 ```
+
+## Develop the web interfaces
+
+Use these development servers when changing frontend code. For normal use, the desktop interface is included in `agentdesktop`, and `agentdesktop-controller` serves its embedded fleet UI. Neither quickstart needs a separate frontend process.
+
+First, complete the [standalone](../getting-started/standalone/) or [controller-managed](../getting-started/managed/) quickstart so that a daemon or controller is running for the development server to connect to. Install frontend dependencies from the repository root:
+
+```sh
+cd frontend
+pnpm install --frozen-lockfile
+```
+
+For controller UI development, leave the controller running on `127.0.0.1:8080` and start the frontend from `frontend/`:
+
+```sh
+pnpm dev:controller
+```
+
+Open [http://127.0.0.1:1421](http://127.0.0.1:1421). The development server proxies `/api` requests to the controller on port 8080.
+
+For desktop UI development, run the following command from `frontend/` in a separate terminal:
+
+```sh
+pnpm dev:desktop
+```
+
+The command starts the Tauri desktop app with frontend reloading. Tauri provides the native window and tray integration for the web interface. The app connects to the local device daemon.
 
 ## Code map
 
