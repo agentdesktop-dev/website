@@ -137,3 +137,5 @@ rm -f /tmp/agentdesktop-standalone.yaml
 ```
 
 The checked-in configuration and identity provider are for local development. Use your own OIDC client, trusted HTTPS endpoints, gateway policy, and secret management for a real deployment.
+
+For a runnable GitHub Copilot CLI and VS Code Copilot Chat setup through the daemon's local proxy, see the [Copilot example](https://github.com/agentdesktop-dev/agentdesktop/tree/main/examples/copilot).

@@ -1,6 +1,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import { basename, extname, join } from "node:path";
 import matter from "gray-matter";
+import Image from "next/image";
 import {
   ArrowRight,
   BookOpen,
@@ -25,6 +26,17 @@ import { siteConfig } from "./site-config";
 const githubUrl = siteConfig.githubUrl;
 const discordUrl = "https://discord.gg/uKX2FvCVpS";
 const blogPostsDirectory = join(process.cwd(), "blog/content/posts");
+
+const supportedTools = [
+  { name: "Claude Code", logo: "/images/tools/claude-code.svg" },
+  { name: "Claude Desktop", logo: "/images/tools/claude-desktop.svg" },
+  { name: "Codex", logo: "/images/tools/codex.svg" },
+  { name: "OpenCode", logo: "/images/tools/opencode.svg" },
+  { name: "Grok Build", logo: "/images/tools/grok.svg" },
+  { name: "Copilot CLI", logo: "/images/tools/github-copilot.svg" },
+  { name: "VS Code Copilot Chat", logo: "/images/tools/vscode.svg" },
+  { name: "Cursor", logo: "/images/tools/cursor.svg" },
+];
 
 type BlogAnnouncement = {
   href: string;
@@ -263,6 +275,39 @@ export default async function Home() {
             </div>
 
             <RoutingDemo />
+          </div>
+        </section>
+
+        <section className={styles.integrations} aria-labelledby="integrations-heading">
+          <div className={styles.integrationsInner}>
+            <p id="integrations-heading" className={styles.integrationsCopy}>Supports</p>
+            <div className={styles.integrationScroller}>
+              <div className={styles.integrationTrack}>
+                {[false, true].map((isDuplicate) => (
+                  <ul
+                    className={styles.integrationToolList}
+                    key={String(isDuplicate)}
+                    aria-hidden={isDuplicate || undefined}
+                  >
+                    {supportedTools.map((tool) => (
+                      <li className={styles.integrationTool} key={tool.name}>
+                        <a
+                          className={styles.integrationLink}
+                          href={`${githubUrl}#supported-tools`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`See ${tool.name} support details`}
+                          title={tool.name}
+                          tabIndex={isDuplicate ? -1 : undefined}
+                        >
+                          <Image src={tool.logo} alt="" width={48} height={48} aria-hidden="true" />
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
