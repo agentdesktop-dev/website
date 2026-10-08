@@ -121,7 +121,7 @@ agentdesktop config
 agentdesktop discover
 ```
 
-Refresh the [controller UI](http://127.0.0.1:8080). The **Devices** page shows each enrolled device's connectivity, discovered tools, and latest configuration result.
+Refresh the [controller UI](http://127.0.0.1:8080). The **Devices** page shows each enrolled device's connectivity, discovered tools, and latest configuration result. With current daemon and controller versions, open a device to see the outcome for each managed program: applied, unchanged, removed, conflict, inactive, blocked, or failed. A program result describes configuration reconciliation, not whether a model request succeeded.
 
 {{< docs-screenshot src="images/controller-managed-devices.png" width="1280" height="430" alt="agentdesktop controller Devices page with macOS, Linux, and Windows devices and their connectivity, tools, and configuration status." caption="The Devices page summarizes fleet connectivity and configuration rollout state." >}}
 
@@ -148,3 +148,5 @@ docker compose -f examples/claude/compose.yaml down
 The controller database and generated keys remain under `/tmp`, so stopping Compose does not reset the scenario. The daemon's identity metadata remains under `/var/lib/agentdesktop`. On Linux, its secrets are stored as owner-only files beneath that directory; macOS and Windows use the operating system credential store.
 
 For a cluster deployment, follow the [Kubernetes controller example](https://github.com/agentdesktop-dev/agentdesktop/tree/main/examples/kubernetes). It installs the controller Helm chart with development Dex and PostgreSQL dependencies and configures Agentgateway separately.
+
+For a runnable GitHub Copilot CLI and VS Code Copilot Chat setup, including gateway routing and proxy-unavailable behavior, see the [Copilot example](https://github.com/agentdesktop-dev/agentdesktop/tree/main/examples/copilot).
