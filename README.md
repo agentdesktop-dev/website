@@ -18,7 +18,7 @@ Agentdesktop gives platform teams visibility and control over AI developer tools
 - apply managed configuration and shared sandbox policy through each tool's native settings;
 - connect tools to an LLM gateway with short-lived credentials carrying user, device, and allowed client context.
 
-Agentdesktop supports standalone use on one workstation and controller-managed fleets. Current integrations cover Claude Code, Claude Desktop, Codex, OpenCode, and VS Code across Linux, macOS, and Windows, with capabilities varying by tool and operating system. See the [project README](https://github.com/agentdesktop-dev/agentdesktop#supported-tools) for the current support matrix and architecture.
+Agentdesktop supports standalone use on one workstation and controller-managed fleets. Current integrations cover Claude Code, Claude Desktop, Codex, GitHub Copilot CLI, OpenCode, and VS Code Copilot Chat across Linux, macOS, and Windows, with capabilities varying by tool and operating system. See the [project README](https://github.com/agentdesktop-dev/agentdesktop#supported-tools) for the current support matrix and architecture.
 
 ## Repository layout
 

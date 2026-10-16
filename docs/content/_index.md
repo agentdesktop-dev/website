@@ -12,8 +12,10 @@ agentdesktop can:
 - Report installed developer tools and versions.
 - Inventory configured MCP servers and agent skills.
 - Reconcile managed settings and a shared inference gateway.
+- Report each managed program's configuration outcome to the controller.
 - Enroll a device and associate it with the signed-in user.
 - Supply short-lived gateway credentials to configured tools.
+- Optionally re-apply configuration on a local interval to repair drift.
 - Report selected session and tool-use events when telemetry is enabled.
 
 ## Supported tools
@@ -23,8 +25,9 @@ agentdesktop can:
 | Claude Code | Yes | Yes | MCP and skills |
 | Claude Desktop | Yes | Yes | MCP |
 | Codex | Yes | Yes | MCP and skills |
+| GitHub Copilot CLI | Yes | Yes | Not yet |
 | OpenCode | Yes | Yes | MCP |
-| VS Code | Yes | Not yet | Not yet |
+| VS Code Copilot Chat | Yes | Yes: own models or GitHub models through the gateway | Not yet |
 
 The project targets Linux, macOS, and Windows. Some managed settings require system-level access; Claude Desktop configuration, for example, cannot be applied in `--user` mode.
 
@@ -43,4 +46,4 @@ Telemetry is off until event names are configured. Current hooks can report new 
 | Controller | OIDC enrollment, device certificates, configuration distribution, inventory, telemetry, gateway JWTs, and the fleet management UI |
 | Inference gateway | External model endpoint configured in developer tools; Agentgateway is used by the repository examples |
 
-Developer tools connect directly to the configured inference gateway. The daemon writes the gateway URL into supported tool configuration and supplies credentials through each tool's helper mechanism; it does not proxy model traffic.
+Most developer tools connect directly to the configured inference gateway. GitHub Copilot CLI and VS Code Copilot Chat use the optional daemon loopback proxy, which forwards their requests to the gateway with the device user's gateway credentials. The controller does not proxy model traffic.

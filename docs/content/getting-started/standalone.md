@@ -314,3 +314,4 @@ Deleting files in `/tmp` does not restore Claude Code settings. Use an empty con
 - To configure Claude Desktop, follow the [Claude Desktop example](https://github.com/agentdesktop-dev/agentdesktop/tree/main/examples/standalone#claude-desktop). That example requires system mode.
 - To change either interface, see [Develop the web interfaces](../../contributing/#develop-the-web-interfaces).
 - For a production deployment, use your own OpenID Connect (OIDC) client, trusted HTTPS endpoints, gateway policy, and secret management. See [Production deployment](../../operations/production/).
+- To route GitHub Copilot CLI and VS Code Copilot Chat through the daemon's local proxy, see the [Copilot example](https://github.com/agentdesktop-dev/agentdesktop/tree/main/examples/copilot).

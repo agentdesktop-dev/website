@@ -248,7 +248,7 @@ Use the command-line tools and controller interface to inspect the enrolled devi
    cursor          3.22.7    /usr/local/bin/cursor
    ```
 
-4. Open **Devices** in the [controller interface](http://127.0.0.1:8080) to inspect connection status, discovered tools, and configuration results.
+4. Open **Devices** in the [controller interface](http://127.0.0.1:8080) to inspect connection status, discovered tools, and configuration results. With current daemon and controller versions, open a device to see the outcome for each managed program: applied, unchanged, removed, conflict, inactive, blocked, or failed. A program result describes configuration reconciliation, not whether a model request succeeded.
 
    {{< docs-screenshot src="images/controller-managed-devices.png" width="1280" height="430" contained=true alt="Controller Devices page with connection status, discovered tools, and configuration results." caption="The Devices page shows connection and configuration status across the fleet." >}}
 
@@ -344,3 +344,5 @@ Stopping the containers or deleting files in `/tmp` does not restore tool settin
 ## Next steps
 
 For a cluster deployment, follow the [Kubernetes controller example](https://github.com/agentdesktop-dev/agentdesktop/tree/main/examples/kubernetes). The example includes the controller Helm chart, development Dex and PostgreSQL dependencies, and a separate agentgateway configuration.
+
+For a runnable GitHub Copilot CLI and VS Code Copilot Chat setup, including gateway routing and proxy-unavailable behavior, see the [Copilot example](https://github.com/agentdesktop-dev/agentdesktop/tree/main/examples/copilot).

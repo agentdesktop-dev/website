@@ -237,6 +237,92 @@
   font-weight: 750;
 }
 
+.integrations {
+  padding: 30px 32px 34px;
+  background: var(--paper-bright);
+}
+
+.integrationsInner {
+  display: grid;
+  gap: 17px;
+  width: min(100%, 1376px);
+  margin: 0 auto;
+}
+
+.integrationsCopy {
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.integrationScroller {
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+  overscroll-behavior-inline: contain;
+}
+
+.integrationTrack {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  animation: integration-marquee 42s linear infinite;
+}
+
+.integrationToolList {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: clamp(32px, 4vw, 58px);
+  padding: 4px clamp(20px, 2.5vw, 38px) 8px;
+  list-style: none;
+}
+
+.integrationScroller:hover .integrationTrack,
+.integrationScroller:focus-within .integrationTrack {
+  animation-play-state: paused;
+}
+
+.integrationTool {
+  flex: 0 0 auto;
+}
+
+.integrationLink {
+  display: grid;
+  width: 80px;
+  height: 80px;
+  place-items: center;
+  opacity: 0.72;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.integrationLink img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.integrationLink:hover,
+.integrationLink:focus-visible {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+@keyframes integration-marquee {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
+@media (max-width: 680px), (prefers-reduced-motion: reduce) {
+  .integrationScroller {
+    overflow-x: auto;
+    scrollbar-color: var(--line) transparent;
+    scrollbar-width: thin;
+  }
+
+  .integrationTrack { animation: none; }
+  .integrationToolList[aria-hidden="true"] { display: none; }
+}
+
 .problem { width: min(100%, 1440px); padding: clamp(80px, 9vw, 130px) 32px; margin: 0 auto; }
 
 .problemHeading { max-width: 900px; }
@@ -1030,6 +1116,10 @@
   .hero h1 { font-size: clamp(34px, 10vw, 44px); }
   .heroText { font-size: 16px; }
   .heroActions { gap: 12px; }
+  .integrations { padding: 26px 20px 30px; }
+  .integrationsInner { gap: 12px; }
+  .integrationLink { width: 70px; height: 70px; }
+  .integrationLink img { width: 56px; height: 56px; }
   .problem, .routingSection { padding: 64px 20px; }
   .whatSection, .gapsSection { padding: 64px 20px; }
   .deployments { padding: 64px 20px; }

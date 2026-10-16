@@ -51,7 +51,7 @@ Run a small pilot before broad deployment. In particular, verify every developer
 
 The fleet API uses TLS for server authentication. After enrollment, devices also present a controller-issued client certificate. Each daemon generates its device private key locally; only a certificate signing request is sent to the controller.
 
-Developer-tool traffic does not pass through the controller. Claude Code, Claude Desktop, Codex, and OpenCode connect directly to the configured inference gateway. The controller only issues a short-lived gateway JWT when `controllerJwt` authentication is enabled.
+Developer-tool traffic does not pass through the controller. Claude Code, Claude Desktop, Codex, and OpenCode connect directly to the configured inference gateway. GitHub Copilot CLI and VS Code Copilot Chat can use the daemon's optional loopback proxy, which forwards requests to the gateway with the user's gateway credentials. The controller only issues a short-lived gateway JWT when `controllerJwt` authentication is enabled.
 
 Keep the two configuration layers separate:
 
@@ -324,6 +324,28 @@ When a tool is present in `programs`, the daemon reconciles its system-managed c
 | Claude Desktop | Selects the gateway inference provider and installs a credential-helper script. |
 | Codex | Adds an `agentdesktop` Responses API model provider and credential command. |
 | OpenCode | Adds an `agentdesktop` provider, selected model, and credential plugin. |
+| GitHub Copilot CLI | Adds managed provider entries routed through the daemon's loopback LLM proxy. |
+| VS Code Copilot Chat | Adds gateway-backed custom models, or routes GitHub's Copilot models through the gateway. |
+
+The Copilot CLI and VS Code Copilot Chat integrations currently require a user-mode daemon (`daemon.user: true`) because they manage files in the user's profile; `daemon.llmProxy.listen` is also user-mode only. They cannot be managed by the system daemon used in the deployment examples. Configure the gateway behavior in the controller-distributed policy if that proxy is unavailable:
+
+```yaml
+llmGateway:
+  whenProxyUnavailable: failClosed # default
+```
+
+`failClosed` keeps existing managed entries pointed at the loopback proxy, so requests fail rather than bypassing the gateway. If no managed entries exist yet, the tools retain their own settings. If another process occupies the configured loopback address, it can receive those requests instead; reserve the port and use this setup on single-user devices. `failOpen` removes the entries until the proxy returns; VS Code using GitHub's models can then reach GitHub directly. This policy affects the files managed by agentdesktop, not the organization's Copilot policy or network egress controls. Older controller and daemon versions reject configurations containing this key, so upgrade both before distributing it. See the [Copilot example](https://github.com/agentdesktop-dev/agentdesktop/tree/main/examples/copilot) for the full setup and behavior checks.
+
+On managed devices, the controller reports an outcome for each program and displays it on the device page. Upgrade the controller before rolling out daemons that send per-program status so the controller database migration is applied first. The per-program states are applied, unchanged, removed, conflict, inactive, blocked, and failed; details identify the affected path or reason without including managed file contents.
+
+Periodic drift repair is opt-in and configured locally in the daemon startup file, not in the controller-distributed `daemon.yaml`:
+
+```yaml
+daemon:
+  reconcileInterval: 1h
+```
+
+The daemon re-applies its current configuration at that interval, repairing deleted or edited managed files, loosened file permissions, and resolved conflicts. Unchanged files are not rewritten. Omit the setting to disable periodic re-apply; it must be greater than zero and no more than 30 days, and changing it requires a daemon restart. Controller-managed devices still apply the latest controller configuration on reconnect when the interval is unset.
 
 System-mode defaults include:
 
