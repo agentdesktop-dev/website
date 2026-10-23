@@ -145,7 +145,7 @@ Stop the foreground daemon and controller with Ctrl-C. Then stop Dex and agentga
 docker compose -f examples/claude/compose.yaml down
 ```
 
-The controller database and generated keys remain under `/tmp`, so stopping Compose does not reset the scenario. The daemon's identity metadata remains under `/var/lib/agentdesktop`. On Linux, its secrets are stored as owner-only files beneath that directory; macOS and Windows use the operating system credential store.
+The controller database and generated keys remain under `/tmp`, so stopping Compose does not reset the scenario. The daemon's identity metadata remains under `/var/lib/agentdesktop`. On Linux, secrets are owner-only files beneath that directory. macOS stores them in Keychain. Windows stores encrypted secret files in the daemon's private state directory and keeps their encryption keys in Credential Manager.
 
 For a cluster deployment, follow the [Kubernetes controller example](https://github.com/agentdesktop-dev/agentdesktop/tree/main/examples/kubernetes). It installs the controller Helm chart with development Dex and PostgreSQL dependencies and configures Agentgateway separately.
 

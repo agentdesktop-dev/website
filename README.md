@@ -18,7 +18,7 @@ Agentdesktop gives platform teams visibility and control over AI developer tools
 - apply managed configuration and shared sandbox policy through each tool's native settings;
 - connect tools to an LLM gateway with short-lived credentials carrying user, device, and allowed client context.
 
-Agentdesktop supports standalone use on one workstation and controller-managed fleets. Current integrations cover Claude Code, Claude Desktop, Codex, GitHub Copilot CLI, OpenCode, and VS Code Copilot Chat across Linux, macOS, and Windows, with capabilities varying by tool and operating system. See the [project README](https://github.com/agentdesktop-dev/agentdesktop#supported-tools) for the current support matrix and architecture.
+Agentdesktop supports standalone use on one workstation and controller-managed fleets. Current integrations cover Claude Code, Claude Desktop, Codex, GitHub Copilot CLI, OpenCode, VS Code Copilot Chat, Cursor, Grok Build, and Pi across Linux, macOS, and Windows, with capabilities varying by tool and operating system. Ollama local-model discovery is also supported. See the [project README](https://github.com/agentdesktop-dev/agentdesktop#supported-tools) for the current support matrix and architecture.
 
 ## Repository layout
 
@@ -39,7 +39,13 @@ Install Node.js, npm, and [Hugo Extended](https://gohugo.io/installation/), then
 npm ci
 ```
 
-Run the marketing, documentation, and blog servers in separate terminals:
+Start the marketing, documentation, and blog servers together:
+
+```bash
+npm run dev:all   # http://localhost:3000
+```
+
+Or run them in separate terminals:
 
 ```bash
 npm run dev       # http://localhost:3000
@@ -47,7 +53,7 @@ npm run dev:docs  # http://localhost:1313/docs/
 npm run dev:blog  # http://localhost:1314/blog/
 ```
 
-Next.js proxies `/docs/*` and `/blog/*` to their Hugo servers during local development, so the combined site is available at [http://localhost:3000](http://localhost:3000).
+Next.js proxies `/docs/*` and `/blog/*` to their Hugo servers during local development, so the combined site is available at [http://localhost:3000](http://localhost:3000). Those paths return a 500 until the Hugo servers are running, so `npm run dev` alone does not serve them.
 
 ## Writing blog posts
 

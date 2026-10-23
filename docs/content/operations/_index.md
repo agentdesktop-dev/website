@@ -10,3 +10,7 @@ Microsoft Entra, Intune, and pilot-enrollment walkthrough backed by the
 downloadable deployment kit. Use [Deploy through Microsoft Intune](intune/) for
 the macOS and Windows endpoint runbook, or [MDM integrations](mdm-integrations/)
 to map that contract to Jamf Pro, Kandji, or Fleet.
+
+See [Gateway and subscription authentication](dual-authentication/) for the local
+proxy and Claude dual-auth mechanisms, deployment boundaries, and harness-specific
+configuration examples.

@@ -22,17 +22,10 @@ git clone https://github.com/agentdesktop-dev/agentdesktop.git
 cd agentdesktop
 ```
 
-The checked-in configuration enables both Claude Code and Claude Desktop. Claude Desktop cannot be configured in `--user` mode, so create a Claude-Code-only copy for the user-mode steps below:
+The checked-in configuration enables Claude Code and leaves the optional Pi and Claude Desktop blocks commented out. Pi requires user mode; Claude Desktop requires system mode. Create a copy for the user-mode steps below:
 
 ```sh
 cp examples/standalone/config.yaml /tmp/agentdesktop-standalone.yaml
-```
-
-In `/tmp/agentdesktop-standalone.yaml`, remove or comment out this active block:
-
-```yaml
-claudeDesktop:
-  useLlmGateway: true
 ```
 
 ## Start the example services
@@ -110,6 +103,27 @@ claude-desktop  1.25927.0       /Applications/Claude.app/Contents/MacOS/Claude
 vscode  1.131.0 /opt/homebrew/bin/code
 ```
 
+## Manage Pi
+
+Pi is discovered and managed from the current user's configuration directory
+(`~/.pi/agent`, or `PI_CODING_AGENT_DIR`). It requires a per-user daemon, as
+used in this standalone walkthrough. Add a Pi entry under the existing `programs`
+block and select a model ID served by your gateway:
+
+```yaml
+programs:
+  pi:
+    useLlmGateway: true
+    model: claude-sonnet-4-5
+    api: anthropic-messages
+```
+
+The API dialect defaults to `anthropic-messages`; set it explicitly when your
+gateway exposes a different Pi-supported API. Agentdesktop adds the managed
+gateway provider and selects the configured default model while preserving
+Pi's other providers. Pi MCP discovery follows saved project-trust settings,
+and the Tools view includes its discovered MCP servers and skills.
+
 The optional desktop app shows the same local state. Run `agentdesktop`, then open **Runtime** under **Status** to confirm that the daemon is running in standalone mode and that the desktop and daemon versions match.
 
 {{< docs-screenshot src="images/desktop-standalone-runtime.png" width="820" height="316" alt="Agent Desktop Runtime panel showing standalone mode on macOS with matching desktop and daemon versions." caption="The Runtime panel confirms that this device is using local standalone configuration." >}}
@@ -120,11 +134,23 @@ Open **Tools** to inspect the discovered developer tools, MCP servers, skills, a
 
 Launch `claude` normally. Claude Code connects directly to agentgateway using the base URL written by agentdesktop. Its credential helper asks the daemon for the user's OIDC access token.
 
-Claude Desktop managed configuration requires system mode. Stop the user-mode daemon with Ctrl-C before switching modes. The original checked-in configuration already enables Claude Desktop, so run it as root:
+To test Claude Desktop, stop the user-mode daemon with Ctrl-C before switching modes. Copy the standalone configuration, enable Claude Desktop under `programs`, and run that system-mode configuration as root:
+
+```sh
+cp examples/standalone/config.yaml /tmp/agentdesktop-system.yaml
+```
+
+Add this block to `/tmp/agentdesktop-system.yaml`:
+
+```yaml
+programs:
+  claudeDesktop:
+    useLlmGateway: true
+```
 
 ```sh
 sudo "$(command -v agentdesktop)" daemon \
-  --config examples/standalone/config.yaml
+  --config /tmp/agentdesktop-system.yaml
 ```
 
 ## Stop the example

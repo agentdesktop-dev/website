@@ -7,6 +7,7 @@
     "dev": "npm run build:deployment-kit && next dev",
     "dev:docs": "npm run build:deployment-kit && hugo server --source docs --disableFastRender",
     "dev:blog": "hugo server --source blog --port 1314 --disableFastRender",
+    "dev:all": "npm run build:deployment-kit && node scripts/dev-all.mjs",
     "build": "npm run build:deployment-kit && next build",
     "build:docs": "npm run build:deployment-kit && hugo --source docs --gc --minify --cleanDestinationDir",
     "build:blog": "hugo --source blog --gc --minify --cleanDestinationDir",
