@@ -30,7 +30,7 @@ Run these commands from your `agentdesktop` repository root on macOS or Linux. F
    export ANTHROPIC_API_KEY='sk-ant-...'
    ```
 
-3. Copy the example configuration. The example configures Claude Code in `--user` mode. Leave the Claude Desktop block commented out.
+3. Copy the example configuration. It enables Claude Code and leaves the optional Pi and Claude Desktop blocks commented out. Pi requires user mode; Claude Desktop requires system mode.
 
    ```sh
    cp examples/standalone/config.yaml /tmp/agentdesktop-standalone.yaml
@@ -248,6 +248,39 @@ The gateway container keeps the Anthropic API key from your Compose terminal. In
    - Credential source: `apiKeyHelper`.
 
 4. Send a short prompt, such as `Reply with hello.` A successful response confirms the request path through the gateway to Anthropic.
+
+## Optional: Manage Pi
+
+The standalone daemon in this walkthrough already runs in user mode, which Pi
+requires. Install Pi separately, then add this block under the existing
+`programs` key in `/tmp/agentdesktop-standalone.yaml`. Choose a model ID served
+by your gateway:
+
+```yaml
+programs:
+   pi:
+      useLlmGateway: true
+      model: claude-sonnet-4-5
+      api: anthropic-messages
+```
+
+Stop the daemon with Ctrl-C and restart it with the updated configuration:
+
+```sh
+agentdesktop daemon \
+   --config /tmp/agentdesktop-standalone.yaml \
+   --user
+```
+
+The API dialect defaults to `anthropic-messages`; set it when your gateway uses
+another Pi-supported API. Agentdesktop adds the gateway provider and selects the
+configured model while preserving other providers. Pi MCP discovery follows
+saved project-trust settings, and the Tools view includes its discovered MCP
+servers and skills. The cleanup below also removes Pi's managed configuration.
+
+Claude Desktop managed settings require system mode; this user-mode walkthrough
+does not apply them. See [Gateway and subscription authentication](../../operations/dual-authentication/#claude-desktop)
+for Claude Desktop's system-mode configuration and platform-specific behavior.
 
 ## Cleanup
 

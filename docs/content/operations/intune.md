@@ -418,7 +418,7 @@ Create `install.ps1`:
 
 ```powershell
 $ErrorActionPreference = "Stop"
-$releaseVersion = "0.1.0"
+$releaseVersion = "0.4.0"
 $msi = Join-Path $PSScriptRoot "agentdesktop.msi"
 $configSource = Join-Path $PSScriptRoot "config.yaml"
 $caSource = Join-Path $PSScriptRoot "controller-ca.pem"
@@ -511,7 +511,7 @@ rules.
 Create `detect.ps1` separately and save it as UTF-8 with a BOM:
 
 ```powershell
-$expectedVersion = "0.1.0"
+$expectedVersion = "0.4.0"
 
 try {
   $root = Join-Path $env:ProgramData "AgentDesktop"
@@ -643,9 +643,10 @@ Restart-Service AgentDesktop
 The user then opens Agent Desktop, selects **Enroll device**, and completes the
 OIDC flow in the default browser.
 
-agentdesktop stores device metadata under the machine state directory. The
-private device key and OAuth tokens use the operating-system credential store
-on macOS and Windows. On Linux they are owner-only files under the state
-directory.
+agentdesktop stores device metadata under the machine state directory. On
+macOS, the private device key and OAuth tokens use Keychain. On Windows, secret
+payloads are encrypted files in the private state directory, with their
+encryption keys in Credential Manager. On Linux, secrets are owner-only files
+under the state directory.
 
 Continue with [Validate a pilot endpoint](../production/#8-validate-a-pilot-endpoint).

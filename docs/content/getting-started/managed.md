@@ -285,6 +285,8 @@ Use the command-line tools and controller interface to inspect the enrolled devi
 
 Stopping the containers or deleting files in `/tmp` does not restore tool settings. Cleanup also leaves the controller database and keys under `/tmp`, and the daemon's identity, stored credentials, and cached controller configuration in `/var/lib/agentdesktop`. This quickstart writes Claude Code settings to a system directory:
 
+Secret storage is platform-specific: Linux uses owner-only files, macOS uses Keychain, and Windows stores encrypted secret files in its private state directory with encryption keys in Credential Manager.
+
 | Operating system | Claude Code managed file |
 | --- | --- |
 | macOS | `/Library/Application Support/ClaudeCode/managed-settings.d/50-agentdesktop.json` |

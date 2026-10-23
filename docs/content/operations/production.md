@@ -51,7 +51,7 @@ Run a small pilot before broad deployment. In particular, verify every developer
 
 The fleet API uses TLS for server authentication. After enrollment, devices also present a controller-issued client certificate. Each daemon generates its device private key locally; only a certificate signing request is sent to the controller.
 
-Developer-tool traffic does not pass through the controller. Claude Code, Claude Desktop, Codex, and OpenCode connect directly to the configured inference gateway. GitHub Copilot CLI and VS Code Copilot Chat can use the daemon's optional loopback proxy, which forwards requests to the gateway with the user's gateway credentials. The controller only issues a short-lived gateway JWT when `controllerJwt` authentication is enabled.
+Developer-tool traffic does not pass through the controller. Claude Code, Claude Desktop, Codex, Grok Build, OpenCode, and Pi connect directly to the configured inference gateway. GitHub Copilot CLI and VS Code Copilot Chat can use the daemon's optional loopback proxy, which forwards requests to the gateway with the user's gateway credentials. The controller only issues a short-lived gateway JWT when `controllerJwt` authentication is enabled.
 
 Keep the two configuration layers separate:
 
@@ -316,18 +316,24 @@ The controller UI's configuration builder generates YAML but does not save it. T
 
 ### Managed client behavior
 
-When a tool is present in `programs`, the daemon reconciles its system-managed configuration. Gateway-generated settings take precedence over overlapping pass-through settings.
+When a tool is present in `programs`, the daemon reconciles its managed configuration in a supported daemon mode. Gateway-generated settings take precedence over overlapping pass-through settings.
 
 | Client | Generated gateway behavior |
 | --- | --- |
 | Claude Code | Sets `ANTHROPIC_BASE_URL` and installs an `apiKeyHelper`. |
 | Claude Desktop | Selects the gateway inference provider and installs a credential-helper script. |
-| Codex | Adds an `agentdesktop` Responses API model provider and credential command. |
+| Codex | Adds an `agentdesktop` Responses API provider and credential command; `auth: subscription` connects ChatGPT through Agentdesktop's OAuth helper, like Claude. |
 | OpenCode | Adds an `agentdesktop` provider, selected model, and credential plugin. |
+| Grok Build | Applies managed settings and gateway configuration in system mode. |
+| Pi | Adds the `agentdesktop` provider and selects the configured default model in Pi's user settings. |
 | GitHub Copilot CLI | Adds managed provider entries routed through the daemon's loopback LLM proxy. |
 | VS Code Copilot Chat | Adds gateway-backed custom models, or routes GitHub's Copilot models through the gateway. |
 
-The Copilot CLI and VS Code Copilot Chat integrations currently require a user-mode daemon (`daemon.user: true`) because they manage files in the user's profile; `daemon.llmProxy.listen` is also user-mode only. They cannot be managed by the system daemon used in the deployment examples. Configure the gateway behavior in the controller-distributed policy if that proxy is unavailable:
+To authenticate to the gateway while preserving a client's own provider subscription credential or API key, see [Gateway and subscription authentication](../dual-authentication/). It covers managed VS Code Copilot, Claude, and Codex integrations, plus a manual OpenCode API-key example. Paid-account access and provider terms still require deployment-specific validation.
+
+When enabling Pi with controller JWT authentication, add `pi` to `allowedClientIds`. Pi configuration is applied only by a user-mode daemon; a system daemon reports it as inactive.
+
+Pi, GitHub Copilot CLI, and VS Code Copilot Chat require a user-mode daemon (`daemon.user: true`) because they manage files in the user's profile; `daemon.llmProxy.listen` is also user-mode only. Claude Desktop and Grok Build require system mode. The user-mode integrations cannot be managed by the system daemon used in the deployment examples. Configure the gateway behavior in the controller-distributed policy if the proxy is unavailable:
 
 ```yaml
 llmGateway:
@@ -354,15 +360,20 @@ System-mode defaults include:
 | Claude Code on macOS | `/Library/Application Support/ClaudeCode/managed-settings.d/50-agentdesktop.json` |
 | Claude Code on Windows | `%ProgramFiles%\ClaudeCode\managed-settings.d\50-agentdesktop.json` |
 | Claude Code on Linux | `/etc/claude-code/managed-settings.d/50-agentdesktop.json` |
-| Claude Desktop settings | `/etc/claude-desktop/managed-settings.json` |
-| Claude Desktop credential helper | `/etc/claude-desktop/agentdesktop-credential-helper` |
+| Claude Desktop managed settings on Linux | `/etc/claude-desktop/managed-settings.json` |
+| Claude Desktop managed settings on macOS | `/Library/Managed Preferences/com.anthropic.claudefordesktop.plist` |
+| Claude Desktop managed settings on Windows | `HKLM\SOFTWARE\Policies\Claude` |
+| Claude Desktop credential helper on Linux/macOS | `/etc/claude-desktop/agentdesktop-credential-helper` |
+| Claude Desktop credential helper on Windows | `%ProgramData%\AgentDesktop\claude-desktop-credential-helper.cmd` |
 | Codex | `/etc/codex/managed_config.toml` |
 | OpenCode settings | `/etc/opencode/opencode.jsonc` |
 | OpenCode credential plugin | `/etc/opencode/plugins/agentdesktop.js` |
+| Grok Build on Linux/macOS | `/etc/grok/managed_config.toml` |
+| Grok Build on Windows | `<system-drive>\etc\grok\managed_config.toml` |
 
-agentdesktop marks files it owns and refuses to replace a conflicting file it did not create. Inventory existing management profiles and files before the pilot.
+On Windows, Claude Desktop settings are written as policy values under the machine key `HKLM\SOFTWARE\Policies\Claude`; the helper remains a file. Agentdesktop tracks the values it owns and leaves other policy values untouched. It marks managed files it owns and refuses to replace a conflicting file it did not create. Inventory existing management profiles and files before the pilot.
 
-The current Windows service also receives the Unix-style `/etc` defaults for Claude Desktop, Codex, and OpenCode, and the MSI does not override them. Treat Windows managed paths as a production integration point. If the installed client expects another organization-managed location, customize the service arguments with `--claude-desktop-managed-settings`, `--claude-desktop-credential-helper`, `--codex-managed-config`, `--open-code-managed-config`, and `--open-code-plugin`, then test the resulting installer.
+On Windows, the Claude Desktop managed-settings target is the policy registry key, not the `daemon.claudeDesktop.config` file path. The Windows service still uses `/etc`-style defaults for Codex and OpenCode; validate those paths or customize the service arguments with `--codex-managed-config`, `--open-code-managed-config`, and `--open-code-plugin`. On platforms that use a managed-settings file, the Claude Desktop settings and helper paths can be customized with `--claude-desktop-managed-settings` and `--claude-desktop-credential-helper`.
 
 ## 5. Install the controller
 
@@ -402,7 +413,7 @@ kubectl -n agentdesktop create secret generic agentdesktop-controller-config \
 Set `VERSION` to a reviewed release without a leading `v`. Pull the chart so you can apply the overlay:
 
 ```sh
-export VERSION=0.1.0
+export VERSION=0.4.0
 
 helm pull \
   oci://ghcr.io/agentdesktop-dev/charts/agentdesktop-controller \
@@ -565,7 +576,7 @@ Do not restore endpoint state to another machine. Device private keys are machin
 
 Deleting a device in the management UI makes future authenticated RPCs and reconnections fail, but it does not synchronously close an established stream or revoke a gateway JWT already issued for up to its configured lifetime. An otherwise authorized user can also enroll again. Permanent offboarding therefore requires removing IdP access, withdrawing MDM policy, and stopping or remediating the endpoint.
 
-The Windows MSI preserves machine configuration, and the macOS PKG has no uninstall command. Removing the state directory alone does not delete private keys and OAuth tokens from macOS Keychain or Windows Credential Manager. Removing the installed application also does not remove agentdesktop-owned tool settings, helper scripts, or plugins.
+The Windows MSI preserves machine configuration, and the macOS PKG has no uninstall command. Removing the state directory alone does not delete private keys and OAuth tokens from macOS Keychain or the per-secret encryption keys in Windows Credential Manager. Windows secret payloads are encrypted files inside the state directory. Removing the installed application also does not remove agentdesktop-owned tool settings, helper scripts, or plugins.
 
 For complete offboarding:
 
@@ -597,7 +608,7 @@ $empty = Join-Path $env:TEMP "agentdesktop-empty.yaml"
 Remove-Item $empty -Force
 ```
 
-If local sign-out cannot run, the current product has no privileged purge command for orphaned Keychain or Credential Manager entries; handle those through platform credential-store remediation or device reimaging.
+If local sign-out cannot run, the current product has no privileged purge command for orphaned Keychain entries or Windows Credential Manager encryption keys; handle those through platform credential-store remediation or device reimaging.
 
 ## Troubleshooting
 
