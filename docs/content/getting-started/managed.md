@@ -196,8 +196,8 @@ The daemon's local configuration, `examples/claude/agentdesktop.yaml`, contains 
 
 3. Sign in through the browser with the example Dex account. Enrollment returns a client certificate while the private device key stays on your workstation.
 
-   * Email: `admin@example.com`
-   * Password: `password`
+   - Email: `admin@example.com`
+   - Password: `password`
 
 ## Step 6: Verify the managed device
 
@@ -284,6 +284,8 @@ Use the command-line tools and controller interface to inspect the enrolled devi
 ## Cleanup
 
 Stopping the containers or deleting files in `/tmp` does not restore tool settings. Cleanup also leaves the controller database and keys under `/tmp`, and the daemon's identity, stored credentials, and cached controller configuration in `/var/lib/agentdesktop`. This quickstart writes Claude Code settings to a system directory:
+
+Secret storage is platform-specific: Linux uses owner-only files, macOS uses Keychain, and Windows stores encrypted secret files in its private state directory with encryption keys in Credential Manager.
 
 | Operating system | Claude Code managed file |
 | --- | --- |

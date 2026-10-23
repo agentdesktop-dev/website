@@ -23,13 +23,20 @@ agentdesktop can:
 | Tool | Discovery | Managed configuration | MCP and skills |
 | --- | --- | --- | --- |
 | Claude Code | Yes | Yes | MCP and skills |
-| Claude Desktop | Yes | Yes | MCP |
+| Claude Desktop | Yes | Yes | MCP; skills partial |
 | Codex | Yes | Yes | MCP and skills |
 | GitHub Copilot CLI | Yes | Yes | Not yet |
-| OpenCode | Yes | Yes | MCP |
-| VS Code Copilot Chat | Yes | Yes: own models or GitHub models through the gateway | Not yet |
+| OpenCode | Yes | Yes | MCP and skills partial |
+| VS Code Copilot Chat | Yes | Yes: own models or GitHub models through the gateway | MCP and skills |
+| Cursor | Yes | Partial | MCP and skills |
+| Grok Build | Yes | Yes | MCP and skills |
+| Pi | Yes | Yes | MCP and skills |
 
-The project targets Linux, macOS, and Windows. Some managed settings require system-level access; Claude Desktop configuration, for example, cannot be applied in `--user` mode.
+Agentdesktop also discovers local models from Ollama. `Partial` indicates gaps in the managed configuration or inventory support.
+
+The `main` branch can include features newer than the latest release. Check the release notes and confirm both daemon and controller versions before rolling out a newly added integration.
+
+The project targets Linux, macOS, and Windows. Some managed settings require a specific daemon scope: Pi, GitHub Copilot CLI, and VS Code Copilot Chat require user mode; Claude Desktop and Grok Build require system mode.
 
 ## Data boundaries
 
