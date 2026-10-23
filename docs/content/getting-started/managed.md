@@ -196,8 +196,8 @@ The daemon's local configuration, `examples/claude/agentdesktop.yaml`, contains 
 
 3. Sign in through the browser with the example Dex account. Enrollment returns a client certificate while the private device key stays on your workstation.
 
-   * Email: `admin@example.com`
-   * Password: `password`
+   - Email: `admin@example.com`
+   - Password: `password`
 
 ## Step 6: Verify the managed device
 

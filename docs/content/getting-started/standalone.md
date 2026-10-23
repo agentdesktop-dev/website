@@ -206,8 +206,8 @@ Use the app to inspect the daemon, large language model (LLM) gateway, and disco
 
 2. On **Status**, verify the connection status. The number of discovered tools depends on your workstation.
 
-   - **Local daemon**: **Running**.
-   - **LLM gateway**: **Configured**.
+   * **Local daemon**: **Running**.
+   * **LLM gateway**: **Configured**.
 
    {{< docs-screenshot src="images/agentdesktop-landing.png" width="2104" height="1584" contained=true alt="Agent Desktop Status page showing a running local daemon, a configured LLM gateway, and discovered tools." caption="The Status page summarizes the local daemon, gateway configuration, and tool inventory." >}}
 
@@ -244,8 +244,8 @@ The gateway container keeps the Anthropic API key from your Compose terminal. In
 
 3. In Claude Code, run `/status` to verify the gateway settings. See the [gateway verification guidance](https://code.claude.com/docs/en/llm-gateway-connect#check-for-an-existing-configuration) for details.
 
-   - Anthropic base URL: `http://127.0.0.1:4001/`.
-   - Credential source: `apiKeyHelper`.
+   * Anthropic base URL: `http://127.0.0.1:4001/`.
+   * Credential source: `apiKeyHelper`.
 
 4. Send a short prompt, such as `Reply with hello.` A successful response confirms the request path through the gateway to Anthropic.
 
@@ -343,8 +343,8 @@ Deleting files in `/tmp` does not restore Claude Code settings. Use an empty con
 
 ## Next steps
 
-- Try the [controller-managed quickstart](../managed/) to enroll your workstation and manage its configuration through a fleet controller.
-- To configure Claude Desktop, follow the [Claude Desktop example](https://github.com/agentdesktop-dev/agentdesktop/tree/main/examples/standalone#claude-desktop). That example requires system mode.
-- To change either interface, see [Develop the web interfaces](../../contributing/#develop-the-web-interfaces).
-- For a production deployment, use your own OpenID Connect (OIDC) client, trusted HTTPS endpoints, gateway policy, and secret management. See [Production deployment](../../operations/production/).
-- To route GitHub Copilot CLI and VS Code Copilot Chat through the daemon's local proxy, see the [Copilot example](https://github.com/agentdesktop-dev/agentdesktop/tree/main/examples/copilot).
+* Try the [controller-managed quickstart](../managed/) to enroll your workstation and manage its configuration through a fleet controller.
+* To configure Claude Desktop, follow the [Claude Desktop example](https://github.com/agentdesktop-dev/agentdesktop/tree/main/examples/standalone#claude-desktop). That example requires system mode.
+* To change either interface, see [Develop the web interfaces](../../contributing/#develop-the-web-interfaces).
+* For a production deployment, use your own OpenID Connect (OIDC) client, trusted HTTPS endpoints, gateway policy, and secret management. See [Production deployment](../../operations/production/).
+* To route GitHub Copilot CLI and VS Code Copilot Chat through the daemon's local proxy, see the [Copilot example](https://github.com/agentdesktop-dev/agentdesktop/tree/main/examples/copilot).
