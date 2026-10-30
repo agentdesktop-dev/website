@@ -1,0 +1,11 @@
+{{- $src := .Get "src" -}}
+{{- $alt := .Get "alt" -}}
+{{- if not (and $src $alt) -}}
+  {{- errorf "diagram shortcode requires src and alt: %s" .Position -}}
+{{- end -}}
+<figure class="diagram">
+  <a class="diagram-frame" href="{{ $src | relURL }}" title="Open full-size diagram">
+    <img src="{{ $src | relURL }}" alt="{{ $alt }}" loading="lazy" decoding="async">
+  </a>
+  {{ with .Get "caption" }}<figcaption>{{ . | $.Page.RenderString }}</figcaption>{{ end }}
+</figure>

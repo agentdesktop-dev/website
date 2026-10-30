@@ -1,0 +1,8 @@
+{{- $lang := .Type | default "text" -}}
+{{- $lexer := index (dict "jsonc" "javascript" "console" "bash") $lang | default $lang -}}
+{{- $labels := dict "bash" "Shell" "sh" "Shell" "console" "Shell" "yaml" "YAML" "json" "JSON" "jsonc" "JSONC" "js" "JavaScript" "javascript" "JavaScript" "ini" "systemd unit" "text" "Output" -}}
+{{- $label := index $labels $lang | default (upper $lang) -}}
+<figure class="code-block">
+  <figcaption><span class="code-lang">{{ $label }}</span><button class="code-copy" type="button" data-code-copy hidden>Copy</button></figcaption>
+  {{ transform.Highlight .Inner $lexer .Options }}
+</figure>

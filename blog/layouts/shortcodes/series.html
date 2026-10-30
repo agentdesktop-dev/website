@@ -1,0 +1,17 @@
+{{- $series := .Page.Params.series -}}
+{{- if not $series -}}
+  {{- errorf "series shortcode needs a series param in front matter: %s" .Position -}}
+{{- end -}}
+{{- $parts := where site.RegularPages "Params.series" $series -}}
+<nav class="series" aria-label="{{ .Get "title" | default "In this series" }}">
+  <p class="series-title"><span class="eyebrow">Series</span>{{ .Get "title" | default "In this series" }}</p>
+  <ol>
+    {{- range sort $parts "Params.seriesPart" }}
+      {{- if eq .RelPermalink $.Page.RelPermalink }}
+        <li aria-current="page"><span class="series-part">{{ .Params.seriesPart }}</span><span>{{ .Params.seriesLabel | default .LinkTitle }}<small>You are here</small></span></li>
+      {{- else }}
+        <li><span class="series-part">{{ .Params.seriesPart }}</span><a href="{{ .RelPermalink }}">{{ .Params.seriesLabel | default .LinkTitle }}</a></li>
+      {{- end }}
+    {{- end }}
+  </ol>
+</nav>

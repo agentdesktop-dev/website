@@ -1,0 +1,9 @@
+{{- $type := .Get "type" | default "note" -}}
+{{- if not (in (slice "note" "tip" "warning" "summary") $type) -}}
+  {{- errorf "callout shortcode received an unknown type %q: %s" $type .Position -}}
+{{- end -}}
+{{- $titles := dict "note" "Note" "tip" "Tip" "warning" "Watch out" "summary" "At a glance" -}}
+<aside class="callout callout-{{ $type }}">
+  <p class="callout-title">{{ .Get "title" | default (index $titles $type) | $.Page.RenderString }}</p>
+  <div class="callout-body">{{ .Inner | $.Page.RenderString (dict "display" "block") }}</div>
+</aside>
