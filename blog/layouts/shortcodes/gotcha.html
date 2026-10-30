@@ -1,0 +1,8 @@
+{{- $title := .Get "title" -}}
+{{- if not $title -}}
+  {{- errorf "gotcha shortcode requires a title: %s" .Position -}}
+{{- end -}}
+<section class="gotcha">
+  <p class="gotcha-symptom"><span class="gotcha-index" aria-hidden="true"></span>{{ $title | $.Page.RenderString }}</p>
+  <div class="gotcha-body">{{ .Inner | $.Page.RenderString (dict "display" "block") }}</div>
+</section>

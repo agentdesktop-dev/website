@@ -75,3 +75,21 @@ if (searchForm instanceof HTMLFormElement) {
   window.addEventListener("popstate", runSearch);
   runSearch();
 }
+for (const button of document.querySelectorAll("[data-code-copy]")) {
+  const code = button.closest(".code-block")?.querySelector("pre code");
+  if (!(button instanceof HTMLButtonElement) || !code || !navigator.clipboard) continue;
+  button.hidden = false;
+  button.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(code.textContent ?? "");
+      button.textContent = "Copied";
+      button.classList.add("is-copied");
+    } catch {
+      button.textContent = "Press ⌘C";
+    }
+    setTimeout(() => {
+      button.textContent = "Copy";
+      button.classList.remove("is-copied");
+    }, 1800);
+  });
+}

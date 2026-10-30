@@ -6,6 +6,11 @@
         <h1>{{ .Title }}</h1>
         {{ with .Description }}<p class="article-dek">{{ . }}</p>{{ end }}
         {{ partial "post-meta.html" . }}
+        {{ with .Params.stack }}
+          <ol class="article-stack" aria-label="Request path">
+            {{ range . }}<li{{ if eq (lower .) "agentgateway" }} class="is-gateway"{{ end }}>{{ . }}</li>{{ end }}
+          </ol>
+        {{ end }}
       </div>
     </header>
 
